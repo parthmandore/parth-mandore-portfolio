@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Parth Mandore — Software Engineer</title>
+<meta name="description" content="Portfolio of Parth Mandore — Software Engineering Student specializing in Java, Spring Boot, and RESTful APIs."/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div class="orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">PM_</a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#achievements">Achievements</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <span class="theme-toggle-icon">☀️</span>
+      <div class="toggle-track">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="theme-toggle-icon">🌙</span>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-container">
+    <div class="hero-inner">
+      <p class="hero-tag">// Software Engineering Student</p>
+      <h1 class="hero-name">
+        Parth<br><span class="highlight">Mandore</span>
+      </h1>
+      <p class="hero-sub">
+        Building scalable backend systems with <strong>Java</strong>, <strong>Spring Boot</strong>, and <strong>RESTful APIs</strong>. Passionate about clean architecture and solving real-world problems through code.
+      </p>
+      <div class="hero-cta">
+        <a href="Parth Mandore.pdf" target="_blank" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          View Resume
+        </a>
+        <a href="#contact" class="btn btn-outline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
+          Contact Me
+        </a>
+      </div>
+    </div>
+    <!-- PROFILE PICTURE -->
+    <div class="hero-profile">
+      <div class="hero-profile-wrap">
+        <div class="hero-img-container">
+          <img src="WhatsApp Image 2025-04-18 at 13.50.22_0448b38eeee.jpg" alt="Parth Mandore" />
+        </div>
+        <div class="orbit-dot orbit-dot-1"></div>
+        <div class="orbit-dot orbit-dot-2"></div>
+        <div class="orbit-dot orbit-dot-3"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ABOUT -->
+<section id="about" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          Hey! I'm Parth, a <strong>Computer Engineering student</strong> at G. H. Raisoni College of Engineering and Management, Pune. I'm deeply passionate about backend development and crafting systems that are clean, efficient, and maintainable.
+        </p>
+        <p>
+          My core expertise lies in <strong>Java, Spring Boot, and RESTful APIs</strong>. I love applying design patterns like Controller-Service-Repository to build modular and robust applications. I'm equally comfortable on the frontend when the need arises.
+        </p>
+        <p>
+          When I'm not coding, I'm grinding <strong>DSA problems</strong> on LeetCode and exploring how distributed systems work under the hood.
+        </p>
+      </div>
+      <div class="about-stats reveal">
+        <div class="stat-card">
+          <div class="stat-num">150+</div>
+          <div class="stat-label">DSA Problems Solved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">7.68</div>
+          <div class="stat-label">CGPA / 10</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Projects Created</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">Top 25</div>
+          <div class="stat-label">National Ideathon 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- EDUCATION -->
+<section id="education" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Education</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="edu-list">
+      <div class="edu-card reveal">
+        <div class="edu-header">
+          <div>
+            <div class="edu-degree">B.Tech in Computer Engineering</div>
+            <div class="edu-school">G. H. Raisoni College of Engineering and Management, Pune</div>
+          </div>
+          <span class="edu-date">Jun 2023 – Present</span>
+        </div>
+        <div class="edu-score">CGPA: 7.68 / 10 (up to Sem VI)</div>
+        <p style="color:var(--muted);font-size:.85rem;margin-top:.6rem;">
+          Relevant Coursework: Data Structures, Computer Networks, DBMS, OOP, Operating Systems
+        </p>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-header">
+          <div>
+            <div class="edu-degree">HSC — Electronics and Telecommunication</div>
+            <div class="edu-school">Pratap College</div>
+          </div>
+          <span class="edu-date">2019 – 2021</span>
+        </div>
+        <div class="edu-score">Percentage: 89.00%</div>
+      </div>
+      <div class="edu-card reveal">
+        <div class="edu-header">
+          <div>
+            <div class="edu-degree">SSC — General Studies</div>
+            <div class="edu-school">Shri N.T. Mundada Global View School</div>
+          </div>
+          <span class="edu-date">2019</span>
+        </div>
+        <div class="edu-score">Percentage: 85.20%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- PROJECTS -->
+<section id="projects" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Projects</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="projects-grid">
+
+      <div class="project-card reveal">
+        <div class="project-icon">🔍</div>
+        <div class="project-name">Message Filtering Backend System</div>
+        <div class="project-desc">
+          A backend application to classify and filter suspicious messages using Spring Boot and RESTful APIs. Implements Controller-Service-Repository pattern for clean, modular architecture with Spring Data JPA and MySQL integration.
+        </div>
+        <div class="project-tags">
+          <span class="tag">Spring Boot</span>
+          <span class="tag">Java</span>
+          <span class="tag cyan">MySQL</span>
+          <span class="tag">REST API</span>
+          <span class="tag cyan">JPA</span>
+        </div>
+        <a href="https://github.com/parthmandore" target="_blank" class="project-link">
+          View Source
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-icon">🔗</div>
+        <div class="project-name">URL Shortener Service</div>
+        <div class="project-desc">
+          A URL shortening service converting long URLs to unique short links with redirect support. Features REST APIs for creation, redirection, and analytics with optimized short-code generation and a layered clean architecture.
+        </div>
+        <div class="project-tags">
+          <span class="tag">Spring Boot</span>
+          <span class="tag">Java</span>
+          <span class="tag cyan">MySQL</span>
+          <span class="tag">REST API</span>
+          <span class="tag cyan">Maven</span>
+        </div>
+        <a href="https://github.com/parthmandore" target="_blank" class="project-link">
+          View Source
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- SKILLS -->
+<section id="skills" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Skills</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="skills-wrapper">
+      <div class="reveal">
+        <div class="skill-group-label">Languages</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-java-plain"></i> Java</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-python-plain"></i> Python</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-javascript-plain"></i> JS</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-typescript-plain"></i> TS</div><div class="skill-level">Beginner</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-azuresqldatabase-plain"></i> SQL</div><div class="skill-level">Advanced</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Frontend</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-html5-plain"></i> HTML5</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-css3-plain"></i> CSS3</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-react-original"></i> React</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-tailwindcss-original"></i> Tailwind</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-bootstrap-plain"></i> Bootstrap</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Backend</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-nodejs-plain"></i> Node.js</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-express-original"></i> Express</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-spring-original"></i> Spring Boot</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🔌 JDBC</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Databases</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-mysql-plain"></i> MySQL</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-postgresql-plain"></i> PostgreSQL</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-mongodb-plain"></i> MongoDB</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">AI / ML</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name">🤖 Machine Learning</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🧠 Deep Learning</div><div class="skill-level">Beginner</div></div>
+          <div class="skill-pill"><div class="skill-name">✨ Generative AI</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">💬 LLMs</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🔎 RAG</div><div class="skill-level">Beginner</div></div>
+          <div class="skill-pill"><div class="skill-name">🕵️ AI Agents</div><div class="skill-level">Beginner</div></div>
+          <div class="skill-pill"><div class="skill-name">✍️ Prompt Eng.</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-scikitlearn-plain"></i> Scikit-learn</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-pandas-plain"></i> Pandas</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-numpy-plain"></i> NumPy</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">♊ Gemini API</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Tools</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-git-plain"></i> Git</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-github-original"></i> GitHub</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-docker-plain"></i> Docker</div><div class="skill-level">Beginner</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-postman-plain"></i> Postman</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name"><i class="devicon-firebase-plain"></i> Firebase</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Core CS</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name">🧩 DSA</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name">🧱 OOP</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name">🗄️ DBMS</div><div class="skill-level">Advanced</div></div>
+          <div class="skill-pill"><div class="skill-name">💻 OS</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">📡 Networks</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🏗️ System Design</div><div class="skill-level">Beginner</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="skill-group-label">Domain Experience</div>
+        <div class="skill-pills">
+          <div class="skill-pill"><div class="skill-name">🥞 Full-Stack</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🚀 AI Apps</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
+          <div class="skill-pill"><div class="skill-name">💾 DB Systems</div><div class="skill-level">Intermediate</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ACHIEVEMENTS -->
+<section id="achievements" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Achievements</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="ach-list">
+      <div class="ach-item reveal">
+        <div class="ach-icon">🏆</div>
+        <div class="ach-text">
+          <strong>Top 25 — National Level Ideathon 2025</strong><br>
+          Project selected among the Top 25 teams out of hundreds of national-level participants in an Ideathon competition, demonstrating strong problem-solving and innovation skills.
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">💡</div>
+        <div class="ach-text">
+          <strong>150+ DSA Problems Solved</strong><br>
+          Solved 150+ data structures and algorithms problems across LeetCode and other platforms with a strong grasp of arrays, strings, trees, and graph problems.
+        </div>
+      </div>
+      <div class="ach-item reveal">
+        <div class="ach-icon">🎯</div>
+        <div class="ach-text">
+          <strong>Hackathon &amp; Ideathon Participant</strong><br>
+          Actively participated in multiple college-level hackathons and ideathons, collaborating in teams to deliver functional solutions under time constraints.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- CONTACT -->
+<section id="contact" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Contact</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Let's Work Together</h3>
+        <p>I'm actively looking for internship and full-time opportunities. Whether you have a project, an opportunity, or just want to connect — my inbox is always open.</p>
+        <div class="contact-links">
+          <a href="https://mail.google.com/mail/?view=cm&to=mandoreparth14@gmail.com" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
+            </div>
+            mandoreparth14@gmail.com
+          </a>
+          <a href="tel:7774091694" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/></svg>
+            </div>
+            +91 7774091694
+          </a>
+          <a href="https://linkedin.com/in/parthmandore" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            linkedin.com/in/parthmandore
+          </a>
+          <a href="https://github.com/parthmandore" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            </div>
+            github.com/parthmandore
+          </a>
+        </div>
+      </div>
+      <form class="contact-form reveal" id="contactForm" onsubmit="sendMessage(event)">
+        <div class="form-group">
+          <label for="formName">Your Name</label>
+          <input type="text" name="name" placeholder="John Doe" id="formName" required/>
+        </div>
+        <div class="form-group">
+          <label for="formEmail">Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" id="formEmail" required/>
+        </div>
+        <div class="form-group">
+          <label for="formMsg">Message</label>
+          <textarea name="message" rows="5" placeholder="Hi Parth, I'd love to connect about..." id="formMsg" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="sendBtn" style="align-self:flex-start;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Message
+        </button>
+        <div id="formStatus" class="form-status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed &amp; Built by <span>Parth Mandore</span> &nbsp;·&nbsp; Pune, Maharashtra &nbsp;·&nbsp; <span>2026</span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
