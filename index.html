@@ -25,8 +25,8 @@
   <div class="nav-right">
     <ul class="nav-links" id="navLinks">
       <li><a href="#about">About</a></li>
-      <li><a href="#education">Education</a></li>
-      <li><a href="#showcase">Portfolio</a></li>
+      <li><a href="#showcase" onclick="switchTab('skills')">Skills</a></li>
+      <li><a href="#showcase" onclick="switchTab('projects')">Portfolio</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
     <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
@@ -54,7 +54,7 @@
         Driven by curiosity, continuous learning, and the challenge of solving complex problems.
       </p>
       <div class="hero-cta">
-        <a href="Parth Mandore.pdf" target="_blank" class="btn-hero">
+        <a href="Parth-Mandore.pdf" target="_blank" class="btn-hero">
           <span class="btn-border-spinner"></span>
           <span class="btn-content">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -94,7 +94,7 @@
             
             <!-- 3. Image Layer -->
             <div class="card-image-wrapper">
-              <img src="parth.jpg" class="card-bg-image" alt="Parth Mandore Background" />
+              <img src="assets/parth.jpg" class="card-bg-image" alt="Parth Mandore Background" />
               
               <!-- 4. Overlay Layer (Cinematic gradients & depth shading) -->
               <div class="card-image-overlay"></div>
@@ -106,7 +106,7 @@
         
         <!-- 5. Cutout Layer (Pops out of the card in 3D Z-space) -->
         <div class="cutout-wrapper">
-          <img src="parth-cutout.png" class="card-cutout-image" alt="Parth Mandore Cutout" />
+          <img src="assets/parth-cutout.png" class="card-cutout-image" alt="Parth Mandore Cutout" />
         </div>
 
 
@@ -131,7 +131,7 @@
     <div class="about-grid">
       <div class="about-text reveal">
         <p>
-          Hey! I'm Parth, a Computer Engineering student who loves building technology that creates meaningful impact. I am driven by curiosity, continuous learning, and the challenge of solving complex problems through software.
+          Hey! I'm Parth, a Computer Engineering student at G. H. Raisoni College of Engineering and Management, Pune ( 2023 – Present ). I loves building technology that creates meaningful impact.
         </p>
         <p>
           My interests include Software Development, Full-Stack Development, Cloud Computing, Artificial Intelligence, and Machine Learning. I enjoy transforming ideas into real-world applications while continuously improving my programming, problem-solving, and engineering skills.
@@ -146,67 +146,13 @@
           <div class="stat-label">DSA Problems Solved</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num" data-target="7.68">0</div>
-          <div class="stat-label">CGPA / 10</div>
+          <div class="stat-num" data-target="4" data-suffix="th">0</div>
+          <div class="stat-label">Year of B.Tech</div>
         </div>
         <div class="stat-card">
-          <div class="stat-num" data-target="2">0</div>
+          <div class="stat-num" data-target="3">0</div>
           <div class="stat-label">Projects Created</div>
         </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="glow-divider"></div>
-
-<!-- EDUCATION -->
-<section id="education" class="section-pad">
-  <div class="inner">
-    <div class="section-head reveal">
-      <h2 class="section-title">Education</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="edu-list">
-      <div class="edu-card reveal">
-        <div class="edu-header">
-          <div>
-            <div class="edu-degree">B.Tech in Computer Engineering</div>
-            <div class="edu-school">G. H. Raisoni College of Engineering and Management, Pune</div>
-          </div>
-          <span class="edu-date">Jun 2023 – Present</span>
-        </div>
-        <div class="edu-score">CGPA: 7.68 / 10 (up to Sem VI)</div>
-      </div>
-      <div class="edu-card reveal">
-        <div class="edu-header">
-          <div>
-            <div class="edu-degree">BArch</div>
-            <div class="edu-school">L S Raheja School of Architecture, Mumbai</div>
-          </div>
-          <span class="edu-date">2021 – 2023</span>
-        </div>
-        <div class="edu-score">CGPA: 8.5</div>
-      </div>
-      <div class="edu-card reveal">
-        <div class="edu-header">
-          <div>
-            <div class="edu-degree">HSC — Electronics and Telecommunication</div>
-            <div class="edu-school">Pratap College</div>
-          </div>
-          <span class="edu-date">2019 – 2021</span>
-        </div>
-        <div class="edu-score">Percentage: 89.00%</div>
-      </div>
-      <div class="edu-card reveal">
-        <div class="edu-header">
-          <div>
-            <div class="edu-degree">SSC — General Studies</div>
-            <div class="edu-school">Shri N.T. Mundada Global View School</div>
-          </div>
-          <span class="edu-date">2019</span>
-        </div>
-        <div class="edu-score">Percentage: 85.20%</div>
       </div>
     </div>
   </div>
@@ -246,7 +192,7 @@
             A backend application to classify and filter suspicious messages using Spring Boot and RESTful APIs. Implements Controller-Service-Repository pattern.
           </div>
           <div class="project-links">
-            <a href="https://github.com/parthmandore" target="_blank" class="project-link">
+            <a href="https://github.com/parthmandore/Message-filtering-backend-system" target="_blank" class="project-link">
               Source Code
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
@@ -255,11 +201,27 @@
 
         <div class="project-card reveal">
           <div class="project-img">
-            <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=400&q=80" alt="URL Shortener Service" />
+            <img src="assets/url-shortner.jpeg" alt="URL Shortener Service" />
           </div>
           <div class="project-name">URL Shortener Service</div>
           <div class="project-desc line-clamp">
             A URL shortening service converting long URLs to unique short links with redirect support, built with optimized short-code generation.
+          </div>
+          <div class="project-links">
+            <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" class="project-link">
+              Source Code
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="project-card reveal">
+          <div class="project-img">
+            <img src="assets/portfolio.png" alt="Personal Portfolio Website" />
+          </div>
+          <div class="project-name">Personal Portfolio Website</div>
+          <div class="project-desc line-clamp">
+            A premium, highly interactive personal portfolio website featuring glassmorphism, dynamic counters, 3D card tilt hover effects, and responsive layout.
           </div>
           <div class="project-links">
             <a href="https://github.com/parthmandore" target="_blank" class="project-link">
