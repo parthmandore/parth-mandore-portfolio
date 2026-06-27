@@ -114,10 +114,8 @@ Or use Live Server in VS Code.
 
 ## Live Website
 
-Add your deployed Vercel URL here:
-
 ```text
-https://your-vercel-link.vercel.app
+https://parthmandore.netlify.app/
 ```
 
 ---
