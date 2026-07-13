@@ -36,8 +36,8 @@ var projects = [
     title: 'Repository Mentor AI',
     description: 'An AI-powered GitHub repository analysis platform that performs static code analysis, architecture detection, semantic repository search, RAG-based Q&A, security insights, and recruiter-friendly repository reports.',
     image: 'assets/repomentor.png',
-    demo: 'https://repomentor.vercel.app',
-    github: 'https://github.com/parthmandore/repository-mentor-ai',
+    demo: 'https://repomentor.netlify.app',
+    github: 'https://github.com/parthmandore/RepoMentor-AI',
     technologies: ['FastAPI', 'Next.js', 'PostgreSQL', 'pgvector', 'Ollama', 'RAG']
   },
   {
