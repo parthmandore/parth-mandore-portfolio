@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Parth Mandore — Software Engineer</title>
+<meta name="description" content="Portfolio of Parth Mandore — Software Engineering Student specializing in Java, Spring Boot, and RESTful APIs."/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div class="orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">PM_</a>
+  <div class="nav-right">
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#showcase" onclick="switchTab('skills')">Skills</a></li>
+      <li><a href="#showcase" onclick="switchTab('projects')">Portfolio</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+      <span class="theme-toggle-icon">☀️</span>
+      <div class="toggle-track">
+        <div class="toggle-knob"></div>
+      </div>
+      <span class="theme-toggle-icon">🌙</span>
+    </div>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-container">
+    <div class="hero-inner">
+      <p class="hero-tag">// Computer Engineering Student</p>
+      <h1 class="hero-name">
+        Parth<br><span class="highlight">Mandore</span>
+      </h1>
+      <p class="hero-sub">
+        Driven by curiosity, continuous learning, and the challenge of solving complex problems.
+      </p>
+      <div class="hero-cta">
+        <a href="Parth-Mandore.pdf" target="_blank" class="btn-hero">
+          <span class="btn-border-spinner"></span>
+          <span class="btn-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Download Resume
+          </span>
+        </a>
+        <a href="#contact" class="btn-hero">
+          <span class="btn-border-spinner"></span>
+          <span class="btn-content">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
+            Contact Me
+          </span>
+        </a>
+      </div>
+    </div>
+    <!-- PROFILE PICTURE SHOWCASE -->
+    <div class="hero-profile">
+      <!-- 1. Background Glow Layer -->
+      <div class="profile-glow-backdrop"></div>
+      
+      <!-- Premium Frame Elements: Floating Particles -->
+      <div class="profile-particles">
+        <span class="particle p-1"></span>
+        <span class="particle p-2"></span>
+        <span class="particle p-3"></span>
+        <span class="particle p-4"></span>
+      </div>
+      
+      <!-- Interactive 3D Card Area -->
+      <div class="profile-3d-card">
+        <!-- 2. Glass Layer & Gradient Border -->
+        <div class="card-border-ring">
+          <div class="card-glass-panel">
+            
+            <!-- Animated Edge Light -->
+            <div class="card-edge-light"></div>
+            
+            <!-- 3. Image Layer -->
+            <div class="card-image-wrapper">
+              <img src="assets/parth.jpg" class="card-bg-image" alt="Parth Mandore Background" />
+              
+              <!-- 4. Overlay Layer (Cinematic gradients & depth shading) -->
+              <div class="card-image-overlay"></div>
+              <div class="card-depth-shading"></div>
+            </div>
+            
+          </div>
+        </div>
+        
+        <!-- 5. Cutout Layer (Pops out of the card in 3D Z-space) -->
+        <div class="cutout-wrapper">
+          <img src="assets/parth-cutout.png" class="card-cutout-image" alt="Parth Mandore Cutout" />
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    scroll
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ABOUT -->
+<section id="about" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">About Me</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          Hey! I'm Parth, a Computer Engineering student at G. H. Raisoni College of Engineering and Management, Pune ( 2023 – Present ). I love building technology that creates meaningful impact.
+        </p>
+        <p>
+          My interests include Software Development, Full-Stack Development, Cloud Computing, Artificial Intelligence, and Machine Learning. I enjoy transforming ideas into real-world applications while continuously improving my programming, problem-solving, and engineering skills.
+        </p>
+        <p>
+          I actively work on projects, coding challenges, and new technologies to strengthen both my technical foundation and practical experience. My goal is to grow into a versatile software engineer capable of building scalable, innovative, and user-focused solutions.
+        </p>
+      </div>
+      <div class="about-stats reveal">
+        <div class="stat-card">
+          <div class="stat-num" data-target="150" data-suffix="+">0</div>
+          <div class="stat-label">DSA Problems Solved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" data-target="4" data-suffix="th">0</div>
+          <div class="stat-label">Year of B.Tech</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" data-target="7">0</div>
+          <div class="stat-label">Projects Created</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- PORTFOLIO SHOWCASE (Tabbed: Projects + Skills) -->
+<section id="showcase" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Portfolio Showcase</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <!-- TAB SWITCHER -->
+    <div class="showcase-tabs reveal">
+      <button class="showcase-tab active" data-tab="projects" onclick="switchTab('projects')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+        Projects
+      </button>
+      <button class="showcase-tab" data-tab="skills" onclick="switchTab('skills')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Skills
+      </button>
+    </div>
+
+    <!-- PROJECTS PANEL -->
+    <div class="showcase-panel active" id="panel-projects">
+      <div class="projects-grid" id="projectsGrid">
+        <!-- Project cards rendered dynamically by script.js -->
+      </div>
+      <div class="btn-show-more-wrap" id="showMoreWrap">
+        <button class="btn-show-more" id="toggleProjectsBtn">
+          <span class="btn-show-more-text">↓ Show More Projects</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- SKILLS PANEL -->
+    <div class="showcase-panel" id="panel-skills">
+      <div class="skills-wrapper">
+        <div class="reveal">
+          <div class="skill-group-label">Languages</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-java-plain"></i> Java</div><div class="skill-level">Advanced</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-python-plain"></i> Python</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-javascript-plain"></i> JS</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-typescript-plain"></i> TS</div><div class="skill-level">Beginner</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-azuresqldatabase-plain"></i> SQL</div><div class="skill-level">Advanced</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="skill-group-label">Frontend</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-html5-plain"></i> HTML5</div><div class="skill-level">Advanced</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-css3-plain"></i> CSS3</div><div class="skill-level">Advanced</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-react-original"></i> React</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-tailwindcss-original"></i> Tailwind</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-bootstrap-plain"></i> Bootstrap</div><div class="skill-level">Intermediate</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="skill-group-label">Backend</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-nodejs-plain"></i> Node.js</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-express-original"></i> Express</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-spring-original"></i> Spring Boot</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🔌 JDBC</div><div class="skill-level">Intermediate</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="skill-group-label">Databases</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-mysql-plain"></i> MySQL</div><div class="skill-level">Advanced</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-postgresql-plain"></i> PostgreSQL</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-mongodb-plain"></i> MongoDB</div><div class="skill-level">Intermediate</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="skill-group-label">AI / ML</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name">🤖 Machine Learning</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🧠 Deep Learning</div><div class="skill-level">Beginner</div></div>
+            <div class="skill-pill"><div class="skill-name">✨ Generative AI</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">💬 LLMs</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🔎 RAG</div><div class="skill-level">Beginner</div></div>
+            <div class="skill-pill"><div class="skill-name">🕵️ AI Agents</div><div class="skill-level">Beginner</div></div>
+            <div class="skill-pill"><div class="skill-name">✍️ Prompt Eng.</div><div class="skill-level">Advanced</div></div>
+            <div class="skill-pill"><div class="skill-name"><i class="devicon-scikitlearn-plain"></i> Scikit-learn</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">♊ Gemini API</div><div class="skill-level">Intermediate</div></div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="skill-group-label">Domain Experience</div>
+          <div class="skill-pills">
+            <div class="skill-pill"><div class="skill-name">🥞 Full-Stack</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🚀 AI Apps</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
+            <div class="skill-pill"><div class="skill-name">💾 DB Systems</div><div class="skill-level">Intermediate</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- CONTACT -->
+<section id="contact" class="section-pad">
+  <div class="inner">
+    <div class="section-head reveal">
+      <h2 class="section-title">Contact</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info reveal">
+        <h3>Let's Work Together</h3>
+        <div class="contact-links">
+          <a href="https://mail.google.com/mail/?view=cm&to=mandoreparth14@gmail.com" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
+            </div>
+            mandoreparth14@gmail.com
+          </a>
+          <a href="tel:7774091694" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/></svg>
+            </div>
+            +91 7774091694
+          </a>
+          <a href="https://linkedin.com/in/parthmandore" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            linkedin.com/in/parthmandore
+          </a>
+          <a href="https://github.com/parthmandore" target="_blank" class="contact-link">
+            <div class="contact-link-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+            </div>
+            github.com/parthmandore
+          </a>
+        </div>
+      </div>
+      <form class="contact-form reveal" id="contactForm" onsubmit="sendMessage(event)">
+        <div class="form-group">
+          <label for="formName">Your Name</label>
+          <input type="text" name="name" placeholder="John Doe" id="formName" required/>
+        </div>
+        <div class="form-group">
+          <label for="formEmail">Email Address</label>
+          <input type="email" name="email" placeholder="john@example.com" id="formEmail" required/>
+        </div>
+        <div class="form-group">
+          <label for="formMsg">Message</label>
+          <textarea name="message" rows="5" placeholder="Hi Parth, I'd love to connect about..." id="formMsg" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" id="sendBtn" style="align-self:flex-start;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Send Message
+        </button>
+        <div id="formStatus" class="form-status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Designed &amp; Built by <span>Parth Mandore</span> &nbsp;·&nbsp; Pune, Maharashtra &nbsp;·&nbsp; <span>2026</span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
