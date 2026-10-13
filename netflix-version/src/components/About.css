@@ -1,0 +1,257 @@
+/* Scoped Netflix About Portrait 3D & Parallax Styles
+ * Replicates the exact dual-image, 3D tilt, and layered parallax effect from Light Theme
+ */
+
+.netflix-about-profile {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1500px;
+  z-index: 10;
+}
+
+/* 1. Background Glow Layer (Netflix Crimson Palette) */
+.netflix-profile-glow-backdrop {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle, rgba(229, 19, 43, 0.4) 0%, rgba(90, 11, 27, 0.15) 45%, transparent 70%);
+  opacity: 0.6;
+  filter: blur(50px);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateZ(-50px);
+}
+
+.netflix-about-profile:hover .netflix-profile-glow-backdrop {
+  opacity: 0.95;
+  transform: scale(1.15) translateZ(-40px);
+}
+
+/* 2. Floating Ambient Crimson Particles */
+.netflix-profile-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.netflix-profile-particles .netflix-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #ff3d5a;
+  border-radius: 50%;
+  filter: drop-shadow(0 0 8px #e5132b);
+  opacity: 0.35;
+}
+.netflix-profile-particles .p-1 { top: 10%; left: -8%; animation: floatParticle1 12s infinite alternate ease-in-out; }
+.netflix-profile-particles .p-2 { top: 80%; right: -6%; animation: floatParticle2 14s infinite alternate ease-in-out; }
+.netflix-profile-particles .p-3 { bottom: 15%; left: -4%; animation: floatParticle1 9s infinite alternate ease-in-out 2s; }
+.netflix-profile-particles .p-4 { top: 40%; right: -12%; animation: floatParticle2 11s infinite alternate ease-in-out 1s; }
+
+/* 3. 3D Interactive Card Container */
+.netflix-profile-3d-card {
+  width: 100%;
+  aspect-ratio: 1 / 1.44;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.7),
+    0 20px 50px -15px rgba(0, 0, 0, 0.6),
+    inset 0 0 100px rgba(0, 0, 0, 0.3);
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+/* Hover: subtle base tilt & elevated shadow */
+.netflix-profile-3d-card:hover {
+  transform: rotateX(8deg) rotateY(-8deg) translateY(-8px);
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.85),
+    0 0 50px -10px rgba(229, 19, 43, 0.3),
+    0 10px 20px -5px rgba(0, 0, 0, 0.5);
+}
+
+/* 4. Glass Layer & Gradient Border Wrapper */
+.netflix-card-border-ring {
+  width: 100%;
+  height: 100%;
+  border-radius: 24px;
+  padding: 2.5px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(229, 19, 43, 0.45), rgba(255, 61, 90, 0.3), rgba(255, 255, 255, 0.05));
+  background-size: 300% 300%;
+  animation: borderGlowGradient 10s infinite alternate ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.netflix-card-glass-panel {
+  width: 100%;
+  height: 100%;
+  border-radius: 21.5px;
+  background: linear-gradient(180deg, rgba(20, 6, 10, 0.85), rgba(7, 7, 10, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* Animated Edge Light scanner line */
+.netflix-card-edge-light {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 120deg,
+    rgba(255, 61, 90, 0.16) 180deg,
+    transparent 240deg,
+    transparent 360deg
+  );
+  animation: edgeScanner 8s linear infinite;
+  pointer-events: none;
+  z-index: 3;
+  mix-blend-mode: overlay;
+}
+
+/* 5. Base Image Layer */
+.netflix-card-image-wrapper {
+  position: absolute;
+  inset: 0;
+  border-radius: 21.5px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.netflix-card-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 21.5px;
+}
+
+/* Hover: background image darkens, contrast boosts, and blurs */
+.netflix-profile-3d-card:hover .netflix-card-bg-image {
+  transform: scale(1.06);
+  filter: brightness(0.35) contrast(1.1) blur(4px);
+}
+
+/* 6. Overlay Layer (Cinematic gradients & depth shading) */
+.netflix-card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, 
+    rgba(7, 7, 10, 0.4) 0%, 
+    transparent 35%, 
+    transparent 65%, 
+    rgba(7, 7, 10, 0.9) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.netflix-card-depth-shading {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at bottom, rgba(229, 19, 43, 0.25) 0%, transparent 60%);
+  z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: color-dodge;
+}
+
+/* 7. Cutout Layer (Pops forward in 3D out of the card frame) */
+.netflix-cutout-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  border-radius: 24px;
+}
+
+.netflix-card-cutout-image {
+  width: 120%;
+  height: auto;
+  position: absolute;
+  bottom: -2px;
+  transform: translate3d(0, 20px, 0) scale(0.96);
+  opacity: 0;
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 88%, rgba(0,0,0,0) 100%);
+}
+
+/* Cutout emerges out of the card and gains shadow height on hover */
+.netflix-profile-3d-card:hover .netflix-card-cutout-image {
+  opacity: 1;
+  transform: translate3d(0, -32px, 80px) scale(1.08);
+  filter: drop-shadow(0 25px 30px rgba(0, 0, 0, 0.65));
+}
+
+/* 8. Foreground Netflix Editorial Overlay */
+.netflix-card-editorial-overlay {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 20;
+  transform: translateZ(90px);
+}
+
+/* Keyframes */
+@keyframes edgeScanner {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes borderGlowGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes floatParticle1 {
+  0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.3; }
+  50% { transform: translateY(-30px) translateX(15px) scale(1.2); opacity: 0.6; }
+  100% { transform: translateY(15px) translateX(-10px) scale(0.8); opacity: 0.2; }
+}
+
+@keyframes floatParticle2 {
+  0% { transform: translateY(0) translateX(0) scale(0.8); opacity: 0.2; }
+  50% { transform: translateY(25px) translateX(-20px) scale(1.3); opacity: 0.5; }
+  100% { transform: translateY(-20px) translateX(10px) scale(0.9); opacity: 0.3; }
+}
+
+/* Accessibility: Respect Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .netflix-card-edge-light,
+  .netflix-card-border-ring,
+  .netflix-profile-particles .netflix-particle {
+    animation: none !important;
+  }
+}
