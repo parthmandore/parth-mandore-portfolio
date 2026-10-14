@@ -1,12 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
-import { sectionMeta, viewerProfiles, type ProfileId, type SectionId } from '../data/portfolio';
+import { sectionMeta, type SectionId } from '../data/portfolio';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { SeriesMark } from './Poster';
-import { ProfileAvatar } from './ProfileSelector';
 import { EASE } from './fx';
 
-export default function Navbar({ order, profileId, onSwitch }: { order: SectionId[]; profileId: ProfileId; onSwitch: (id: ProfileId) => void }) {
+export default function Navbar({
+  order,
+  theme = 'netflix',
+  onThemeChange,
+}: {
+  order: SectionId[];
+  profileId?: string;
+  onSwitch?: (id: string) => void;
+  theme?: 'light' | 'dark' | 'netflix';
+  onThemeChange?: (theme: 'light' | 'dark' | 'netflix') => void;
+}) {
   const { scrollY } = useScroll();
   const [solid, setSolid] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -51,8 +60,6 @@ export default function Navbar({ order, profileId, onSwitch }: { order: SectionI
     scrollTo(`#${id}`, { offset: id === 'top' ? 0 : -64 });
   };
 
-  const current = viewerProfiles.find((p) => p.id === profileId)!;
-
   return (
     <motion.header
       className="fixed inset-x-0 top-0 z-[60]"
@@ -84,16 +91,23 @@ export default function Navbar({ order, profileId, onSwitch }: { order: SectionI
           >
             LET&apos;S BUILD
           </button>
+
+          {/* Theme Dropdown: replaces profile selector */}
           <div className="relative" ref={menuRef}>
             <button
               type="button"
               onClick={() => setMenu((m) => !m)}
-              aria-haspopup="menu"
+              aria-haspopup="listbox"
               aria-expanded={menu}
-              aria-label={`Viewing as ${current.name}. Switch profile`}
-              className="flex items-center gap-2 rounded-md p-1"
+              aria-label="Select theme"
+              className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-bone backdrop-blur transition hover:border-white/50 hover:bg-white/10"
             >
-              <ProfileAvatar id={profileId} size="sm" />
+              <span className="text-sm">
+                {theme === 'dark' ? '🟣' : theme === 'light' ? '📰' : '🎬'}
+              </span>
+              <span className="hidden sm:inline">
+                {theme === 'dark' ? 'Purple' : theme === 'light' ? 'News Letter' : 'Netflix Version'}
+              </span>
               <motion.span animate={{ rotate: menu ? 180 : 0 }} className="text-[10px] text-mist">
                 ▼
               </motion.span>
@@ -101,30 +115,43 @@ export default function Navbar({ order, profileId, onSwitch }: { order: SectionI
             <AnimatePresence>
               {menu && (
                 <motion.div
-                  role="menu"
+                  role="listbox"
                   initial={{ opacity: 0, y: -8, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -8, scale: 0.97 }}
-                  transition={{ duration: 0.25, ease: EASE }}
-                  className="absolute right-0 top-12 w-60 origin-top-right rounded-xl border border-white/10 bg-ink-2/95 p-2 shadow-2xl backdrop-blur-xl"
+                  transition={{ duration: 0.22, ease: EASE }}
+                  className="absolute right-0 top-12 w-48 origin-top-right rounded-xl border border-white/15 bg-ink-2/95 p-1.5 shadow-2xl backdrop-blur-xl z-50"
                 >
-                  <p className="px-3 pb-2 pt-1 text-[10px] font-semibold tracking-[0.24em] text-smoke">WHO&apos;S WATCHING?</p>
-                  {viewerProfiles.map((p) => (
+                  <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.24em] text-smoke">Theme</p>
+                  {[
+                    { id: 'dark', label: 'Purple', icon: '🟣' },
+                    { id: 'light', label: 'News Letter', icon: '📰' },
+                    { id: 'netflix', label: 'Netflix Version', icon: '🎬' },
+                  ].map((t) => (
                     <button
-                      key={p.id}
-                      role="menuitem"
+                      key={t.id}
                       type="button"
+                      role="option"
+                      aria-selected={t.id === theme}
                       onClick={() => {
-                        onSwitch(p.id);
+                        localStorage.setItem('theme', t.id);
+                        if (onThemeChange) {
+                          onThemeChange(t.id as 'light' | 'dark' | 'netflix');
+                        }
+                        if (window.parent && window.parent !== window) {
+                          window.parent.postMessage({ type: 'SET_THEME', theme: t.id }, '*');
+                        }
                         setMenu(false);
                       }}
-                      className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-white/5 ${p.id === profileId ? 'bg-white/[0.06]' : ''}`}
+                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition hover:bg-white/10 ${
+                        t.id === theme ? 'bg-white/10 text-crimson-2 font-bold' : 'text-bone'
+                      }`}
                     >
-                      <ProfileAvatar id={p.id} size="sm" />
-                      <span>
-                        <span className="block text-sm text-bone">{p.name}</span>
-                        <span className="block text-[11px] text-smoke">{p.blurb}</span>
+                      <span className="flex items-center gap-2">
+                        <span>{t.icon}</span>
+                        <span>{t.label}</span>
                       </span>
+                      {t.id === theme && <span className="text-xs text-crimson-2 font-bold">✓</span>}
                     </button>
                   ))}
                 </motion.div>

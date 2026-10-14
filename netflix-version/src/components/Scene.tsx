@@ -9,12 +9,23 @@ import { useTrackProgress } from '../hooks/sectionProgress';
 export default function Scene({ id, children, className = '' }: { id: string; children: ReactNode; className?: string }) {
   const ref = useRef<HTMLElement>(null);
   useTrackProgress(id, ref);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 0.55'] });
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.15, 1]);
-  const scale = useTransform(scrollYProgress, [0, 1], [0.97, 1]);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start 0.5'] });
+  const opacity = useTransform(scrollYProgress, [0, 0.85], [0.25, 1]);
+  const scale = useTransform(scrollYProgress, [0, 1], [0.985, 1]);
+  const y = useTransform(scrollYProgress, [0, 1], [24, 0]);
 
   return (
-    <motion.section id={id} ref={ref} style={{ opacity, scale }} className={`relative scroll-mt-16 py-16 sm:py-24 ${className}`}>
+    <motion.section
+      id={id}
+      ref={ref}
+      style={{ opacity, scale, y }}
+      className={`relative scroll-mt-16 py-16 sm:py-24 ${className}`}
+    >
+      {/* Subtle ambient lighting continuity between scenes */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -top-12 h-24 bg-gradient-to-b from-transparent via-crimson/[0.015] to-transparent"
+      />
       {children}
     </motion.section>
   );

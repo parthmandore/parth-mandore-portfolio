@@ -1,14 +1,16 @@
-import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { profile } from '../data/portfolio';
 import { useSmoothScroll } from '../hooks/smoothScroll';
 import { EASE, Magnetic, Particles } from './fx';
 import { SeriesMark } from './Poster';
 import { DirectionalText, AlternatingLines } from './CinematicTypography';
+import { useScrollDownTrigger } from '../hooks/useScrollDirectionTrigger';
+import { useReducedMotionPref } from '../hooks/useMedia';
 
 export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
-  const ref = useRef<HTMLElement>(null);
+  const { ref: sectionRef, hasEntered } = useScrollDownTrigger<HTMLElement>(0.85);
   const { scrollTo } = useSmoothScroll();
+  const reduced = useReducedMotionPref();
 
   const ctas = [
     { label: "Let's Build", href: `mailto:${profile.email}?subject=${encodeURIComponent("Let's build something")}`, primary: true, cursor: 'play' },
@@ -18,14 +20,22 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
   ];
 
   return (
-    <section id="contact" ref={ref} className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
+    <section id="contact" ref={sectionRef} className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-4 py-24 text-center">
       <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_60%,rgba(229,19,43,0.18),transparent_70%)]" />
       <Particles count={36} />
 
       {/* The Next Episode: enters from LEFT */}
-      <DirectionalText direction="left" distance="110%" delay={0.08} duration={1.25} className="relative z-10 mb-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-crimson-2">
-          The Next Episode
+      <DirectionalText
+        direction="left"
+        distance="110%"
+        delay={0.08}
+        duration={1.25}
+        trigger={hasEntered || reduced}
+        className="relative z-10 mb-4"
+      >
+        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-crimson-2 flex items-center justify-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-crimson animate-pulse" />
+          <span>The Next Episode</span>
         </p>
       </DirectionalText>
 
@@ -38,20 +48,33 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
         stagger={0.14}
         duration={1.5}
         as="h2"
+        trigger={hasEntered || reduced}
         className="relative z-10 font-display leading-[0.84] text-bone"
         lineClassName="text-[clamp(3.8rem,13vw,11.5rem)] tracking-[0.01em]"
       />
 
       <div className="relative z-10 mt-12">
         {/* Name: enters from LEFT */}
-        <DirectionalText direction="left" distance="100%" delay={0.32} duration={1.35}>
+        <DirectionalText
+          direction="left"
+          distance="100%"
+          delay={0.3}
+          duration={1.3}
+          trigger={hasEntered || reduced}
+        >
           <p className="font-sans text-2xl font-semibold tracking-[0.2em] text-bone sm:text-3xl">
             {profile.displayName.toUpperCase()}
           </p>
         </DirectionalText>
 
         {/* Role: enters from RIGHT */}
-        <DirectionalText direction="right" distance="100%" delay={0.42} duration={1.35}>
+        <DirectionalText
+          direction="right"
+          distance="100%"
+          delay={0.4}
+          duration={1.3}
+          trigger={hasEntered || reduced}
+        >
           <p className="mt-2 text-xs font-semibold tracking-[0.4em] text-mist sm:text-sm">
             {profile.role.toUpperCase()}
           </p>
@@ -61,12 +84,20 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
       <motion.div
         className="relative mt-10 flex flex-wrap justify-center gap-3"
         initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        transition={{ staggerChildren: 0.08, delayChildren: 0.35 }}
+        animate={hasEntered || reduced ? 'show' : 'hidden'}
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.35 } },
+        }}
       >
         {ctas.map((c) => (
-          <motion.div key={c.label} variants={{ hidden: { opacity: 0, y: 20, scale: 0.9 }, show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: EASE } } }}>
+          <motion.div
+            key={c.label}
+            variants={{
+              hidden: { opacity: 0, y: 20, scale: 0.9 },
+              show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: EASE } },
+            }}
+          >
             <Magnetic>
               <a
                 href={c.href}
@@ -87,10 +118,10 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
       </motion.div>
 
       <div className="relative mt-16 flex flex-wrap justify-center gap-6 text-xs font-semibold tracking-[0.24em] text-smoke">
-        <button type="button" onClick={() => scrollTo(0, { offset: 0 })} className="hover:text-bone">
+        <button type="button" onClick={() => scrollTo(0, { offset: 0 })} className="hover:text-bone transition-colors">
           ↺ WATCH AGAIN
         </button>
-        <button type="button" onClick={onReplay} className="hover:text-bone">
+        <button type="button" onClick={onReplay} className="hover:text-bone transition-colors">
           ▶ REPLAY OPENING
         </button>
       </div>
@@ -99,8 +130,8 @@ export default function FinalCTA({ onReplay }: { onReplay: () => void }) {
         <div className="mb-2 text-base">
           <SeriesMark />
         </div>
-        <p className="text-[11px] leading-relaxed text-smoke">
-          © {new Date().getFullYear()} {profile.displayName}. A personal, streaming-inspired portfolio — not affiliated with any streaming service.
+        <p className="text-[11px] text-smoke">
+          © 2026 {profile.fullName}. A personal, streaming-inspired portfolio — not affiliated with any streaming service.
         </p>
       </footer>
     </section>

@@ -10,7 +10,7 @@ export const profile = {
   fullName: 'Parth Mandore',
   displayName: 'Parth Mandore',
   firstName: 'PARTH',
-  seriesTag: 'THE SERIES',
+  seriesTag: 'PORTFOLIO',
   /** Fictional studio card shown at the very start of the opening sequence. */
   originalLabel: 'A MANDORE ORIGINAL',
   role: 'Software Engineering · Backend Development · Applied AI',

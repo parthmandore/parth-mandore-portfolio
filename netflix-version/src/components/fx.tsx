@@ -43,11 +43,11 @@ export function Tilt({
   const active = fine && !reduced;
   const px = useMotionValue(0.5);
   const py = useMotionValue(0.5);
-  const rx = useSpring(useTransform(py, [0, 1], [max, -max]), { stiffness: 180, damping: 20 });
-  const ry = useSpring(useTransform(px, [0, 1], [-max, max]), { stiffness: 180, damping: 20 });
+  const rx = useSpring(useTransform(py, [0, 1], [max, -max]), { stiffness: 150, damping: 22, mass: 0.45 });
+  const ry = useSpring(useTransform(px, [0, 1], [-max, max]), { stiffness: 150, damping: 22, mass: 0.45 });
   const gx = useTransform(px, (v) => `${v * 100}%`);
   const gy = useTransform(py, (v) => `${v * 100}%`);
-  const glareBg = useTransform([gx, gy], ([a, b]) => `radial-gradient(circle at ${a} ${b}, rgba(255,255,255,0.16), transparent 55%)`);
+  const glareBg = useTransform([gx, gy], ([a, b]) => `radial-gradient(circle at ${a} ${b}, rgba(255,255,255,0.15), transparent 60%)`);
 
   return (
     <motion.div
@@ -119,21 +119,21 @@ export function SectionHeading({ kicker, title, aside }: { kicker: string; title
   });
 
   const smooth = useSpring(scrollYProgress, {
-    stiffness: 75,
-    damping: 24,
-    mass: 0.55,
+    stiffness: 45,
+    damping: 26,
+    mass: 0.7,
     restDelta: 0.001,
   });
 
   // Smooth progressive mapping:
-  // 0.03 -> 0.32: deliberate travel across screen as user scrolls into section
-  // 0.32 -> 0.78: reading zone (docked at 0%, fully readable)
-  // 0.78 -> 0.98: natural exit sweep
-  const kickerX = useTransform(smooth, [0.03, 0.32, 0.78, 0.98], ['-100%', '0%', '0%', '-100%']);
-  const titleX = useTransform(smooth, [0.03, 0.34, 0.78, 0.98], ['100%', '0%', '0%', '100%']);
-  const titleRot = useTransform(smooth, [0.03, 0.34, 0.78, 0.98], [1.5, 0, 0, 1.5]);
-  const asideX = useTransform(smooth, [0.06, 0.36, 0.78, 0.98], ['-80%', '0%', '0%', '-80%']);
-  const opacity = useTransform(smooth, [0.03, 0.25, 0.82, 0.98], [0, 1, 1, 0]);
+  // 0.02 -> 0.30: deliberate, slower cinematic travel across screen connected to scroll
+  // 0.30 -> 0.82: wide, stable reading plateau (docked cleanly at 0%, perfectly readable)
+  // 0.82 -> 0.98: natural exit sweep
+  const kickerX = useTransform(smooth, [0.02, 0.28, 0.82, 0.98], ['-100%', '0%', '0%', '-100%']);
+  const titleX = useTransform(smooth, [0.02, 0.30, 0.82, 0.98], ['100%', '0%', '0%', '100%']);
+  const titleRot = useTransform(smooth, [0.02, 0.30, 0.82, 0.98], [1.2, 0, 0, 1.2]);
+  const asideX = useTransform(smooth, [0.04, 0.32, 0.82, 0.98], ['-80%', '0%', '0%', '-80%']);
+  const opacity = useTransform(smooth, [0.02, 0.22, 0.85, 0.98], [0, 1, 1, 0]);
 
   return (
     <div ref={containerRef} className="gutter mb-6 flex flex-wrap items-end justify-between gap-4 overflow-hidden md:mb-9">

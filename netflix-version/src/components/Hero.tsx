@@ -19,17 +19,21 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
   const fade = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const blackout = useTransform(scrollYProgress, [0.35, 1], [0, 1]);
 
-  // pointer parallax (desktop)
+  // pointer parallax with multi-plane 3D depth (desktop)
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const px = useSpring(mx, { stiffness: 60, damping: 18 });
-  const py = useSpring(my, { stiffness: 60, damping: 18 });
-  const imgRotY = useTransform(px, [-1, 1], [-4, 4]);
-  const imgRotX = useTransform(py, [-1, 1], [3, -3]);
-  const imgShiftX = useTransform(px, [-1, 1], [-10, 10]);
-  const chipX = useTransform(px, [-1, 1], [18, -18]);
-  const chipY = useTransform(py, [-1, 1], [12, -12]);
-  const glowX = useTransform(px, [-1, 1], ['-6%', '6%']);
+  const px = useSpring(mx, { stiffness: 75, damping: 22 });
+  const py = useSpring(my, { stiffness: 75, damping: 22 });
+  const imgRotY = useTransform(px, [-1, 1], [-2.5, 2.5]);
+  const imgRotX = useTransform(py, [-1, 1], [2, -2]);
+  const imgShiftX = useTransform(px, [-1, 1], [-8, 8]);
+  const imgShiftY = useTransform(py, [-1, 1], [-6, 6]);
+  const ringX = useTransform(px, [-1, 1], [-10, 10]);
+  const ringY = useTransform(py, [-1, 1], [-8, 8]);
+  const chipX = useTransform(px, [-1, 1], [24, -24]);
+  const chipY = useTransform(py, [-1, 1], [16, -16]);
+  const glowX = useTransform(px, [-1, 1], [-20, 20]);
+  const glowY = useTransform(py, [-1, 1], [-14, 14]);
 
   const meta = [
     'B.Tech Computer Engineering',
@@ -53,9 +57,13 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         mx.set((e.clientX / window.innerWidth) * 2 - 1);
         my.set((e.clientY / window.innerHeight) * 2 - 1);
       }}
+      onPointerLeave={() => {
+        mx.set(0);
+        my.set(0);
+      }}
     >
-      {/* atmosphere */}
-      <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX }}>
+      {/* atmosphere with subtle inverse parallax depth */}
+      <motion.div aria-hidden className="absolute inset-0" style={{ x: glowX, y: glowY }}>
         <div className="absolute right-[-10%] top-[-10%] h-[90vh] w-[80vw] rounded-full bg-[radial-gradient(closest-side,rgba(229,19,43,0.38),rgba(229,19,43,0.08)_55%,transparent)] blur-2xl lg:right-[-4%] lg:w-[60vw]" />
         <div className="absolute bottom-[-20%] left-[-10%] h-[70vh] w-[60vw] rounded-full bg-[radial-gradient(closest-side,rgba(90,20,120,0.25),transparent)] blur-2xl" />
       </motion.div>
@@ -66,32 +74,35 @@ export default function Hero({ onPlay, onResume, profileId }: { onPlay: () => vo
         <span className="light-streak left-[55%] top-[44%] w-[30vw]" style={{ animationDelay: '5.2s' }} />
       </div>
 
-      {/* portrait */}
+      {/* portrait composition with multi-plane depth */}
       <motion.div
         className="absolute inset-x-0 top-12 z-[2] flex h-[64svh] items-end justify-center sm:h-[70svh] lg:bottom-0 lg:left-auto lg:right-[3vw] lg:top-20 lg:h-auto lg:w-[54vw] xl:right-[6vw] xl:w-[48vw]"
         style={{ y: imgY, scale: imgScale, opacity: fade }}
       >
         <motion.div
-          className="relative h-full w-full lg:h-[86vh]"
-          style={{ rotateY: imgRotY, rotateX: imgRotX, x: imgShiftX, transformPerspective: 1200 }}
+          className="relative h-full w-full lg:h-[86vh] [transform-style:preserve-3d]"
+          style={{ rotateY: imgRotY, rotateX: imgRotX, x: imgShiftX, y: imgShiftY, transformPerspective: 1200 }}
           initial={{ clipPath: 'inset(100% -30% -10% -30%)', opacity: 0 }}
           animate={{ clipPath: 'inset(-30% -30% -10% -30%)', opacity: 1 }}
           transition={{ duration: 1.6, ease: EASE, delay: 0.1 }}
         >
-          {/* rim light ring */}
-          <div aria-hidden className="absolute bottom-[8%] left-1/2 h-[78%] w-[78%] -translate-x-1/2 rounded-full border border-crimson-2/20 shadow-[0_0_120px_rgba(229,19,43,0.35),inset_0_0_80px_rgba(229,19,43,0.18)]" />
+          {/* rim light ring at background depth */}
+          <motion.div
+            aria-hidden
+            style={{ x: ringX, y: ringY }}
+            className="absolute bottom-[8%] left-1/2 h-[78%] w-[78%] -translate-x-1/2 rounded-full border border-crimson-2/20 shadow-[0_0_120px_rgba(229,19,43,0.35),inset_0_0_80px_rgba(229,19,43,0.18)]"
+          />
           <img
             src={profile.portrait.src}
             srcSet={profile.portrait.srcSet}
             sizes="(max-width: 1024px) 100vw, 54vw"
             alt={profile.portrait.alt}
-
             className="absolute bottom-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2 object-contain object-bottom drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] [mask-image:linear-gradient(to_bottom,black_62%,transparent_97%)]"
           />
           {/* crimson rim light on the image edge */}
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_80%_30%,rgba(255,61,90,0.16),transparent_70%)] mix-blend-screen" />
 
-          {/* floating UI chips */}
+          {/* floating UI chips with independent spatial offset */}
           {floating.map((f, i) => (
             <FloatChip key={f.text} {...f} index={i} mx={chipX} my={chipY} />
           ))}

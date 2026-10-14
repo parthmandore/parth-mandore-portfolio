@@ -48,13 +48,13 @@ export default function ResumeSection({ onView }: { onView: () => void }) {
           </div>
           <dl className="mt-8 grid grid-cols-3 gap-px overflow-hidden rounded-xl bg-white/10 text-center">
             {[
-              { v: education[0].score.split(' ')[0], k: 'CGPA' },
+              { v: '7.68 / 10', k: 'CGPA (Sem VI)' },
               { v: String(projects.length), k: 'Projects' },
               { v: String(achievements.length), k: 'Milestones' },
             ].map((s) => (
-              <div key={s.k} className="bg-ink-2 px-2 py-4">
-                <dd className="font-display text-3xl leading-none text-bone">{s.v}</dd>
-                <dt className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-smoke">{s.k}</dt>
+              <div key={s.k} className="bg-ink-2 px-2 py-4 flex flex-col justify-center min-w-0">
+                <dd className="font-display text-2xl sm:text-3xl leading-none text-bone tracking-tight break-words">{s.v}</dd>
+                <dt className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-smoke">{s.k}</dt>
               </div>
             ))}
           </dl>
