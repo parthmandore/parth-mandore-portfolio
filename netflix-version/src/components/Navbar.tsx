@@ -103,10 +103,10 @@ export default function Navbar({
               className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-bone backdrop-blur transition hover:border-white/50 hover:bg-white/10"
             >
               <span className="text-sm">
-                {theme === 'dark' ? '🟣' : theme === 'light' ? '📰' : '🎬'}
+                {theme === 'light' ? '☀️' : theme === 'dark' ? '🌙' : '🎬'}
               </span>
               <span className="hidden sm:inline">
-                {theme === 'dark' ? 'Purple' : theme === 'light' ? 'News Letter' : 'Netflix Version'}
+                {theme === 'light' ? 'Light' : theme === 'dark' ? 'Dark' : 'Netflix Version'}
               </span>
               <motion.span animate={{ rotate: menu ? 180 : 0 }} className="text-[10px] text-mist">
                 ▼
@@ -124,8 +124,8 @@ export default function Navbar({
                 >
                   <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold uppercase tracking-[0.24em] text-smoke">Theme</p>
                   {[
-                    { id: 'dark', label: 'Purple', icon: '🟣' },
-                    { id: 'light', label: 'News Letter', icon: '📰' },
+                    { id: 'dark', label: 'Dark', icon: '🌙' },
+                    { id: 'light', label: 'Light', icon: '☀️' },
                     { id: 'netflix', label: 'Netflix Version', icon: '🎬' },
                   ].map((t) => (
                     <button

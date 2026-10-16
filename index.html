@@ -29,12 +29,36 @@
       <li><a href="#showcase" onclick="switchTab('projects')">Portfolio</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
-      <span class="theme-toggle-icon">☀️</span>
-      <div class="toggle-track">
-        <div class="toggle-knob"></div>
-      </div>
-      <span class="theme-toggle-icon">🌙</span>
+    <div class="theme-dropdown-wrapper" id="themeDropdownWrapper">
+      <button
+        type="button"
+        class="theme-dropdown-trigger"
+        id="themeDropdownTrigger"
+        aria-haspopup="listbox"
+        aria-expanded="false"
+        aria-label="Select theme"
+      >
+        <span class="theme-trigger-icon" id="themeTriggerIcon">🌙</span>
+        <span class="theme-trigger-label" id="themeTriggerLabel">Dark</span>
+        <span class="theme-trigger-arrow" aria-hidden="true">▾</span>
+      </button>
+      <ul class="theme-dropdown-menu" id="themeDropdownMenu" role="listbox" aria-label="Theme options">
+        <li role="option" class="theme-dropdown-item" data-theme-val="light" tabindex="0">
+          <span class="theme-item-icon">☀️</span>
+          <span class="theme-item-text">Light</span>
+          <span class="theme-item-check" aria-hidden="true">✓</span>
+        </li>
+        <li role="option" class="theme-dropdown-item active" data-theme-val="dark" tabindex="0">
+          <span class="theme-item-icon">🌙</span>
+          <span class="theme-item-text">Dark</span>
+          <span class="theme-item-check" aria-hidden="true">✓</span>
+        </li>
+        <li role="option" class="theme-dropdown-item" data-theme-val="netflix" tabindex="0">
+          <span class="theme-item-icon">🎬</span>
+          <span class="theme-item-text">Netflix Version</span>
+          <span class="theme-item-check" aria-hidden="true">✓</span>
+        </li>
+      </ul>
     </div>
     <div class="hamburger" id="hamburger" onclick="toggleMenu()">
       <span></span><span></span><span></span>
@@ -327,6 +351,17 @@
 <footer>
   <p>Designed &amp; Built by <span>Parth Mandore</span> &nbsp;·&nbsp; Pune, Maharashtra &nbsp;·&nbsp; <span>2026</span></p>
 </footer>
+
+<!-- NETFLIX PORTFOLIO VIEW CONTAINER -->
+<div id="netflixPortfolioContainer" class="netflix-portfolio-container" style="display: none;">
+  <iframe
+    id="netflixPortfolioFrame"
+    src="netflix-version/index.html"
+    title="Netflix Version Portfolio"
+    class="netflix-portfolio-iframe"
+    loading="lazy"
+  ></iframe>
+</div>
 
 <script src="script.js"></script>
 </body>

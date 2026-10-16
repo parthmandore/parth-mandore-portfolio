@@ -23,10 +23,10 @@ export const profile = {
     linkedin: 'https://linkedin.com/in/parthmandore',
     github: 'https://github.com/parthmandore',
   },
-  resumePdf: '/assets/Parth_Mandore_Resume.pdf',
+  resumePdf: './assets/Parth_Mandore_Resume.pdf',
   portrait: {
-    src: '/assets/portrait-720.webp',
-    srcSet: '/assets/portrait-420.webp 420w, /assets/portrait-720.webp 720w, /assets/portrait-1100.webp 1100w',
+    src: './assets/portrait-720.webp',
+    srcSet: './assets/portrait-420.webp 420w, ./assets/portrait-720.webp 720w, ./assets/portrait-1100.webp 1100w',
     alt: 'Portrait of Parth Mandore',
   },
   interests: ['Backend Systems', 'Applied AI', 'Database Architecture'],

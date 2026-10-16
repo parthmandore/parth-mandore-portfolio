@@ -1,27 +1,152 @@
-// Theme Toggle
-function toggleTheme() {
-  var html = document.documentElement;
-  var current = html.getAttribute('data-theme');
-  var next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('theme', next);
-  updateNavBg();
-  
-  if (typeof window.startTyping === 'function') {
-    window.startTyping();
+// Theme Manager & Dropdown Controller (Light / Dark / Netflix Version)
+function switchTheme(theme) {
+  if (!theme || (theme !== 'light' && theme !== 'dark' && theme !== 'netflix')) {
+    theme = 'dark';
   }
-  if (typeof window.resetStats === 'function') {
-    window.resetStats();
+  
+  var html = document.documentElement;
+  var netflixContainer = document.getElementById('netflixPortfolioContainer');
+  var triggerIcon = document.getElementById('themeTriggerIcon');
+  var triggerLabel = document.getElementById('themeTriggerLabel');
+  var dropdownWrapper = document.getElementById('themeDropdownWrapper');
+  var dropdownTrigger = document.getElementById('themeDropdownTrigger');
+  var dropdownItems = document.querySelectorAll('.theme-dropdown-item');
+
+  localStorage.setItem('theme', theme);
+
+  if (theme === 'netflix') {
+    if (netflixContainer) {
+      netflixContainer.style.display = 'block';
+    }
+    html.setAttribute('data-theme', 'netflix');
+    if (triggerIcon) triggerIcon.textContent = '🎬';
+    if (triggerLabel) triggerLabel.textContent = 'Netflix Version';
+  } else {
+    if (netflixContainer) {
+      netflixContainer.style.display = 'none';
+    }
+    html.setAttribute('data-theme', theme);
+    if (triggerIcon) triggerIcon.textContent = theme === 'light' ? '☀️' : '🌙';
+    if (triggerLabel) triggerLabel.textContent = theme === 'light' ? 'Light' : 'Dark';
+    
+    updateNavBg();
+    if (typeof window.startTyping === 'function') {
+      window.startTyping();
+    }
+    if (typeof window.resetStats === 'function') {
+      window.resetStats();
+    }
+  }
+
+  // Update active state in dropdown
+  dropdownItems.forEach(function (item) {
+    if (item.getAttribute('data-theme-val') === theme) {
+      item.classList.add('active');
+      item.setAttribute('aria-selected', 'true');
+    } else {
+      item.classList.remove('active');
+      item.setAttribute('aria-selected', 'false');
+    }
+  });
+
+  // Close dropdown if open
+  if (dropdownWrapper) {
+    dropdownWrapper.classList.remove('open');
+  }
+  if (dropdownTrigger) {
+    dropdownTrigger.setAttribute('aria-expanded', 'false');
   }
 }
 
-// Prevent flash of light/dark theme on page load
-(function () {
-  var saved = localStorage.getItem('theme');
-  if (saved) {
-    document.documentElement.setAttribute('data-theme', saved);
+// Global hook for external calls & backward compatibility
+window.switchTheme = switchTheme;
+window.toggleTheme = function () {
+  var current = localStorage.getItem('theme') || document.documentElement.getAttribute('data-theme') || 'dark';
+  var next = current === 'light' ? 'dark' : (current === 'dark' ? 'netflix' : 'light');
+  switchTheme(next);
+};
+
+// Listen for theme switch messages from the embedded Netflix portfolio iframe
+window.addEventListener('message', function (event) {
+  if (event.data && event.data.type === 'SET_THEME') {
+    switchTheme(event.data.theme);
   }
+});
+
+function initThemeDropdown() {
+  var wrapper = document.getElementById('themeDropdownWrapper');
+  var trigger = document.getElementById('themeDropdownTrigger');
+  if (!wrapper || !trigger) return;
+
+  // Toggle dropdown on button click
+  trigger.addEventListener('click', function (e) {
+    e.stopPropagation();
+    var isOpen = wrapper.classList.toggle('open');
+    trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  // Handle option selection
+  var items = wrapper.querySelectorAll('.theme-dropdown-item');
+  items.forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var chosenTheme = item.getAttribute('data-theme-val');
+      if (chosenTheme) {
+        switchTheme(chosenTheme);
+      }
+    });
+
+    item.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var chosenTheme = item.getAttribute('data-theme-val');
+        if (chosenTheme) {
+          switchTheme(chosenTheme);
+        }
+      }
+    });
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!wrapper.contains(e.target)) {
+      wrapper.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && wrapper.classList.contains('open')) {
+      wrapper.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.focus();
+    }
+  });
+}
+
+// Prevent flash of light/dark/netflix theme on page load
+(function () {
+  var urlParams = new URLSearchParams(window.location.search);
+  var queryTheme = urlParams.get('theme');
+  if (queryTheme && (queryTheme === 'light' || queryTheme === 'dark' || queryTheme === 'netflix')) {
+    localStorage.setItem('theme', queryTheme);
+  }
+  var saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
 })();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function () {
+    initThemeDropdown();
+    var saved = localStorage.getItem('theme') || 'dark';
+    switchTheme(saved);
+  });
+} else {
+  initThemeDropdown();
+  var saved = localStorage.getItem('theme') || 'dark';
+  switchTheme(saved);
+}
 
 // Hamburger Mobile Menu
 function toggleMenu() {

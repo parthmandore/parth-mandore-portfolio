@@ -4,7 +4,6 @@ import { viewerProfiles, type ProfileId, type Project, type SectionId } from './
 import { SmoothScrollProvider, useSmoothScroll } from './hooks/smoothScroll';
 import CustomCursor from './components/CustomCursor';
 import OpeningSequence from './components/OpeningSequence';
-import ProfileSelector from './components/ProfileSelector';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ContinueWatching from './components/ContinueWatching';
@@ -25,7 +24,8 @@ const PlayIntro = lazy(() => import('./components/PlayIntro'));
 const ProjectModal = lazy(() => import('./components/ProjectModal'));
 const ResumeModal = lazy(() => import('./components/ResumeModal'));
 
-type Stage = 'opening' | 'profiles' | 'home';
+export type Theme = 'light' | 'dark' | 'netflix';
+type Stage = 'opening' | 'home';
 
 const STORAGE_KEY = 'parth-series-profile';
 
@@ -39,22 +39,81 @@ function readStoredProfile(): ProfileId | null {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      const urlParam = new URLSearchParams(window.location.search).get('theme')?.toLowerCase();
+      if (urlParam === 'light' || urlParam === 'dark' || urlParam === 'netflix') {
+        return urlParam;
+      }
+      if (urlParam === 'purple') return 'dark';
+      if (urlParam === 'newsletter' || urlParam === 'news-letter') return 'light';
+      const saved = localStorage.getItem('theme')?.toLowerCase();
+      if (saved === 'light' || saved === 'dark' || saved === 'netflix') {
+        return saved as Theme;
+      }
+      if (saved === 'purple') return 'dark';
+      if (saved === 'newsletter' || saved === 'news-letter') return 'light';
+    } catch {
+      /* ignore */
+    }
+    return 'netflix';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      /* ignore */
+    }
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  // Global handler for external messages or window.switchTheme
+  useEffect(() => {
+    (window as any).switchTheme = (t: Theme) => {
+      if (t === 'light' || t === 'dark' || t === 'netflix') {
+        setTheme(t);
+      }
+    };
+    const onMessage = (e: MessageEvent) => {
+      if (e.data && e.data.type === 'SET_THEME' && (e.data.theme === 'light' || e.data.theme === 'dark' || e.data.theme === 'netflix')) {
+        setTheme(e.data.theme);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  const handleThemeChange = (t: Theme) => {
+    setTheme(t);
+    try {
+      localStorage.setItem('theme', t);
+    } catch {
+      /* ignore */
+    }
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'SET_THEME', theme: t }, '*');
+    } else if (t === 'light' || t === 'dark') {
+      window.location.href = `../?theme=${t}`;
+    }
+  };
+
   return (
     <SmoothScrollProvider>
-      <Series />
+      <Series theme={theme} onThemeChange={handleThemeChange} />
     </SmoothScrollProvider>
   );
 }
 
-function Series() {
+function Series({ theme, onThemeChange }: { theme: Theme; onThemeChange: (t: Theme) => void }) {
   const stored = readStoredProfile();
   const [stage, setStage] = useState<Stage>(stored ? 'home' : 'opening');
-  const [profileId, setProfileId] = useState<ProfileId>(stored ?? 'parth');
+  const [profileId] = useState<ProfileId>(stored ?? 'parth');
   const [playing, setPlaying] = useState(false);
   const [project, setProject] = useState<Project | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const { scrollTo, lock, unlock } = useSmoothScroll();
+  const { lock, unlock } = useSmoothScroll();
 
   const order = viewerProfiles.find((p) => p.id === profileId)!.order;
 
@@ -63,26 +122,6 @@ function Series() {
     lock();
     return unlock;
   }, [stage, lock, unlock]);
-
-  const pickProfile = useCallback(
-    (id: ProfileId) => {
-      setProfileId(id);
-      try {
-        sessionStorage.setItem(STORAGE_KEY, id);
-      } catch {
-        /* storage unavailable — profile simply won't persist */
-      }
-      if (stage !== 'home') {
-        window.scrollTo(0, 0);
-        setStage('home');
-      } else {
-        const p = viewerProfiles.find((v) => v.id === id)!;
-        setToast(`Now watching as ${p.name} — ${p.blurb.toLowerCase()}`);
-        scrollTo(0, { offset: 0 });
-      }
-    },
-    [stage, scrollTo],
-  );
 
   useEffect(() => {
     if (!toast) return;
@@ -110,14 +149,25 @@ function Series() {
       <div className="grain" aria-hidden />
       <CustomCursor />
 
-      <AnimatePresence>
-        {stage === 'opening' && <OpeningSequence key="opening" onDone={() => setStage('profiles')} />}
-        {stage === 'profiles' && <ProfileSelector key="profiles" onPick={pickProfile} />}
+      <AnimatePresence mode="wait">
+        {stage === 'opening' && (
+          <OpeningSequence
+            key="opening"
+            onDone={() => {
+              window.scrollTo(0, 0);
+              setStage('home');
+            }}
+          />
+        )}
       </AnimatePresence>
 
       {stage === 'home' && (
-        <motion.div initial={{ opacity: 0, scale: 1.03, filter: 'blur(10px)' }} animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }} transition={{ duration: 1, ease: EASE }}>
-          <Navbar order={order} profileId={profileId} onSwitch={pickProfile} />
+        <motion.div
+          initial={{ opacity: 0, scale: 1.02, filter: 'blur(8px)' }}
+          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          transition={{ duration: 1.1, ease: EASE }}
+        >
+          <Navbar order={order} theme={theme} onThemeChange={onThemeChange} />
           <main>
             <Hero key={`hero-${profileId}`} onPlay={() => setPlaying(true)} onResume={() => setResumeOpen(true)} profileId={profileId} />
             <ContinueWatching order={order} />
