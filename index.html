@@ -1,368 +1,1822 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="dark" class="no-js">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Parth Mandore — Software Engineer</title>
-<meta name="description" content="Portfolio of Parth Mandore — Software Engineering Student specializing in Java, Spring Boot, and RESTful APIs."/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
-<link rel="stylesheet" href="style.css"/>
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Primary Meta Tags -->
+  <title>Parth Mandore | Software Engineer Portfolio</title>
+  <meta name="title" content="Parth Mandore | Software Engineer Portfolio" />
+  <meta name="description" content="Official personal portfolio of Parth Mandore — Computer Engineering student and software developer in Pune, specializing in Java, Spring Boot, REST APIs, and applied AI projects." />
+  <meta name="author" content="Parth Mandore" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <link rel="canonical" href="https://parthmandore.netlify.app/" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://parthmandore.netlify.app/" />
+  <meta property="og:title" content="Parth Mandore | Software Engineer Portfolio" />
+  <meta property="og:description" content="Official personal portfolio of Parth Mandore — Computer Engineering student and software developer in Pune, specializing in Java, Spring Boot, REST APIs, and applied AI projects." />
+  <meta property="og:image" content="https://parthmandore.netlify.app/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Parth Mandore — Software Engineer Portfolio Preview" />
+  <meta property="og:site_name" content="Parth Mandore Portfolio" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://parthmandore.netlify.app/" />
+  <meta name="twitter:title" content="Parth Mandore | Software Engineer Portfolio" />
+  <meta name="twitter:description" content="Official personal portfolio of Parth Mandore — Computer Engineering student and software developer in Pune, specializing in Java, Spring Boot, REST APIs, and applied AI projects." />
+  <meta name="twitter:image" content="https://parthmandore.netlify.app/assets/og-image.png" />
+  <meta name="twitter:image:alt" content="Parth Mandore — Software Engineer Portfolio Preview" />
+
+  <!-- Schema.org JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://parthmandore.netlify.app/#person",
+        "name": "Parth Mandore",
+        "givenName": "Parth",
+        "familyName": "Mandore",
+        "url": "https://parthmandore.netlify.app/",
+        "image": "https://parthmandore.netlify.app/assets/og-image.png",
+        "jobTitle": "Software Engineer",
+        "description": "Computer Engineering student and software developer specializing in Java, Spring Boot, RESTful APIs, and applied AI systems.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Pune",
+          "addressRegion": "Maharashtra",
+          "addressCountry": "IN"
+        },
+        "alumniOf": {
+          "@type": "EducationalOrganization",
+          "name": "G. H. Raisoni College of Engineering and Management, Pune",
+          "url": "https://ghrcem.raisoni.net/"
+        },
+        "sameAs": [
+          "https://github.com/parthmandore",
+          "https://www.linkedin.com/in/parthmandore"
+        ],
+        "knowsAbout": [
+          "Java",
+          "Spring Boot",
+          "RESTful APIs",
+          "Applied AI",
+          "Python",
+          "PostgreSQL",
+          "pgvector",
+          "JavaScript",
+          "TypeScript",
+          "Docker",
+          "Data Structures & Algorithms",
+          "Computer Vision",
+          "Retrieval-Augmented Generation (RAG)"
+        ],
+        "mainEntityOfPage": "https://parthmandore.netlify.app/"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://parthmandore.netlify.app/#website",
+        "url": "https://parthmandore.netlify.app/",
+        "name": "Parth Mandore Portfolio",
+        "alternateName": [
+          "Parth Mandore",
+          "Parth Mandore Official Portfolio",
+          "Parth Mandore Software Engineer",
+          "Parth Mandore Developer Portfolio"
+        ],
+        "description": "Official personal portfolio of Parth Mandore — Computer Engineering student and software developer in Pune, specializing in Java, Spring Boot, REST APIs, and applied AI projects.",
+        "publisher": {
+          "@id": "https://parthmandore.netlify.app/#person"
+        },
+        "creator": {
+          "@id": "https://parthmandore.netlify.app/#person"
+        },
+        "author": {
+          "@id": "https://parthmandore.netlify.app/#person"
+        },
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://parthmandore.netlify.app/#webpage",
+        "url": "https://parthmandore.netlify.app/",
+        "name": "Parth Mandore | Software Engineer Portfolio",
+        "isPartOf": {
+          "@id": "https://parthmandore.netlify.app/#website"
+        },
+        "about": {
+          "@id": "https://parthmandore.netlify.app/#person"
+        },
+        "mainEntity": {
+          "@id": "https://parthmandore.netlify.app/#person"
+        },
+        "description": "Official personal portfolio of Parth Mandore — Computer Engineering student and software developer in Pune, specializing in Java, Spring Boot, REST APIs, and applied AI projects.",
+        "primaryImageOfPage": "https://parthmandore.netlify.app/assets/og-image.png",
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "ItemList",
+        "@id": "https://parthmandore.netlify.app/#projects",
+        "name": "Parth Mandore Software Engineering Projects",
+        "description": "Production software and applied AI projects created by Parth Mandore.",
+        "numberOfItems": 7,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "Repository Mentor AI",
+              "description": "AI-powered GitHub repository analysis platform performing static code analysis, architecture topology detection, semantic repository search, RAG-based Q&A, and security insights.",
+              "codeRepository": "https://github.com/parthmandore/RepoMentor-AI",
+              "url": "https://repomentor.vercel.app",
+              "programmingLanguage": ["Python", "FastAPI", "TypeScript", "Next.js"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "GymBuddy AI Trainer",
+              "description": "Real-time browser-based AI personal trainer and workout tracking application using computer vision pose tracking to monitor biomechanics, count repetitions, and assess posture.",
+              "codeRepository": "https://github.com/parthmandore/GymBuddy-AI-Trainer",
+              "programmingLanguage": ["JavaScript", "TensorFlow.js"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "Career AI Platform",
+              "description": "AI-powered career development platform analyzing resumes, optimizing ATS compatibility, and streamlining professional workflows with automated generative insights.",
+              "codeRepository": "https://github.com/parthmandore/career-ai-platform",
+              "programmingLanguage": ["Python", "Generative AI", "Next.js"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "MindPulse AI",
+              "description": "Machine Learning burnout risk prediction and proactive wellness advisory platform predicting risk from biometric and lifestyle metrics.",
+              "codeRepository": "https://github.com/parthmandore/MindPulse-AI",
+              "programmingLanguage": ["Python", "Scikit-Learn"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 5,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "Spotify Web Player Clone",
+              "description": "Responsive frontend replica of Spotify web player interface engineered for music discovery, interactive playback controls, and playlist navigation.",
+              "codeRepository": "https://github.com/parthmandore/Spotify_Clone",
+              "programmingLanguage": ["JavaScript", "HTML5 Audio", "CSS"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 6,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "URL Shortener Service",
+              "description": "High-throughput URL shortening service converting long URLs into unique short links with sub-millisecond redirection and layered architecture.",
+              "codeRepository": "https://github.com/parthmandore/url-shortener-api",
+              "programmingLanguage": ["Java", "Spring Boot", "MySQL"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 7,
+            "item": {
+              "@type": "SoftwareSourceCode",
+              "name": "Gyan — Dyslexia Support Mobile App",
+              "description": "Offline-first assistive mobile learning platform designed for children with dyslexia and dysgraphia. Selected as Top 25 National Finalist at Ideathon 2025.",
+              "codeRepository": "https://github.com/parthmandore/Gyan",
+              "programmingLanguage": ["React Native", "TypeScript", "SQLite"],
+              "creator": {
+                "@id": "https://parthmandore.netlify.app/#person"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  
+  <!-- Favicon and Application Icons -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  
+  <!-- Fonts: High-Fashion Architectural Serif / Display + Precision Monospace + Clean Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@600;700;800&display=swap" />
+  </noscript>
+  
+  <!-- Architectural Atelier Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Cinematic 3D Galaxy Project Exhibition Stylesheet -->
+  <link rel="stylesheet" href="galaxy-journey/galaxy-journey.css" />
+  <!-- Dedicated Cinematic Project Experience Stylesheet -->
+  <link rel="stylesheet" href="galaxy-journey/project-experience.css" />
 </head>
 <body>
 
-<div id="cursor"></div>
-<div class="orbs">
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-  <div class="orb orb4"></div>
-</div>
+  <!-- Precision Crosshair / Reticle Cursor -->
+  <div id="reticle-dot" class="reticle-cursor"></div>
+  <div id="reticle-ring" class="reticle-cursor"></div>
 
-<!-- NAV -->
-<nav id="navbar">
-  <a href="#hero" class="nav-logo">PM_</a>
-  <div class="nav-right">
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#about">About</a></li>
-      <li><a href="#showcase" onclick="switchTab('skills')">Skills</a></li>
-      <li><a href="#showcase" onclick="switchTab('projects')">Portfolio</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="theme-dropdown-wrapper" id="themeDropdownWrapper">
-      <button
-        type="button"
-        class="theme-dropdown-trigger"
-        id="themeDropdownTrigger"
-        aria-haspopup="listbox"
-        aria-expanded="false"
-        aria-label="Select theme"
-      >
-        <span class="theme-trigger-icon" id="themeTriggerIcon">🌙</span>
-        <span class="theme-trigger-label" id="themeTriggerLabel">Dark</span>
-        <span class="theme-trigger-arrow" aria-hidden="true">▾</span>
-      </button>
-      <ul class="theme-dropdown-menu" id="themeDropdownMenu" role="listbox" aria-label="Theme options">
-        <li role="option" class="theme-dropdown-item" data-theme-val="light" tabindex="0">
-          <span class="theme-item-icon">☀️</span>
-          <span class="theme-item-text">Light</span>
-          <span class="theme-item-check" aria-hidden="true">✓</span>
-        </li>
-        <li role="option" class="theme-dropdown-item active" data-theme-val="dark" tabindex="0">
-          <span class="theme-item-icon">🌙</span>
-          <span class="theme-item-text">Dark</span>
-          <span class="theme-item-check" aria-hidden="true">✓</span>
-        </li>
-        <li role="option" class="theme-dropdown-item" data-theme-val="netflix" tabindex="0">
-          <span class="theme-item-icon">🎬</span>
-          <span class="theme-item-text">Netflix Version</span>
-          <span class="theme-item-check" aria-hidden="true">✓</span>
-        </li>
-      </ul>
-    </div>
-    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </div>
+
+
+  <!-- Architectural Film Grain & Atmospheric Depth -->
+  <div class="film-grain" aria-hidden="true"></div>
+  <div class="ambient-depth-vignette" aria-hidden="true"></div>
+  <!-- Space Edition Multi-Layer Starfield Canvas -->
+  <canvas id="spaceStarfield" class="space-starfield-canvas" aria-hidden="true"></canvas>
+  <!-- Dedicated Visual Clone Animation Layer Back (z-index: 48, behind 3D canvas) -->
+  <div id="gravityAnimationLayerBack" class="gravity-animation-layer gravity-layer-back" aria-hidden="true"></div>
+  <!-- Three.js 3D Relativistic Interactive Gravitational Black Hole Canvas -->
+  <canvas id="hero3DCanvas" class="hero-3d-canvas" aria-hidden="true"></canvas>
+  <!-- Dedicated Visual Clone Animation Layer Front (z-index: 52, in front of 3D canvas) -->
+  <div id="gravityAnimationLayerFront" class="gravity-animation-layer gravity-layer-front" aria-hidden="true"></div>
+  <!-- Dedicated Photographic Particle Disintegration Canvas Overlay -->
+  <canvas id="portraitFragmentCanvas" class="portrait-fragment-canvas" aria-hidden="true"></canvas>
+  <!-- Fullscreen Cosmic Energy Flash Overlay -->
+  <div id="cosmicEnergyFlash" class="cosmic-energy-flash" aria-hidden="true"></div>
+  <!-- Floating Cosmic Rebirth HUD Control Prompt -->
+  <div id="cosmicRebirthPrompt" class="cosmic-rebirth-prompt" aria-hidden="true">
+    <button id="cosmicRebirthPromptBtn" class="rebirth-action-btn" type="button">
+      <span class="rebirth-pulse-dot" aria-hidden="true"></span>
+      <span class="rebirth-btn-text">RESTORE HERO CONTENT // RESET TIMELINE</span>
+    </button>
   </div>
-</nav>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-container">
-    <div class="hero-inner">
-      <p class="hero-tag">// Computer Engineering Student</p>
-      <h1 class="hero-name">
-        Parth<br><span class="highlight">Mandore</span>
-      </h1>
-      <p class="hero-sub">
-        Driven by curiosity, continuous learning, and the challenge of solving complex problems.
-      </p>
-      <div class="hero-cta">
-        <a href="Parth-Mandore.pdf" target="_blank" class="btn-hero">
-          <span class="btn-border-spinner"></span>
-          <span class="btn-content">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Download Resume
-          </span>
-        </a>
-        <a href="#contact" class="btn-hero">
-          <span class="btn-border-spinner"></span>
-          <span class="btn-content">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
-            Contact Me
-          </span>
+  <!-- TOP EDITORIAL NAVIGATION -->
+  <header id="atelier-header">
+    <nav class="atelier-nav" aria-label="Main Navigation">
+      <div class="nav-brand">
+        <a href="#hero" class="brand-monogram">
+          <span class="brand-title">PARTH MANDORE</span>
+          <span class="brand-sub">ENGINEERING PORTFOLIO &bull; 2026</span>
         </a>
       </div>
-    </div>
-    <!-- PROFILE PICTURE SHOWCASE -->
-    <div class="hero-profile">
-      <!-- 1. Background Glow Layer -->
-      <div class="profile-glow-backdrop"></div>
-      
-      <!-- Premium Frame Elements: Floating Particles -->
-      <div class="profile-particles">
-        <span class="particle p-1"></span>
-        <span class="particle p-2"></span>
-        <span class="particle p-3"></span>
-        <span class="particle p-4"></span>
+
+      <div class="nav-center">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#works" class="nav-link"><span class="link-idx">01</span>PROJECTS</a></li>
+          <li><a href="#disciplines" class="nav-link"><span class="link-idx">02</span>SKILLS</a></li>
+          <li><a href="#dispatch" class="nav-link"><span class="link-idx">03</span>CONTACT</a></li>
+        </ul>
       </div>
-      
-      <!-- Interactive 3D Card Area -->
-      <div class="profile-3d-card">
-        <!-- 2. Glass Layer & Gradient Border -->
-        <div class="card-border-ring">
-          <div class="card-glass-panel">
-            
-            <!-- Animated Edge Light -->
-            <div class="card-edge-light"></div>
-            
-            <!-- 3. Image Layer -->
-            <div class="card-image-wrapper">
-              <img src="assets/parth.jpg" class="card-bg-image" alt="Parth Mandore Background" />
-              
-              <!-- 4. Overlay Layer (Cinematic gradients & depth shading) -->
-              <div class="card-image-overlay"></div>
-              <div class="card-depth-shading"></div>
+
+      <div class="nav-tools">
+        <!-- Location Telemetry -->
+        <div class="location-pill" title="Current Location">
+          <span class="status-indicator"></span>
+          <span>PUNE, IN &bull; 18.52° N</span>
+        </div>
+
+        <!-- Studio Telemetry: Space Edition -->
+        <div class="location-pill studio-pill" title="Space Edition Studio Architecture Active">
+          <span class="status-indicator"></span>
+          <span>SPACE // STUDIO</span>
+        </div>
+
+        <!-- Theme Dropdown: Dark / Light / Netflix Version -->
+        <div class="theme-dropdown-wrapper" id="themeDropdownWrapper">
+          <button
+            type="button"
+            class="theme-dropdown-trigger"
+            id="themeDropdownTrigger"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-label="Select theme"
+          >
+            <span class="theme-trigger-icon" id="themeTriggerIcon">🌙</span>
+            <span class="theme-trigger-label" id="themeTriggerLabel">Dark</span>
+            <span class="theme-trigger-arrow" aria-hidden="true">▾</span>
+          </button>
+          <ul class="theme-dropdown-menu" id="themeDropdownMenu" role="listbox" aria-label="Theme options">
+            <li role="option" class="theme-dropdown-item active" data-theme-val="dark" tabindex="0">
+              <span class="theme-item-icon">🌙</span>
+              <span class="theme-item-text">Dark</span>
+              <span class="theme-item-check" aria-hidden="true">✓</span>
+            </li>
+            <li role="option" class="theme-dropdown-item" data-theme-val="light" tabindex="0">
+              <span class="theme-item-icon">☀️</span>
+              <span class="theme-item-text">Light</span>
+              <span class="theme-item-check" aria-hidden="true">✓</span>
+            </li>
+            <li role="option" class="theme-dropdown-item" data-theme-val="netflix" tabindex="0">
+              <span class="theme-item-icon">🎬</span>
+              <span class="theme-item-text">Netflix Version</span>
+              <span class="theme-item-check" aria-hidden="true">✓</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button id="menuToggle" class="menu-btn" aria-label="Toggle Navigation Menu">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- MAIN SCROLL EXPERIENCE -->
+  <main id="atelier-main">
+
+    <!-- ═══════════════════════════════════════════════
+         00 // HERO: EDITORIAL MONOGRAPH & ARCHITECTURAL ACCENT
+         ═══════════════════════════════════════════════ -->
+    <section id="hero" class="pavilion-hero">
+
+      <!-- Dedicated Positioned Black Hole Interaction Container & Hit Area -->
+      <div id="blackHoleContainer" class="black-hole-container" aria-label="Interactive Black Hole System">
+        <div id="blackHoleHitArea" class="black-hole-hit-area" role="button" aria-label="Black Hole Gravitational Core (Drag to move, click to interact)" tabindex="0">
+          <div class="black-hole-reticle" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Futuristic First-Time Gravitational Guidance HUD -->
+      <aside id="blackHoleIntroHud" class="blackhole-intro-hud" role="region" aria-label="Gravitational Field Telemetry Guidance">
+        <div class="intro-hud-terminal">
+          <div class="intro-hud-header">
+            <div class="hud-status-badge">
+              <span class="hud-status-pip" aria-hidden="true"></span>
+              <span class="hud-status-text">GRAVITY FIELD ONLINE</span>
             </div>
-            
+            <button type="button" class="intro-hud-close-btn" id="introHudCloseBtn" aria-label="Dismiss Instructions" title="Dismiss Guidance">&times;</button>
+          </div>
+          <div class="intro-hud-grid">
+            <div class="hud-instruction-row">
+              <span class="hud-action-tag">DRAG</span>
+              <span class="hud-desc">DRAG TO MOVE</span>
+            </div>
+            <div class="hud-instruction-row">
+              <span class="hud-action-tag">ORBIT</span>
+              <span class="hud-desc">LETTERS ORBIT BEFORE COLLAPSE</span>
+            </div>
+            <div class="hud-instruction-row">
+              <span class="hud-action-tag">COLLAPSE</span>
+              <span class="hud-desc">DOUBLE-CLICK EVENT HORIZON TO INITIATE COLLAPSE</span>
+            </div>
+          </div>
+          <div class="intro-hud-footer">
+            <span class="hud-coords-spec">RELATIVISTIC SINGULARITY // 0.34 M&#9737;</span>
           </div>
         </div>
+      </aside>
+
+      <div class="hero-layout">
         
-        <!-- 5. Cutout Layer (Pops out of the card in 3D Z-space) -->
-        <div class="cutout-wrapper">
-          <img src="assets/parth-cutout.png" class="card-cutout-image" alt="Parth Mandore Cutout" />
+        <!-- Left Editorial Monograph -->
+        <div class="hero-monograph is-revealed">
+          <div class="meta-tag">
+            <span class="meta-bracket">[</span>
+            <span class="meta-text">COMPUTER ENGINEERING SCHOLAR &bull; GHRCEM PUNE</span>
+            <span class="meta-bracket">]</span>
+          </div>
+
+          <h1 class="monograph-headline is-revealed" aria-label="Parth Mandore" id="heroHeadline">
+            <span class="headline-primary" aria-hidden="true"><span class="mask-text" id="headlineFirst"><span class="gravity-char">P</span><span class="gravity-char">A</span><span class="gravity-char">R</span><span class="gravity-char">T</span><span class="gravity-char">H</span></span></span>
+            <span class="headline-secondary" aria-hidden="true"><span class="mask-text" id="headlineLast"><span class="gravity-char">M</span><span class="gravity-char">A</span><span class="gravity-char">N</span><span class="gravity-char">D</span><span class="gravity-char">O</span><span class="gravity-char">R</span><span class="gravity-char">E</span></span></span>
+          </h1>
+
+          <div class="monograph-lead">
+            <p>
+              <span class="gravity-word">Undergraduate</span> <span class="gravity-word">engineer</span> <span class="gravity-word">at</span> <strong><span class="gravity-word">G. H.</span> <span class="gravity-word">Raisoni</span> <span class="gravity-word">College</span> <span class="gravity-word">of</span> <span class="gravity-word">Engineering</span> <span class="gravity-word">and</span> <span class="gravity-word">Management,</span> <span class="gravity-word">Pune</span></strong>. <span class="gravity-word">Focused</span> <span class="gravity-word">on</span> <span class="gravity-word">robust</span> <span class="gravity-word">backend</span> <span class="gravity-word">systems</span> <span class="gravity-word">using</span> <span class="gravity-word">Java</span> <span class="gravity-word">and</span> <span class="gravity-word">Spring</span> <span class="gravity-word">Boot,</span> <span class="gravity-word">scalable</span> <span class="gravity-word">REST</span> <span class="gravity-word">APIs,</span> <span class="gravity-word">and</span> <span class="gravity-word">applied</span> <span class="gravity-word">AI</span> <span class="gravity-word">systems.</span>
+            </p>
+          </div>
+
+          <div class="hero-actions">
+            <a href="#works" class="atelier-btn btn-solid">
+              <span>EXPLORE PROJECTS</span>
+              <span class="btn-arrow">&rarr;</span>
+            </a>
+
+            <a href="Parth-Mandore.pdf" target="_blank" rel="noopener noreferrer" class="atelier-btn btn-ghost">
+              <span>CURRICULUM VITAE [PDF]</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="14" height="14">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </a>
+          </div>
+
+          <div class="hero-footer-meta">
+            <div class="meta-group">
+              <span class="meta-caption">CORE FOCUS</span>
+              <span class="meta-value">Java &bull; Spring Boot &bull; AI Systems</span>
+            </div>
+            <div class="meta-separator">/</div>
+            <div class="meta-group">
+              <span class="meta-caption">DISTINCTIONS</span>
+              <span class="meta-value">150+ DSA &bull; Top 25 Ideathon Finalist</span>
+            </div>
+            <div class="meta-separator">/</div>
+            <div class="meta-group">
+              <span class="meta-caption">STATUS</span>
+              <a href="#dispatch" class="meta-value status-available" style="text-decoration: none;" title="Transmit inquiry to Parth Mandore">Open for Engineering Roles &rarr;</a>
+            </div>
+          </div>
         </div>
 
+        <!-- Right: Futuristic AR Research Terminal Display -->
+        <div class="hero-plinth-wrapper">
+          <div class="ar-portrait-terminal" id="arPortraitTerminal">
+            
+            <!-- Metallic Holographic Corner Brackets -->
+            <div class="ar-bracket corner-tl" aria-hidden="true"></div>
+            <div class="ar-bracket corner-tr" aria-hidden="true"></div>
+            <div class="ar-bracket corner-bl" aria-hidden="true"></div>
+            <div class="ar-bracket corner-br" aria-hidden="true"></div>
 
-      </div>
-    </div>
-  </div>
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    scroll
-  </div>
-</section>
+            <!-- Precision Reticles and Measurement Marks -->
+            <div class="ar-hud-telemetry" aria-hidden="true">
+              <span class="hud-marker hud-marker-top">SEC // SYS.01 &bull; OPTICAL FEED</span>
+              <span class="hud-marker hud-marker-coords">[18.52&deg; N // 73.85&deg; E]</span>
+              <div class="hud-crosshair-reticle"></div>
+              <div class="hud-signal-pip"></div>
+            </div>
 
-<div class="glow-divider"></div>
+            <!-- Floating Transparent Glass Frame -->
+            <div class="ar-frame" id="arFrame">
+              <div class="ar-photo-viewport">
+                <picture>
+                  <source srcset="assets/parth.webp" type="image/webp" />
+                  <img src="assets/parth.jpg" alt="Parth Mandore" class="ar-photo" width="504" height="672" loading="eager" decoding="async" />
+                </picture>
+                <!-- Subtle Scanning Laser Line -->
+                <div class="ar-scanline" aria-hidden="true"></div>
+                <!-- Optical Glare / Glass Reflection -->
+                <div class="ar-glass-glare" aria-hidden="true"></div>
+              </div>
 
-<!-- ABOUT -->
-<section id="about" class="section-pad">
-  <div class="inner">
-    <div class="section-head reveal">
-      <h2 class="section-title">About Me</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="about-grid">
-      <div class="about-text reveal">
-        <p>
-          Hey! I'm Parth, a Computer Engineering student at G. H. Raisoni College of Engineering and Management, Pune ( 2023 – Present ). I love building technology that creates meaningful impact.
-        </p>
-        <p>
-          My interests include Software Development, Full-Stack Development, Cloud Computing, Artificial Intelligence, and Machine Learning. I enjoy transforming ideas into real-world applications while continuously improving my programming, problem-solving, and engineering skills.
-        </p>
-        <p>
-          I actively work on projects, coding challenges, and new technologies to strengthen both my technical foundation and practical experience. My goal is to grow into a versatile software engineer capable of building scalable, innovative, and user-focused solutions.
-        </p>
-      </div>
-      <div class="about-stats reveal">
-        <div class="stat-card">
-          <div class="stat-num" data-target="150" data-suffix="+">0</div>
-          <div class="stat-label">DSA Problems Solved</div>
+              <!-- Factual AR Identity Label -->
+              <div class="ar-identity-badge">
+                <div class="ar-id-name">PARTH MANDORE</div>
+                <div class="ar-id-field">COMPUTER ENGINEERING</div>
+                <div class="ar-id-loc">PUNE, INDIA</div>
+              </div>
+            </div>
+
+            <!-- Floating Depth Shadow Emitter -->
+            <div class="ar-shadow-emitter" aria-hidden="true"></div>
+
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-num" data-target="4" data-suffix="th">0</div>
-          <div class="stat-label">Year of B.Tech</div>
+
+      </div>
+
+      <!-- Spatial Scroll Indicator -->
+      <a href="#works" class="spatial-scroll-indicator" aria-label="Scroll to Projects Section">
+        <span class="scroll-track-line"></span>
+        <span class="scroll-label">SCROLL TO DISCOVER</span>
+      </a>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         01 // THE EXHIBITION: 3D SPATIAL REVOLVING SHOWCASE
+         ═══════════════════════════════════════════════ -->
+    <section id="works" class="atelier-section works-showcase-section is-3d-active">
+      <div class="section-ghost-watermark" aria-hidden="true">EXHIBITION</div>
+      
+      <!-- Top Section Header & View Toggle -->
+      <div class="atelier-container works-intro-bar">
+        <div class="section-rubric">
+          <span class="rubric-num-wrap"><span class="rubric-num">01</span></span>
+          <span class="rubric-divider"></span>
+          <span class="rubric-title">EXHIBITION // SELECTED WORKS</span>
         </div>
-        <div class="stat-card">
-          <div class="stat-num" data-target="7">0</div>
-          <div class="stat-label">Projects Created</div>
+
+        <div class="works-header-flex">
+          <div class="exhibition-header">
+            <h2 class="editorial-heading editorial-heading-compact"><span id="projectsCountWord">Seven</span> Software Products Engineered for Purpose and Scale.</h2>
+            <p class="exhibition-sub exhibition-sub-compact">
+              Scroll through the three-dimensional planetary expedition to explore each production architecture in depth.
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
 
-<div class="glow-divider"></div>
-
-<!-- PORTFOLIO SHOWCASE (Tabbed: Projects + Skills) -->
-<section id="showcase" class="section-pad">
-  <div class="inner">
-    <div class="section-head reveal">
-      <h2 class="section-title">Portfolio Showcase</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <!-- TAB SWITCHER -->
-    <div class="showcase-tabs reveal">
-      <button class="showcase-tab active" data-tab="projects" onclick="switchTab('projects')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
-        Projects
-      </button>
-      <button class="showcase-tab" data-tab="skills" onclick="switchTab('skills')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-        Skills
-      </button>
-    </div>
-
-    <!-- PROJECTS PANEL -->
-    <div class="showcase-panel active" id="panel-projects">
-      <div class="projects-grid" id="projectsGrid">
-        <!-- Project cards rendered dynamically by script.js -->
+      <!-- 3D Cinematic Galaxy Viewport (Primary Exhibition Experience) -->
+      <div id="worksGalaxyStage" class="works-galaxy-stage">
+        <canvas id="galaxy3DCanvas" class="galaxy-3d-canvas" aria-hidden="true"></canvas>
       </div>
-      <div class="btn-show-more-wrap" id="showMoreWrap">
-        <button class="btn-show-more" id="toggleProjectsBtn">
-          <span class="btn-show-more-text">↓ Show More Projects</span>
+
+      <!-- 3D Pinned Spatial Viewport (Preserved Orrery Carousel Mode) -->
+      <div id="works3DPin" class="works-3d-pin" style="display: none;">
+        <div class="spatial-vignette-overlay" aria-hidden="true"></div>
+
+        <div class="atelier-container works-3d-layout">
+          
+          <!-- Left Column: Synchronized Editorial Project Dossier -->
+          <div class="works-dossier-panel">
+            <div class="dossier-top-telemetry">
+              <span class="dossier-tag-label">// EXHIBITION MONOGRAPH</span>
+              <span id="dossierFlagship" class="dossier-flagship-pill">&#9670; FLAGSHIP ARTIFACT</span>
+            </div>
+
+            <div class="dossier-counter">
+              <span id="dossierIndex" class="counter-num">01</span>
+              <span id="dossierTotal" class="counter-total">/ 07</span>
+            </div>
+
+            <h3 id="dossierTitle" class="dossier-title">Repository Mentor AI</h3>
+
+            <p id="dossierDesc" class="dossier-desc">
+              An AI-powered GitHub repository analysis platform performing static code analysis, architecture topology detection, semantic search, RAG-based Q&A, and recruiter reports.
+            </p>
+
+            <div id="dossierTags" class="dossier-chips-wrap">
+              <!-- Dynamically populated in script.js -->
+            </div>
+
+            <div class="dossier-action-links">
+              <button type="button" id="dossierInspectBtn" class="atelier-btn btn-solid btn-sm">
+                <span>INSPECT ARCHITECTURE</span>
+                <span class="btn-arrow">&rarr;</span>
+              </button>
+              <a id="dossierDemoBtn" href="https://repomentor.vercel.app" target="_blank" rel="noopener noreferrer" class="atelier-btn btn-ghost btn-sm">
+                <span>LIVE DEMO</span>
+                <span class="btn-arrow">&nearr;</span>
+              </a>
+              <a id="dossierGithubBtn" href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="atelier-btn btn-ghost btn-sm">
+                <span>SOURCE CODE</span>
+                <span class="btn-arrow">&nearr;</span>
+              </a>
+            </div>
+
+            <!-- Stepper Controls & Continuous Progress Track -->
+            <div class="dossier-stepper-dock">
+              <button type="button" id="showcasePrevBtn" class="stepper-arrow-btn" aria-label="Previous Project">&uarr;</button>
+              <button type="button" id="showcaseNextBtn" class="stepper-arrow-btn" aria-label="Next Project">&darr;</button>
+              
+              <div class="showcase-progress-rail" title="Scroll Progress">
+                <div id="showcaseProgressFill" class="showcase-progress-fill"></div>
+              </div>
+              
+              <span class="scroll-instruction-cue">01 / 07 &bull; SCROLL TO REVOLVE</span>
+            </div>
+          </div>
+
+          <!-- Right Column: 3D Vertical Rotating Carousel around Central Axis -->
+          <div class="works-3d-stage" id="stage3D">
+            <!-- Stable Central Vertical Axis Shaft -->
+            <div class="carousel-central-axis" id="carouselAxis" aria-hidden="true">
+              <div class="axis-cap axis-cap-top"></div>
+              <div class="axis-mast">
+                <div class="axis-amber-seam"></div>
+                <div class="axis-collar axis-collar-1"></div>
+                <div class="axis-collar axis-collar-2"></div>
+                <div class="axis-collar axis-collar-3"></div>
+                <div class="axis-collar axis-collar-4"></div>
+                <div class="axis-collar axis-collar-5"></div>
+                <div class="axis-collar axis-collar-6"></div>
+                <div class="axis-collar axis-collar-7"></div>
+              </div>
+              <div class="axis-cap axis-cap-bottom"></div>
+            </div>
+
+            <!-- Revolving Rotor populated with 7 Panels -->
+            <div class="carousel-rotor" id="carouselRotor">
+              <!-- Populated dynamically via script.js -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Accessible Archival Grid Container (Displayed in Grid Mode) -->
+      <div id="worksGridStage" class="atelier-container works-grid-stage" style="display: none;">
+        <div class="exhibition-monographs" id="projectsGridContainer">
+          <!-- Dynamically populated via script.js -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         02 // THE DISCIPLINES & APPARATUS (SKILLS)
+         ═══════════════════════════════════════════════ -->
+    <section id="disciplines" class="atelier-section">
+      <div class="section-ghost-watermark" aria-hidden="true">APPARATUS</div>
+      <div class="atelier-container">
+        
+        <div class="section-rubric">
+          <span class="rubric-num-wrap"><span class="rubric-num">02</span></span>
+          <span class="rubric-divider"></span>
+          <span class="rubric-title">TECHNOLOGIES // REPOSITORIES</span>
+        </div>
+
+        <div class="disciplines-header">
+          <h2 class="editorial-heading">Technologies &amp; Verified Repositories.</h2>
+          <p class="exhibition-sub">
+            Direct mapping of core languages, backend frameworks, cloud databases, and machine learning systems to their verified public GitHub repositories.
+          </p>
+        </div>
+
+        <div class="skills-matrix" id="skillsMatrix">
+
+          <!-- Entry 01: Java -->
+          <article class="skill-entry" tabindex="0" data-tech="Java" aria-label="Java: used in url-shortener-api and DSA-Journey">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">01 // CORE LANGUAGE</span>
+              <h3 class="skill-entry-name">JAVA</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/DSA-Journey" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="DSA-Journey on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">DSA-Journey</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 02: Python -->
+          <article class="skill-entry" tabindex="0" data-tech="Python" aria-label="Python: used in RepoMentor-AI, MindPulse-AI, career-ai-platform, and mlops-rolling-mean-pipeline">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">02 // CORE LANGUAGE</span>
+              <h3 class="skill-entry-name">PYTHON</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/MindPulse-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="MindPulse-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">MindPulse-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/career-ai-platform" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="career-ai-platform on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">career-ai-platform</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/mlops-rolling-mean-pipeline" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="mlops-rolling-mean-pipeline on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">mlops-rolling-mean-pipeline</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 03: TypeScript -->
+          <article class="skill-entry" tabindex="0" data-tech="TypeScript" aria-label="TypeScript: used in GymBuddy-AI-Trainer, Gyan, and RepoMentor-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">03 // CORE LANGUAGE</span>
+              <h3 class="skill-entry-name">TYPESCRIPT</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/Gyan" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="Gyan on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">Gyan</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 04: JavaScript -->
+          <article class="skill-entry" tabindex="0" data-tech="JavaScript" aria-label="JavaScript: used in Spotify_Clone and parth-mandore-portfolio">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">04 // WEB LANGUAGE</span>
+              <h3 class="skill-entry-name">JAVASCRIPT</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/Spotify_Clone" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="Spotify_Clone on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">Spotify_Clone</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/parth-mandore-portfolio" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="parth-mandore-portfolio on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">parth-mandore-portfolio</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 05: C / C++ -->
+          <article class="skill-entry" tabindex="0" data-tech="C / C++" aria-label="C / C++: used in DSA-Journey">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">05 // SYSTEMS LANGUAGE</span>
+              <h3 class="skill-entry-name">C / C++</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/DSA-Journey" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="DSA-Journey on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">DSA-Journey</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 06: Spring Boot -->
+          <article class="skill-entry" tabindex="0" data-tech="Spring Boot" aria-label="Spring Boot: used in url-shortener-api">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">06 // BACKEND FRAMEWORK</span>
+              <h3 class="skill-entry-name">SPRING BOOT</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 07: FastAPI -->
+          <article class="skill-entry" tabindex="0" data-tech="FastAPI" aria-label="FastAPI: used in RepoMentor-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">07 // BACKEND FRAMEWORK</span>
+              <h3 class="skill-entry-name">FASTAPI</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 08: REST APIs -->
+          <article class="skill-entry" tabindex="0" data-tech="REST APIs" aria-label="REST APIs: used in url-shortener-api, RepoMentor-AI, and GymBuddy-AI-Trainer">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">08 // API ARCHITECTURE</span>
+              <h3 class="skill-entry-name">REST APIS</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 09: Next.js / React -->
+          <article class="skill-entry" tabindex="0" data-tech="Next.js / React" aria-label="Next.js / React: used in GymBuddy-AI-Trainer, RepoMentor-AI, and career-ai-platform">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">09 // WEB FRAMEWORK</span>
+              <h3 class="skill-entry-name">NEXT.JS / REACT</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/career-ai-platform" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="career-ai-platform on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">career-ai-platform</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 10: React Native / Expo -->
+          <article class="skill-entry" tabindex="0" data-tech="React Native / Expo" aria-label="React Native / Expo: used in Gyan">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">10 // MOBILE FRAMEWORK</span>
+              <h3 class="skill-entry-name">REACT NATIVE / EXPO</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/Gyan" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="Gyan on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">Gyan</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 11: Tailwind CSS -->
+          <article class="skill-entry" tabindex="0" data-tech="Tailwind CSS" aria-label="Tailwind CSS: used in GymBuddy-AI-Trainer and career-ai-platform">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">11 // INTERFACE STYLING</span>
+              <h3 class="skill-entry-name">TAILWIND CSS</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/career-ai-platform" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="career-ai-platform on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">career-ai-platform</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 12: HTML5 / CSS3 -->
+          <article class="skill-entry" tabindex="0" data-tech="HTML5 / CSS3" aria-label="HTML5 / CSS3: used in Spotify_Clone and parth-mandore-portfolio">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">12 // WEB STANDARDS</span>
+              <h3 class="skill-entry-name">HTML5 / CSS3</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/Spotify_Clone" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="Spotify_Clone on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">Spotify_Clone</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/parth-mandore-portfolio" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="parth-mandore-portfolio on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">parth-mandore-portfolio</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 13: SQL / PostgreSQL -->
+          <article class="skill-entry" tabindex="0" data-tech="SQL / PostgreSQL" aria-label="SQL / PostgreSQL: used in RepoMentor-AI, GymBuddy-AI-Trainer, and url-shortener-api">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">13 // RELATIONAL DATABASE</span>
+              <h3 class="skill-entry-name">SQL / POSTGRESQL</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 14: MySQL / JPA -->
+          <article class="skill-entry" tabindex="0" data-tech="MySQL / JPA" aria-label="MySQL / JPA: used in url-shortener-api">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">14 // DATABASE &amp; ORM</span>
+              <h3 class="skill-entry-name">MYSQL / JPA</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 15: Supabase -->
+          <article class="skill-entry" tabindex="0" data-tech="Supabase" aria-label="Supabase: used in GymBuddy-AI-Trainer">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">15 // CLOUD DATABASE</span>
+              <h3 class="skill-entry-name">SUPABASE</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 16: MediaPipe / Computer Vision -->
+          <article class="skill-entry" tabindex="0" data-tech="MediaPipe / Computer Vision" aria-label="MediaPipe / Computer Vision: used in GymBuddy-AI-Trainer">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">16 // APPLIED AI &amp; VISION</span>
+              <h3 class="skill-entry-name">MEDIAPIPE / COMPUTER VISION</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/GymBuddy-AI-Trainer" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="GymBuddy-AI-Trainer on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">GymBuddy-AI-Trainer</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 17: RAG & Vector Search -->
+          <article class="skill-entry" tabindex="0" data-tech="RAG &amp; Vector Search" aria-label="RAG &amp; Vector Search: used in RepoMentor-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">17 // KNOWLEDGE RETRIEVAL</span>
+              <h3 class="skill-entry-name">RAG &amp; VECTOR SEARCH</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 18: Scikit-Learn / ML -->
+          <article class="skill-entry" tabindex="0" data-tech="Scikit-Learn" aria-label="Scikit-Learn: used in MindPulse-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">18 // PREDICTIVE MODELING</span>
+              <h3 class="skill-entry-name">SCIKIT-LEARN / ML</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/MindPulse-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="MindPulse-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">MindPulse-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 19: Pandas / NumPy -->
+          <article class="skill-entry" tabindex="0" data-tech="Pandas / NumPy" aria-label="Pandas / NumPy: used in MindPulse-AI and mlops-rolling-mean-pipeline">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">19 // DATA PROCESSING</span>
+              <h3 class="skill-entry-name">PANDAS / NUMPY</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/MindPulse-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="MindPulse-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">MindPulse-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/mlops-rolling-mean-pipeline" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="mlops-rolling-mean-pipeline on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">mlops-rolling-mean-pipeline</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 20: Docker -->
+          <article class="skill-entry" tabindex="0" data-tech="Docker" aria-label="Docker: used in mlops-rolling-mean-pipeline and RepoMentor-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">20 // CONTAINERIZATION</span>
+              <h3 class="skill-entry-name">DOCKER</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/mlops-rolling-mean-pipeline" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="mlops-rolling-mean-pipeline on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">mlops-rolling-mean-pipeline</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 21: Git / GitHub -->
+          <article class="skill-entry" tabindex="0" data-tech="Git / GitHub" aria-label="Git / GitHub: used in parth-mandore-portfolio and DSA-Journey">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">21 // VERSION CONTROL</span>
+              <h3 class="skill-entry-name">GIT / GITHUB</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/parth-mandore-portfolio" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="parth-mandore-portfolio on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">parth-mandore-portfolio</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/DSA-Journey" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="DSA-Journey on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">DSA-Journey</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 22: Postman / API Testing -->
+          <article class="skill-entry" tabindex="0" data-tech="Postman" aria-label="Postman: used in url-shortener-api">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">22 // API VALIDATION</span>
+              <h3 class="skill-entry-name">POSTMAN / API TESTING</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 23: Swagger / OpenAPI -->
+          <article class="skill-entry" tabindex="0" data-tech="Swagger / OpenAPI" aria-label="Swagger / OpenAPI: used in url-shortener-api and RepoMentor-AI">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">23 // API SPECIFICATION</span>
+              <h3 class="skill-entry-name">SWAGGER / OPENAPI</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/url-shortener-api" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="url-shortener-api on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">url-shortener-api</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+              <a href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="RepoMentor-AI on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">RepoMentor-AI</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- Entry 24: DSA & Problem Solving -->
+          <article class="skill-entry" tabindex="0" data-tech="DSA" aria-label="DSA: used in DSA-Journey">
+            <div class="skill-entry-ambient" aria-hidden="true"></div>
+            <div class="skill-entry-sweep" aria-hidden="true"></div>
+            <div class="skill-entry-header">
+              <span class="skill-entry-num">24 // CS FUNDAMENTALS</span>
+              <h3 class="skill-entry-name">DSA &amp; PROBLEM SOLVING</h3>
+            </div>
+            <div class="skill-connection" aria-hidden="true">
+              <span class="skill-connection-track"></span>
+              <span class="skill-connection-spark"></span>
+            </div>
+            <div class="skill-entry-repos">
+              <a href="https://github.com/parthmandore/DSA-Journey" target="_blank" rel="noopener noreferrer" class="skill-repo-link" aria-label="DSA-Journey on GitHub">
+                <span class="skill-repo-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+                </span>
+                <span class="skill-repo-name">DSA-Journey</span>
+                <span class="skill-repo-arrow" aria-hidden="true">&nearr;</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         03 // THE DISPATCH: CONTACT TERMINAL
+         ═══════════════════════════════════════════════ -->
+    <section id="dispatch" class="atelier-section">
+      <div class="section-ghost-watermark" aria-hidden="true">DISPATCH</div>
+      <div class="atelier-container">
+        
+        <div class="section-rubric">
+          <span class="rubric-num-wrap"><span class="rubric-num">03</span></span>
+          <span class="rubric-divider"></span>
+          <span class="rubric-title">DISPATCH // DIRECT CONTACT</span>
+        </div>
+
+        <div class="dispatch-header">
+          <h2 class="editorial-heading">Direct Dispatch &amp; Collaboration.</h2>
+          <p class="dispatch-lead exhibition-sub">
+            I am actively seeking software engineering internships, entry-level opportunities, and technical collaborations where clean architecture and execution matter.
+          </p>
+        </div>
+
+        <div class="dispatch-layout">
+          
+          <!-- Left: Direct Channels Card -->
+          <div class="dispatch-channels dispatch-channels-card">
+            <h3 class="form-title channels-card-title">COLLABORATION SIGNALS</h3>
+
+            <div class="channels-list">
+              
+              <!-- Email with Direct Copy Button -->
+              <div class="channel-row">
+                <div class="channel-meta-col">
+                  <span class="channel-tag">DIRECT EMAIL</span>
+                  <a href="mailto:mandoreparth14@gmail.com" class="channel-main-link">mandoreparth14@gmail.com</a>
+                </div>
+                <button type="button" id="copyEmailBtn" class="channel-action-btn" title="Copy Email Address" aria-label="Copy Email">
+                  <span>COPY</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Phone -->
+              <div class="channel-row">
+                <div class="channel-meta-col">
+                  <span class="channel-tag">TELEPHONE</span>
+                  <a href="tel:+917774091694" class="channel-main-link">+91 7774091694</a>
+                </div>
+              </div>
+
+              <!-- LinkedIn -->
+              <div class="channel-row">
+                <div class="channel-meta-col">
+                  <span class="channel-tag">LINKEDIN</span>
+                  <a href="https://linkedin.com/in/parthmandore" target="_blank" rel="noopener noreferrer" class="channel-main-link">
+                    linkedin.com/in/parthmandore &nearr;
+                  </a>
+                </div>
+              </div>
+
+              <!-- GitHub -->
+              <div class="channel-row">
+                <div class="channel-meta-col">
+                  <span class="channel-tag">GITHUB</span>
+                  <a href="https://github.com/parthmandore" target="_blank" rel="noopener noreferrer" class="channel-main-link">
+                    github.com/parthmandore &nearr;
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Resume Link Card -->
+            <div class="dossier-box">
+              <div class="dossier-info">
+                <span class="dossier-title">CURRICULUM VITAE</span>
+                <span class="dossier-meta">PARTH-MANDORE.PDF &bull; UPDATED 2026</span>
+              </div>
+              <a href="Parth-Mandore.pdf" target="_blank" rel="noopener noreferrer" class="atelier-btn btn-solid btn-sm">
+                <span>DOWNLOAD</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Right: Asynchronous Contact Form -->
+          <div class="dispatch-form-wrapper">
+            <div class="form-container">
+              <h3 class="form-title">TRANSMIT INQUIRY</h3>
+              <form id="contactForm" class="atelier-form" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="_honey">
+                
+                <!-- Anti-Spam Honeypot Field (hidden from users, traps automated spambots) -->
+                <div class="form-input-honey" style="display:none !important;" aria-hidden="true">
+                  <label for="formHoney">Please leave this field empty</label>
+                  <input type="text" id="formHoney" name="_honey" tabindex="-1" autocomplete="off" />
+                </div>
+
+                <div class="form-input-group">
+                  <label for="formName" class="input-label">YOUR NAME</label>
+                  <input type="text" id="formName" name="name" placeholder="John Doe" required minlength="2" maxlength="100" autocomplete="name" />
+                </div>
+
+                <div class="form-input-group">
+                  <label for="formEmail" class="input-label">CONTACT EMAIL</label>
+                  <input type="email" id="formEmail" name="email" placeholder="john@example.com" required inputmode="email" autocomplete="email" />
+                </div>
+
+                <div class="form-input-group">
+                  <label for="formSubject" class="input-label">SUBJECT</label>
+                  <input type="text" id="formSubject" name="subject" placeholder="Software Engineering Role // Discussion" maxlength="150" />
+                </div>
+
+                <div class="form-input-group">
+                  <label for="formMsg" class="input-label">MESSAGE</label>
+                  <textarea id="formMsg" name="message" rows="5" placeholder="Hi Parth, I'd like to discuss an opportunity regarding..." required minlength="10" maxlength="5000"></textarea>
+                </div>
+
+                <button type="submit" id="sendBtn" class="atelier-btn btn-solid btn-full">
+                  <span>DISPATCH SIGNAL</span>
+                  <span class="btn-arrow">&rarr;</span>
+                </button>
+
+                <div id="formStatus" class="form-alert-box" role="status" aria-live="polite"></div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DEDICATED CINEMATIC PROJECT EXPERIENCE OVERLAY -->
+  <div id="projectDetailModal" class="project-modal-backdrop project-experience-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    
+    <!-- Top Sticky Expedition Navigation Bar -->
+    <header class="experience-top-nav" aria-label="Expedition Navigation">
+      <div class="experience-nav-left">
+        <button type="button" id="projectModalClose" class="experience-return-btn" aria-label="Return to Planetary Orbit">
+          <span aria-hidden="true">&larr;</span>
+          <span>RETURN TO ORBIT // ESC</span>
+        </button>
+        <div id="experienceWaypointBadge" class="experience-waypoint-pill">
+          <span class="experience-waypoint-pip" aria-hidden="true"></span>
+          <span id="experienceWaypointText">WAYPOINT // ORBIT 01: TERRESTRIAL SYNAPSE</span>
+        </div>
+      </div>
+      <div class="experience-nav-stepper" role="navigation" aria-label="Project Switcher">
+        <button type="button" id="experiencePrevBtn" class="experience-step-btn" aria-label="Previous Showcase Project">
+          <span aria-hidden="true">&larr;</span>
+          <span>PREV</span>
+        </button>
+        <button type="button" id="experienceNextBtn" class="experience-step-btn" aria-label="Next Showcase Project">
+          <span>NEXT</span>
+          <span aria-hidden="true">&rarr;</span>
         </button>
       </div>
-    </div>
+    </header>
 
-    <!-- SKILLS PANEL -->
-    <div class="showcase-panel" id="panel-skills">
-      <div class="skills-wrapper">
-        <div class="reveal">
-          <div class="skill-group-label">Languages</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-java-plain"></i> Java</div><div class="skill-level">Advanced</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-python-plain"></i> Python</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-javascript-plain"></i> JS</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-typescript-plain"></i> TS</div><div class="skill-level">Beginner</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-azuresqldatabase-plain"></i> SQL</div><div class="skill-level">Advanced</div></div>
+    <!-- Main Editorial Project Experience Container -->
+    <article class="project-experience-body">
+
+      <!-- Section Hero Header: Identity & Classification -->
+      <section class="experience-hero-header">
+        <div class="experience-meta-line">
+          <span id="modalIndex" class="experience-index-tag">INDEX // 01</span>
+          <span class="meta-sep" aria-hidden="true">&bull;</span>
+          <span id="modalCategory" class="experience-sector-tag">SECTOR // ALPHA &bull; FLAGSHIP ARTIFACT</span>
+          <span class="meta-sep" aria-hidden="true">&bull;</span>
+          <span id="experienceYear" class="experience-year-badge">2025</span>
+        </div>
+        <h1 id="modalTitle" class="experience-title">Repository Mentor AI</h1>
+        <p id="experienceTagline" class="experience-tagline">Codebase Intelligence, Static AST Security Audits &amp; Grounded RAG Platform</p>
+      </section>
+
+      <!-- Section B: Visual Hero Showcase with 3D Parallax Tilt & Telemetry -->
+      <section class="experience-hero-stage" aria-label="Project Visual Showcase">
+        <div id="experienceHeroFrame" class="experience-hero-frame">
+          <img id="modalImg" src="assets/repomentor.webp" alt="Project Architecture Preview" class="experience-hero-img" loading="lazy" width="1240" height="620" decoding="async" />
+          <div class="experience-hero-scanline" aria-hidden="true"></div>
+          <div class="experience-hero-vignette" aria-hidden="true"></div>
+          
+          <!-- Telemetry HUD Overlay -->
+          <div class="experience-telemetry-hud" role="group" aria-label="Orbital and Architectural Telemetry">
+            <div class="telemetry-node">
+              <span class="telemetry-node-label">ORBITAL RANGE</span>
+              <span id="telemetryOrbit" class="telemetry-node-val">540 AU // 9.8 YR</span>
+            </div>
+            <div class="telemetry-node">
+              <span class="telemetry-node-label">SYSTEM STATUS</span>
+              <span id="telemetrySignal" class="telemetry-node-val accent">PRODUCTION LIVE</span>
+            </div>
+            <div class="telemetry-node">
+              <span class="telemetry-node-label">INFERENCE MODE</span>
+              <span id="telemetryInference" class="telemetry-node-val">100% Local ONNX Runtime</span>
+            </div>
+            <div class="telemetry-node">
+              <span class="telemetry-node-label">SEARCH LATENCY</span>
+              <span id="telemetryLookup" class="telemetry-node-val accent">&lt;250ms Vector Search</span>
+            </div>
           </div>
         </div>
-        <div class="reveal">
-          <div class="skill-group-label">Frontend</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-html5-plain"></i> HTML5</div><div class="skill-level">Advanced</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-css3-plain"></i> CSS3</div><div class="skill-level">Advanced</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-react-original"></i> React</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-tailwindcss-original"></i> Tailwind</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-bootstrap-plain"></i> Bootstrap</div><div class="skill-level">Intermediate</div></div>
+      </section>
+
+      <!-- Section A: Identity, Purpose & Problem Solved -->
+      <section class="experience-dossier-grid" aria-label="Problem and Purpose Specification">
+        <div class="dossier-panel problem-panel">
+          <div class="dossier-panel-header">
+            <span class="dossier-panel-kicker">PROBLEM STATEMENT</span>
+          </div>
+          <h2 class="dossier-panel-title">The Challenge Solved</h2>
+          <p id="experienceProblemText" class="dossier-panel-text">
+            Navigating multi-thousand-line repositories without documentation is time-consuming and risks introducing security regressions; existing cloud AI tools risk leaking proprietary source code to external servers.
+          </p>
+        </div>
+        <div class="dossier-panel purpose-panel">
+          <div class="dossier-panel-header">
+            <span class="dossier-panel-kicker">PURPOSE &amp; OBJECTIVE</span>
+          </div>
+          <h2 class="dossier-panel-title">Engineering Mission</h2>
+          <p id="experiencePurposeText" class="dossier-panel-text">
+            Automating codebase comprehension, structural complexity scoring, and architectural guidance for developers and technical recruiters.
+          </p>
+          <p id="modalDescription" style="display:none;"></p>
+        </div>
+      </section>
+
+      <!-- Section C: Verified Implemented Capabilities (Features Grid) -->
+      <section class="experience-section-block" aria-labelledby="featuresBlockHeading">
+        <div class="section-block-heading">
+          <span class="block-num">[ 01 ]</span>
+          <h2 id="featuresBlockHeading" class="block-title">VERIFIED IMPLEMENTED CAPABILITIES</h2>
+          <div class="block-divider" aria-hidden="true"></div>
+        </div>
+        <div id="experienceFeaturesGrid" class="features-cards-grid">
+          <!-- Dynamically populated from PORTFOLIO_PROJECT_DETAILS -->
+        </div>
+      </section>
+
+      <!-- Section D: Technical Architecture & Data Flow -->
+      <section class="experience-section-block" aria-labelledby="archBlockHeading">
+        <div class="section-block-heading">
+          <span class="block-num">[ 02 ]</span>
+          <h2 id="archBlockHeading" class="block-title">TECHNICAL ARCHITECTURE &amp; DATA FLOW</h2>
+          <div class="block-divider" aria-hidden="true"></div>
+        </div>
+        <div class="architecture-composite-grid">
+          <!-- Stack & Badges -->
+          <div class="arch-column-box">
+            <h3 class="arch-box-title">
+              <span aria-hidden="true">&loz;</span>
+              <span>CORE TECHNOLOGIES &amp; FRAMEWORKS</span>
+            </h3>
+            <div id="experienceTechGroups" class="tech-groups-list">
+              <!-- Dynamically populated -->
+            </div>
+            <!-- Backwards-compatible legacy container -->
+            <div id="modalTechnologies" class="modal-tech-pills" style="display:none;"></div>
+          </div>
+          <!-- Pipeline Data Flow & Decisions -->
+          <div class="arch-column-box">
+            <h3 class="arch-box-title">
+              <span aria-hidden="true">&loz;</span>
+              <span>DATA FLOW PIPELINE</span>
+            </h3>
+            <div id="experienceDataFlow" class="data-flow-nodes">
+              <!-- Dynamically populated -->
+            </div>
+            <h3 class="arch-box-title" style="margin-top: 1rem;">
+              <span aria-hidden="true">&loz;</span>
+              <span>ENGINEERING DECISIONS</span>
+            </h3>
+            <div id="experienceDecisions" class="decisions-list">
+              <!-- Dynamically populated -->
+            </div>
           </div>
         </div>
-        <div class="reveal">
-          <div class="skill-group-label">Backend</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-nodejs-plain"></i> Node.js</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-express-original"></i> Express</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-spring-original"></i> Spring Boot</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🔌 JDBC</div><div class="skill-level">Intermediate</div></div>
-          </div>
+      </section>
+
+      <!-- Section E: Engineering Challenges & Verifiable Solutions -->
+      <section class="experience-section-block" aria-labelledby="challengesBlockHeading">
+        <div class="section-block-heading">
+          <span class="block-num">[ 03 ]</span>
+          <h2 id="challengesBlockHeading" class="block-title">ENGINEERING CHALLENGES &amp; SOLUTIONS</h2>
+          <div class="block-divider" aria-hidden="true"></div>
         </div>
-        <div class="reveal">
-          <div class="skill-group-label">Databases</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-mysql-plain"></i> MySQL</div><div class="skill-level">Advanced</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-postgresql-plain"></i> PostgreSQL</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-mongodb-plain"></i> MongoDB</div><div class="skill-level">Intermediate</div></div>
-          </div>
+        <div id="experienceChallengesDeck" class="challenges-deck">
+          <!-- Dynamically populated -->
         </div>
-        <div class="reveal">
-          <div class="skill-group-label">AI / ML</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name">🤖 Machine Learning</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🧠 Deep Learning</div><div class="skill-level">Beginner</div></div>
-            <div class="skill-pill"><div class="skill-name">✨ Generative AI</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">💬 LLMs</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🔎 RAG</div><div class="skill-level">Beginner</div></div>
-            <div class="skill-pill"><div class="skill-name">🕵️ AI Agents</div><div class="skill-level">Beginner</div></div>
-            <div class="skill-pill"><div class="skill-name">✍️ Prompt Eng.</div><div class="skill-level">Advanced</div></div>
-            <div class="skill-pill"><div class="skill-name"><i class="devicon-scikitlearn-plain"></i> Scikit-learn</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">♊ Gemini API</div><div class="skill-level">Intermediate</div></div>
-          </div>
+      </section>
+
+      <!-- Section F: Project Links & Actions -->
+      <section class="experience-actions-bar" aria-label="Project Verification Links">
+        <a id="modalGithubLink" href="https://github.com/parthmandore/RepoMentor-AI" target="_blank" rel="noopener noreferrer" class="action-cta-btn ghost">
+          <span>VIEW GITHUB REPOSITORY</span>
+          <span class="btn-arrow" aria-hidden="true">&nearr;</span>
+        </a>
+        <a id="modalLiveDemo" href="https://repomentor.vercel.app" target="_blank" rel="noopener noreferrer" class="action-cta-btn solid">
+          <span>LAUNCH PRODUCTION DEPLOYMENT</span>
+          <span class="btn-arrow" aria-hidden="true">&nearr;</span>
+        </a>
+      </section>
+
+      <!-- Section G: Expedition Navigation Footer -->
+      <footer class="experience-expedition-footer" role="navigation" aria-label="Expedition Route Navigation">
+        <div class="footer-nav-grid">
+          <button type="button" id="footerTeaserPrev" class="footer-expedition-teaser">
+            <span class="teaser-dir-label">&larr; PREVIOUS ORBIT</span>
+            <span id="footerPrevTitle" class="teaser-project-title">Previous Project</span>
+          </button>
+          <button type="button" id="footerTeaserNext" class="footer-expedition-teaser" style="text-align: right;">
+            <span class="teaser-dir-label">NEXT ORBIT &rarr;</span>
+            <span id="footerNextTitle" class="teaser-project-title">Next Project</span>
+          </button>
         </div>
-        <div class="reveal">
-          <div class="skill-group-label">Domain Experience</div>
-          <div class="skill-pills">
-            <div class="skill-pill"><div class="skill-name">🥞 Full-Stack</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🚀 AI Apps</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">🌐 REST APIs</div><div class="skill-level">Intermediate</div></div>
-            <div class="skill-pill"><div class="skill-name">💾 DB Systems</div><div class="skill-level">Intermediate</div></div>
-          </div>
+        <div class="footer-return-bar">
+          <button type="button" id="footerReturnBtn" class="footer-return-action">
+            <span>[ RETURN TO GALAXY EXPEDITION ]</span>
+          </button>
         </div>
+      </footer>
+
+    </article>
+  </div>
+
+  <!-- ATELIER FOOTER -->
+  <footer id="atelier-footer">
+    <div class="atelier-container footer-content">
+      
+      <div class="footer-left">
+        <span class="footer-brand">PARTH MANDORE</span>
+        <p class="footer-tagline">Built with Three.js, WebGL &amp; Vanilla JavaScript &bull; Pune, Maharashtra, India.</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Footer Navigation">
+        <a href="#hero" class="footer-nav-link">Overview</a>
+        <span class="footer-nav-sep" aria-hidden="true">&bull;</span>
+        <a href="#works" class="footer-nav-link">Projects</a>
+        <span class="footer-nav-sep" aria-hidden="true">&bull;</span>
+        <a href="#disciplines" class="footer-nav-link">Skills</a>
+        <span class="footer-nav-sep" aria-hidden="true">&bull;</span>
+        <a href="#dispatch" class="footer-nav-link">Contact</a>
+        <span class="footer-nav-sep" aria-hidden="true">&bull;</span>
+        <button type="button" id="cookiePrefsBtn" class="footer-nav-btn" aria-label="Open Cookie and Privacy Preferences">Cookie Preferences</button>
+      </nav>
+
+      <div class="footer-center">
+        <span class="footer-time-label">LOCAL TELEMETRY</span>
+        <span id="footerClock" class="footer-time">--:--:-- IST</span>
+      </div>
+
+      <div class="footer-right">
+        <a href="#hero" class="apex-link" aria-label="Return to top">
+          <span>APEX &uarr;</span>
+        </a>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Toast Notification Feedback Hub -->
+  <div id="toastContainer" class="toast-hub" aria-live="polite"></div>
+
+  <!-- PRIVACY & COOKIE CONSENT BANNER -->
+  <aside id="cookieConsentBanner" class="cookie-banner" role="region" aria-label="Privacy and Cookie Preferences" style="display: none;">
+    <div class="cookie-banner-inner">
+      <div class="cookie-banner-content">
+        <div class="cookie-badge">
+          <span class="cookie-badge-pip" aria-hidden="true"></span>
+          <span>PRIVACY // PREFERENCES</span>
+        </div>
+        <p class="cookie-banner-text">
+          This portfolio uses strictly necessary local storage to remember your theme selection. Optional anonymous analytics can be enabled to measure project interest and resume views without collecting personal data.
+        </p>
+      </div>
+      <div class="cookie-banner-actions">
+        <button type="button" id="cookieAcceptAll" class="cookie-btn cookie-btn-solid">Accept All</button>
+        <button type="button" id="cookieRejectOptional" class="cookie-btn cookie-btn-ghost">Reject Optional</button>
+        <button type="button" id="cookieOpenSettings" class="cookie-btn cookie-btn-link">Customize</button>
       </div>
     </div>
+  </aside>
 
-  </div>
-</section>
+  <!-- PRIVACY PREFERENCES MODAL -->
+  <div id="cookiePrefsModal" class="cookie-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle" style="display: none;">
+    <div class="cookie-modal-window">
+      <div class="cookie-modal-header">
+        <div class="cookie-badge">
+          <span class="cookie-badge-pip" aria-hidden="true"></span>
+          <span>TELEMETRY &amp; STORAGE SETTINGS</span>
+        </div>
+        <h2 id="cookieModalTitle" class="cookie-modal-title">Cookie &amp; Privacy Preferences</h2>
+        <button type="button" id="cookieModalClose" class="cookie-modal-close" aria-label="Close preferences modal">&times;</button>
+      </div>
 
-<div class="glow-divider"></div>
+      <div class="cookie-modal-body">
+        <p class="cookie-modal-intro">
+          Choose which storage and measurement categories you permit on this portfolio. Your choices are persisted locally in your browser and can be modified at any time via the footer link.
+        </p>
 
-<!-- CONTACT -->
-<section id="contact" class="section-pad">
-  <div class="inner">
-    <div class="section-head reveal">
-      <h2 class="section-title">Contact</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="contact-grid">
-      <div class="contact-info reveal">
-        <h3>Let's Work Together</h3>
-        <div class="contact-links">
-          <a href="https://mail.google.com/mail/?view=cm&to=mandoreparth14@gmail.com" target="_blank" class="contact-link">
-            <div class="contact-link-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v14H4z"/><polyline points="4 4 12 13 20 4"/></svg>
+        <!-- Category 1: Essential -->
+        <div class="cookie-category-item">
+          <div class="cookie-category-header">
+            <div class="cookie-category-info">
+              <span class="cookie-category-name">Strictly Necessary Storage</span>
+              <span class="cookie-category-status">Always Active</span>
             </div>
-            mandoreparth14@gmail.com
-          </a>
-          <a href="tel:7774091694" class="contact-link">
-            <div class="contact-link-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14v2.92z"/></svg>
+            <input type="checkbox" checked disabled class="cookie-toggle" aria-label="Strictly Necessary Storage (Always Active)" />
+          </div>
+          <p class="cookie-category-desc">
+            Required for core portfolio features. Retains your chosen theme (Dark, Light, or Netflix Version) and your privacy consent decisions in local storage. Does not track you across websites.
+          </p>
+        </div>
+
+        <!-- Category 2: Optional Analytics -->
+        <div class="cookie-category-item">
+          <div class="cookie-category-header">
+            <div class="cookie-category-info">
+              <span class="cookie-category-name">Anonymous Interaction Analytics</span>
+              <span class="cookie-category-status" id="analyticsStatusLabel">Optional</span>
             </div>
-            +91 7774091694
-          </a>
-          <a href="https://linkedin.com/in/parthmandore" target="_blank" class="contact-link">
-            <div class="contact-link-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-            </div>
-            linkedin.com/in/parthmandore
-          </a>
-          <a href="https://github.com/parthmandore" target="_blank" class="contact-link">
-            <div class="contact-link-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
-            </div>
-            github.com/parthmandore
-          </a>
+            <label class="cookie-switch-label">
+              <input type="checkbox" id="analyticsConsentToggle" class="cookie-toggle" aria-label="Enable or disable anonymous interaction analytics" />
+              <span class="cookie-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+          <p class="cookie-category-desc">
+            Measures anonymous conversion events such as project demo clicks, resume downloads, and inquiry submissions. No names, email addresses, message contents, or IP profiles are ever recorded.
+          </p>
         </div>
       </div>
-      <form class="contact-form reveal" id="contactForm" onsubmit="sendMessage(event)">
-        <div class="form-group">
-          <label for="formName">Your Name</label>
-          <input type="text" name="name" placeholder="John Doe" id="formName" required/>
-        </div>
-        <div class="form-group">
-          <label for="formEmail">Email Address</label>
-          <input type="email" name="email" placeholder="john@example.com" id="formEmail" required/>
-        </div>
-        <div class="form-group">
-          <label for="formMsg">Message</label>
-          <textarea name="message" rows="5" placeholder="Hi Parth, I'd love to connect about..." id="formMsg" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary" id="sendBtn" style="align-self:flex-start;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          Send Message
-        </button>
-        <div id="formStatus" class="form-status"></div>
-      </form>
+
+      <div class="cookie-modal-footer">
+        <button type="button" id="cookieSaveCustom" class="cookie-btn cookie-btn-solid">Save Preferences</button>
+        <button type="button" id="cookieRejectAllModal" class="cookie-btn cookie-btn-ghost">Reject All Optional</button>
+      </div>
     </div>
   </div>
-</section>
 
-<footer>
-  <p>Designed &amp; Built by <span>Parth Mandore</span> &nbsp;·&nbsp; Pune, Maharashtra &nbsp;·&nbsp; <span>2026</span></p>
-</footer>
+  <!-- NETFLIX PORTFOLIO VIEW CONTAINER -->
+  <div id="netflixPortfolioContainer" class="netflix-portfolio-container" style="display: none;">
+    <iframe
+      id="netflixPortfolioFrame"
+      src="netflix-version/index.html"
+      title="Netflix Version Portfolio"
+      class="netflix-portfolio-iframe"
+      loading="lazy"
+    ></iframe>
+  </div>
 
-<!-- NETFLIX PORTFOLIO VIEW CONTAINER -->
-<div id="netflixPortfolioContainer" class="netflix-portfolio-container" style="display: none;">
-  <iframe
-    id="netflixPortfolioFrame"
-    src="netflix-version/index.html"
-    title="Netflix Version Portfolio"
-    class="netflix-portfolio-iframe"
-    loading="lazy"
-  ></iframe>
-</div>
+  <!-- Three.js 3D WebGL Library (Local Vendor with CDN Fallback) -->
+  <script src="vendor/three.min.js"></script>
+  <script>
+    if (typeof THREE === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>');
+    }
+  </script>
 
-<script src="script.js"></script>
+  <!-- GSAP & ScrollTrigger Animation Engine -->
+  <script src="vendor/gsap.min.js"></script>
+  <script src="vendor/ScrollTrigger.min.js"></script>
+
+  <!-- Dedicated Project Experience Specifications & Verified Data -->
+  <script src="galaxy-journey/project-data.js"></script>
+
+  <!-- Cinematic 3D Galaxy Project Exhibition Engine -->
+  <script src="galaxy-journey/galaxy-journey.js"></script>
+
+  <!-- Atelier Application & 3D Architectural Engine -->
+  <script src="script.js"></script>
+
 </body>
 </html>
