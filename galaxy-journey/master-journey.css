@@ -1,0 +1,558 @@
+/* ==========================================================================
+   PHASE 1: MASTER CINEMATIC VIEWPORT RIGGING & SCROLL SPINE STYLING
+   Space Journey 3D Continuous Portfolio
+   ========================================================================== */
+
+/* 1. Dedicated Fixed Viewport Container */
+.cinematic-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Visibility conditioned on Space Theme */
+html[data-theme="space"] .cinematic-viewport {
+  display: block;
+}
+html:not([data-theme="space"]) .cinematic-viewport {
+  display: none !important;
+}
+
+/* Interactive elements inside fixed viewport */
+.cinematic-viewport .is-interactive,
+.cinematic-viewport a,
+.cinematic-viewport button,
+.cinematic-viewport input,
+.cinematic-viewport [role="button"],
+.cinematic-viewport .interactive-plate {
+  pointer-events: auto;
+}
+
+/* 2. Virtual Scroll Driver (Provides calibrated native scroll track) */
+.scroll-spine-driver {
+  position: relative;
+  width: 100%;
+  height: 20000px;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+}
+
+html:not([data-theme="space"]) .scroll-spine-driver {
+  display: none !important;
+}
+
+/* 3. Cockpit Telemetry Readout HUD (Phase 1 Progress & Camera Target) */
+.journey-telemetry-hud {
+  position: fixed;
+  top: 76px;
+  right: 24px;
+  z-index: 9990;
+  width: 250px;
+  background: rgba(8, 8, 12, 0.92);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 158, 11, 0.1);
+  border-radius: 2px;
+  color: #E2E8F0;
+  font-family: 'Space Mono', 'Courier New', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: auto;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+html:not([data-theme="space"]) .journey-telemetry-hud {
+  display: none !important;
+}
+
+.journey-telemetry-hud.is-minimized {
+  transform: translateX(calc(100% - 36px));
+  opacity: 0.85;
+}
+
+.journey-telemetry-hud.is-minimized:hover {
+  opacity: 1;
+}
+
+.hud-telemetry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(245, 158, 11, 0.12);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hud-telemetry-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #F59E0B;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.hud-telemetry-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+  animation: hudPipPulse 2s infinite ease-in-out;
+}
+
+@keyframes hudPipPulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.hud-toggle-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0 4px;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.hud-toggle-btn:hover {
+  color: #F59E0B;
+}
+
+.hud-telemetry-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hud-telemetry-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+  padding-bottom: 4px;
+}
+
+.hud-telemetry-label {
+  color: #94A3B8;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.hud-telemetry-value {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.hud-telemetry-value.is-amber {
+  color: #F59E0B;
+}
+
+.hud-telemetry-value.is-green {
+  color: #10B981;
+}
+
+.hud-telemetry-value.is-cyan {
+  color: #06B6D4;
+}
+
+.hud-progress-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.hud-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+  transition: width 0.05s linear;
+}
+
+.hud-telemetry-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 9px;
+  color: #64748B;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 4. Responsive Media Rules */
+@media (max-width: 768px) {
+  .journey-telemetry-hud {
+    top: auto;
+    bottom: 74px;
+    right: 12px;
+    width: 270px;
+    font-size: 10px;
+  }
+  .scroll-spine-driver {
+    height: 16000px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 2: SEAMLESS VIEWPORT & CANVASES STACKING CONTINUITY
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Fix #hero in Space Theme to eliminate section scrolling jumps */
+html[data-theme="space"] #hero {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 22 !important;
+}
+
+html[data-theme="space"] #hero a,
+html[data-theme="space"] #hero button,
+html[data-theme="space"] #hero input,
+html[data-theme="space"] #hero [role="button"],
+html[data-theme="space"] #hero .interactive-plate,
+html[data-theme="space"] #hero .space-hero-dock {
+  pointer-events: auto !important;
+}
+
+/* Ensure worksGalaxyStage is truly fixed viewport behind hero */
+#worksGalaxyStage.works-galaxy-stage {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+
+html[data-theme="space"] #works.works-showcase-section {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+}
+
+html[data-theme="space"] #works a,
+html[data-theme="space"] #works button,
+html[data-theme="space"] #works input,
+html[data-theme="space"] #works [role="button"],
+html[data-theme="space"] #works #projectDossierCard,
+html[data-theme="space"] #works #projectExperienceModal,
+html[data-theme="space"] #works .galaxy-spacecraft-hud {
+  pointer-events: auto !important;
+}
+
+#hero3DCanvas.hero-3d-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 20 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure background starfield is behind everything */
+#spaceStarfield.space-starfield-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 2: FIXED COSMIC VIEWPORT FOR SECTOR 04 (SKILLS)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Fix #disciplines into the cosmic viewport for Space Theme */
+html[data-theme="space"] #disciplines {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 25 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  visibility: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 88px 5% 80px !important;
+  box-sizing: border-box !important;
+  perspective: 1200px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 158, 11, 0.4) transparent;
+  will-change: opacity, transform;
+}
+
+html[data-theme="space"] #disciplines::-webkit-scrollbar {
+  width: 6px;
+}
+html[data-theme="space"] #disciplines::-webkit-scrollbar-track {
+  background: transparent;
+}
+html[data-theme="space"] #disciplines::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.4);
+  border-radius: 3px;
+}
+
+/* Interactive elements inside fixed disciplines viewport */
+html[data-theme="space"] #disciplines.is-interactive,
+html[data-theme="space"] #disciplines a,
+html[data-theme="space"] #disciplines button,
+html[data-theme="space"] #disciplines .skill-entry,
+html[data-theme="space"] #disciplines .skill-repo-link,
+html[data-theme="space"] #disciplines .constellation-filter-btn {
+  pointer-events: auto !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 4: SECTOR 05 BEACON NEXUS STYLING
+   ══════════════════════════════════════════════════════════════════ */
+
+html[data-theme="space"] #dispatch {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  z-index: 26 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  visibility: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 88px 5% 80px !important;
+  box-sizing: border-box !important;
+  perspective: 1200px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 158, 11, 0.4) transparent;
+  will-change: opacity, transform;
+}
+
+html[data-theme="space"] #dispatch::-webkit-scrollbar {
+  width: 6px;
+}
+html[data-theme="space"] #dispatch::-webkit-scrollbar-track {
+  background: transparent;
+}
+html[data-theme="space"] #dispatch::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.4);
+  border-radius: 3px;
+}
+
+/* Interactive elements inside fixed dispatch viewport */
+html[data-theme="space"] #dispatch.is-interactive,
+html[data-theme="space"] #dispatch a,
+html[data-theme="space"] #dispatch button,
+html[data-theme="space"] #dispatch input,
+html[data-theme="space"] #dispatch textarea,
+html[data-theme="space"] #dispatch .channel-action-btn,
+html[data-theme="space"] #dispatch .channel-main-link,
+html[data-theme="space"] #dispatch .atelier-btn {
+  pointer-events: auto !important;
+}
+
+/* Communication console card styling in Space Theme */
+html[data-theme="space"] .dispatch-channels-card,
+html[data-theme="space"] .dispatch-form-wrapper .form-container {
+  background: rgba(10, 15, 26, 0.82) !important;
+  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+  border-radius: 8px !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.05) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+html[data-theme="space"] .dispatch-channels-card:hover,
+html[data-theme="space"] .dispatch-form-wrapper .form-container:hover {
+  border-color: rgba(245, 158, 11, 0.45) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 40px rgba(245, 158, 11, 0.10) !important;
+}
+
+/* Restrained amber beacon accents */
+html[data-theme="space"] #dispatch .section-rubric .rubric-title {
+  color: #F59E0B !important;
+}
+html[data-theme="space"] #dispatch .editorial-heading {
+  color: #F8FAFC !important;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
+}
+html[data-theme="space"] #dispatch .dispatch-lead {
+  color: #94A3B8 !important;
+}
+html[data-theme="space"] #dispatch .channel-tag {
+  color: #F59E0B !important;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+html[data-theme="space"] #dispatch .channel-main-link {
+  color: #F1F5F9 !important;
+}
+html[data-theme="space"] #dispatch .channel-main-link:hover {
+  color: #F59E0B !important;
+}
+html[data-theme="space"] #dispatch .form-input-group label {
+  color: #CBD5E1 !important;
+}
+html[data-theme="space"] #dispatch input,
+html[data-theme="space"] #dispatch textarea {
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #F8FAFC !important;
+}
+html[data-theme="space"] #dispatch input:focus,
+html[data-theme="space"] #dispatch textarea:focus {
+  border-color: #F59E0B !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+  outline: none !important;
+}
+html[data-theme="space"] #dispatch #sendBtn {
+  background: #F59E0B !important;
+  color: #05070D !important;
+  font-weight: 600;
+  border: none;
+}
+html[data-theme="space"] #dispatch #sendBtn:hover {
+  background: #D97706 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 3: COCKPIT HUD AVIONICS & POINTER ISOLATION
+   ══════════════════════════════════════════════════════════════════ */
+
+html[data-theme="space"] #spaceCockpitHud {
+  pointer-events: none !important;
+}
+html[data-theme="space"] #spaceCockpitHud .cockpit-viewport-frame,
+html[data-theme="space"] #spaceCockpitHud .cockpit-telemetry-bottom,
+html[data-theme="space"] #spaceCockpitHud .cockpit-target-director {
+  pointer-events: none !important;
+}
+html[data-theme="space"] #spaceCockpitHud button,
+html[data-theme="space"] #spaceCockpitHud a {
+  pointer-events: auto !important;
+}
+
+/* Ensure smooth transitions on HUD sector tags and nav mode */
+#cockpitSectionLabel,
+#cockpitSysMode,
+#cockpitFlightCoords,
+#cockpitStatusVal,
+#cockpitNavModeText {
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+#cockpitTargetDirector {
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+/* Constellation spatialization cards & groups styling */
+html[data-theme="space"] .skills-category-group {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  transition: border-color 0.3s ease;
+}
+
+html[data-theme="space"] .skill-entry {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+html[data-theme="space"] .constellation-filter-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* TARGET RETICLE & PLANETARY HUD SECTOR 01 SUPPRESSION: Reticle and Sector 02 Planetary HUD only appear during Sector 02 Planetary Encounters */
+html[data-theme="space"]:not([data-cockpit-mode="projects"]) #galaxyPlanetReticle,
+html[data-theme="space"][data-cockpit-mode="launch"] #galaxyPlanetReticle,
+html[data-theme="space"] .galaxy-planet-reticle:not(.is-sector02-active),
+html[data-theme="space"]:not([data-cockpit-mode="projects"]) #galaxyHudOverlay,
+html[data-theme="space"][data-cockpit-mode="launch"] #galaxyHudOverlay,
+html[data-theme="space"]:not([data-cockpit-mode="projects"]) .galaxy-hud-bottombar,
+html[data-theme="space"][data-cockpit-mode="launch"] .galaxy-hud-bottombar {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Auto-minimize Telemetry HUD on laptop (<=1400px) and mobile (<=768px) for zero-overlap elegance */
+@media (max-width: 1400px) {
+  .journey-telemetry-hud {
+    transform: translateX(calc(100% - 36px));
+    opacity: 0.85;
+  }
+  .journey-telemetry-hud:hover,
+  .journey-telemetry-hud.is-user-expanded {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .journey-telemetry-hud {
+    transform: translateX(calc(100% - 32px)) !important;
+    width: 240px !important;
+    font-size: 9px !important;
+    bottom: 55px !important;
+    top: auto !important;
+  }
+  .journey-telemetry-hud:hover,
+  .journey-telemetry-hud.is-user-expanded {
+    transform: translateX(0) !important;
+  }
+}
