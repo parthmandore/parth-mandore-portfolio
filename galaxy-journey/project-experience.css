@@ -1,0 +1,920 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   PARTH MANDORE — CINEMATIC SPACE PORTFOLIO
+   PHASE 4: DEDICATED PROJECT EXPERIENCE & DIRECTIONAL ARROW NAVIGATION STYLES
+   ════════════════════════════════════════════════════════════════════════════════ */
+
+/* ── 01. PLANETARY HUD ACTION BUTTON & ANIMATED DIRECTIONAL ARROW ── */
+.galaxy-inspect-action {
+  position: relative;
+  overflow: visible !important;
+  background-color: var(--accent-titanium, #E5E5E5) !important;
+  color: #08070B !important;
+  font-family: var(--font-mono, 'Space Mono', monospace) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.12em !important;
+  padding: 0.55rem 1.1rem !important;
+  border-radius: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  cursor: pointer !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease,
+              border-color 0.25s ease !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4),
+              0 0 12px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.2);
+}
+
+.galaxy-inspect-action:hover,
+.galaxy-inspect-action:focus-visible {
+  transform: translateY(-2px) scale(1.02);
+  background-color: #FFFFFF !important;
+  border-color: var(--planet-accent, #F59E0B) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6),
+              0 0 28px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.5) !important;
+  outline: 2px solid var(--planet-accent, #F59E0B);
+  outline-offset: 3px;
+}
+
+.galaxy-inspect-action:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Arrow Wrapper with Directional Depth Trail */
+.action-arrow-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 14px;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.action-arrow-svg {
+  width: 18px;
+  height: 14px;
+  color: currentColor;
+  position: relative;
+  z-index: 2;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.arrow-trail-line {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+/* Luminous Directional Depth Trail */
+.arrow-glow-trail {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 24px;
+  height: 3px;
+  margin-top: -1.5px;
+  background: linear-gradient(90deg, transparent 0%, rgba(var(--planet-accent-rgb, 245, 158, 11), 0.8) 50%, var(--planet-accent, #F59E0B) 100%);
+  border-radius: 2px;
+  opacity: 0;
+  transform: scaleX(0.4) translateX(-8px);
+  transform-origin: right center;
+  transition: opacity 0.3s ease, transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: blur(1px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.galaxy-inspect-action:hover .action-arrow-wrap,
+.galaxy-inspect-action:focus-visible .action-arrow-wrap {
+  transform: translateX(4px);
+}
+
+.galaxy-inspect-action:hover .action-arrow-svg,
+.galaxy-inspect-action:focus-visible .action-arrow-svg {
+  transform: translateX(3px);
+}
+
+.galaxy-inspect-action:hover .arrow-glow-trail,
+.galaxy-inspect-action:focus-visible .arrow-glow-trail {
+  opacity: 1;
+  transform: scaleX(1.3) translateX(-2px);
+}
+
+/* ── 02. DEDICATED PROJECT EXPERIENCE OVERLAY (FULL-SCREEN EXPERIENCE) ── */
+.project-experience-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: radial-gradient(circle at 50% 12%, rgba(var(--project-accent-rgb, 245, 158, 11), 0.12) 0%, rgba(8, 7, 12, 0.97) 50%, #030205 100%);
+  backdrop-filter: blur(36px);
+  -webkit-backdrop-filter: blur(36px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+
+.project-experience-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Top Expedition Navigation Bar */
+.experience-top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 8, 14, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.9rem 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.experience-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.experience-return-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #F0EEFF;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 0.55rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: all 0.25s ease;
+}
+
+.experience-return-btn:hover,
+.experience-return-btn:focus-visible {
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.18);
+  border-color: var(--project-accent, #F59E0B);
+  color: #FFFFFF;
+  transform: translateX(-3px);
+  outline: none;
+  box-shadow: 0 0 20px rgba(var(--project-accent-rgb, 245, 158, 11), 0.3);
+}
+
+.experience-waypoint-pill {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: var(--project-accent, #F59E0B);
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.08);
+  border: 1px solid rgba(var(--project-accent-rgb, 245, 158, 11), 0.25);
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+}
+
+.experience-waypoint-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--project-accent, #F59E0B);
+  box-shadow: 0 0 8px var(--project-accent, #F59E0B);
+}
+
+.experience-nav-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.experience-step-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #9B95C4;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  padding: 0.45rem 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.experience-step-btn:hover,
+.experience-step-btn:focus-visible {
+  border-color: var(--project-accent, #F59E0B);
+  color: #FFFFFF;
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.12);
+  outline: none;
+}
+
+/* ── 03. MAIN EDITORIAL WRAPPER & VISUAL HIERARCHY ── */
+.project-experience-body {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 3rem 5% 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.8rem;
+  position: relative;
+}
+
+/* Section Header Meta */
+.experience-hero-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.experience-meta-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.experience-index-tag {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--project-accent, #F59E0B);
+  letter-spacing: 0.15em;
+}
+
+.experience-sector-tag {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: #9B95C4;
+  text-transform: uppercase;
+}
+
+.experience-year-badge {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  color: var(--project-accent, #F59E0B);
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.1);
+  border: 1px solid rgba(var(--project-accent-rgb, 245, 158, 11), 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: 3px;
+}
+
+.experience-title {
+  font-family: 'Cinzel', 'Syne', serif;
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.experience-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  color: #D4D0E6;
+  line-height: 1.6;
+  max-width: 960px;
+  font-weight: 400;
+}
+
+/* ── 04. HERO IMAGE STAGE WITH 3D TILT & SENSOR TELEMETRY ── */
+.experience-hero-stage {
+  width: 100%;
+  perspective: 1200px;
+  position: relative;
+}
+
+.experience-hero-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(340px, 48vw, 620px);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #06050A;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7),
+              0 0 50px rgba(var(--project-accent-rgb, 245, 158, 11), 0.15);
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.experience-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.experience-hero-frame:hover .experience-hero-img {
+  transform: scale(1.02);
+}
+
+.experience-hero-scanline {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--project-accent-rgb, 245, 158, 11), 0.05) 50%, transparent 100%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.experience-hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.5) 100%),
+              linear-gradient(to top, rgba(8, 7, 12, 0.95) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+/* Telemetry HUD Bar on Hero Footer */
+.experience-telemetry-hud {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.2rem 1.8rem;
+  background: linear-gradient(to top, rgba(6, 5, 10, 0.95), rgba(6, 5, 10, 0.5) 75%, transparent 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.telemetry-node {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.telemetry-node-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #9B95C4;
+  text-transform: uppercase;
+}
+
+.telemetry-node-val {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.telemetry-node-val.accent {
+  color: var(--project-accent, #F59E0B);
+}
+
+/* ── 05. SECTION A: IDENTITY & PROBLEM SOLVED (DUAL DOSSIER PANELS) ── */
+.experience-dossier-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.dossier-panel {
+  background: rgba(16, 14, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 2.2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dossier-panel:hover {
+  transform: translateY(-3px);
+  border-color: rgba(var(--project-accent-rgb, 245, 158, 11), 0.4);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+}
+
+.dossier-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--project-accent, #F59E0B);
+  opacity: 0.8;
+}
+
+.dossier-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.dossier-panel-kicker {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--project-accent, #F59E0B);
+  font-weight: 700;
+}
+
+.dossier-panel-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.dossier-panel-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: #B4AFD0;
+}
+
+/* ── 06. SECTION C: VERIFIED IMPLEMENTED CAPABILITIES (FEATURES GRID) ── */
+.experience-section-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.section-block-heading {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.block-num {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.8rem;
+  color: var(--project-accent, #F59E0B);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.block-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.block-divider {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(var(--project-accent-rgb, 245, 158, 11), 0.4), rgba(255, 255, 255, 0.05));
+}
+
+.features-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.feature-artifact-card {
+  background: rgba(14, 12, 20, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-artifact-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(var(--project-accent-rgb, 245, 158, 11), 0.35);
+  background: rgba(18, 15, 26, 0.8);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+}
+
+.feature-card-index {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  color: var(--project-accent, #F59E0B);
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.feature-card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.feature-card-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #A29BBF;
+}
+
+/* ── 07. SECTION D: TECHNICAL ARCHITECTURE & DECISIONS ── */
+.architecture-composite-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.arch-column-box {
+  background: rgba(14, 12, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.arch-box-title {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.78rem;
+  color: var(--project-accent, #F59E0B);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* Tech Stack Badges Grouped */
+.tech-groups-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.tech-group-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.tech-group-category {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #8A85AC;
+  text-transform: uppercase;
+}
+
+.tech-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tech-verified-chip {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.tech-verified-chip:hover {
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.15);
+  border-color: var(--project-accent, #F59E0B);
+  color: var(--project-accent, #F59E0B);
+}
+
+/* Data Flow Nodes Pipeline */
+.data-flow-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  position: relative;
+}
+
+.data-flow-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.9rem 1.1rem;
+}
+
+.step-number {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--project-accent, #F59E0B);
+  min-width: 26px;
+}
+
+.step-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.86rem;
+  color: #CBC7DE;
+  line-height: 1.5;
+}
+
+/* Engineering Decisions List */
+.decisions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.decision-card {
+  border-left: 2px solid var(--project-accent, #F59E0B);
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.04);
+  padding: 1rem 1.2rem;
+  border-radius: 0 4px 4px 0;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  color: #B4AFD0;
+  line-height: 1.65;
+}
+
+/* ── 08. SECTION E: ENGINEERING CHALLENGES & SOLUTIONS ── */
+.challenges-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.challenge-resolution-card {
+  background: rgba(14, 12, 20, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 2.2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.challenge-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.side-header {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.side-header.danger {
+  color: #EF4444;
+}
+
+.side-header.success {
+  color: #06D6A0;
+}
+
+.side-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: #B4AFD0;
+}
+
+/* ── 09. SECTION F: PROJECT LINKS & ACTIONS ── */
+.experience-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.4rem;
+  padding: 2.5rem;
+  background: rgba(16, 14, 24, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.action-cta-btn {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border: none;
+  text-transform: uppercase;
+}
+
+.action-cta-btn.solid {
+  background-color: var(--project-accent, #F59E0B);
+  color: #08070B;
+  box-shadow: 0 4px 20px rgba(var(--project-accent-rgb, 245, 158, 11), 0.35);
+}
+
+.action-cta-btn.solid:hover,
+.action-cta-btn.solid:focus-visible {
+  transform: translateY(-3px);
+  background-color: #FFFFFF;
+  color: #08070B;
+  box-shadow: 0 10px 30px rgba(var(--project-accent-rgb, 245, 158, 11), 0.5);
+  outline: none;
+}
+
+.action-cta-btn.ghost {
+  background: transparent;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.action-cta-btn.ghost:hover,
+.action-cta-btn.ghost:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--project-accent, #F59E0B);
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.12);
+  color: var(--project-accent, #F59E0B);
+  outline: none;
+}
+
+/* ── 10. SECTION G: BOTTOM EXPEDITION FOOTER NAVIGATION ── */
+.experience-expedition-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.footer-nav-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.footer-expedition-teaser {
+  background: rgba(14, 12, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 1.5rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.footer-expedition-teaser:hover,
+.footer-expedition-teaser:focus-visible {
+  background: rgba(20, 17, 30, 0.85);
+  border-color: rgba(var(--project-accent-rgb, 245, 158, 11), 0.4);
+  transform: translateY(-3px);
+  outline: none;
+}
+
+.teaser-dir-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: #8A85AC;
+  text-transform: uppercase;
+}
+
+.teaser-project-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.footer-return-bar {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.footer-return-action {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.76rem;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  color: #9B95C4;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.8rem 2.2rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-transform: uppercase;
+}
+
+.footer-return-action:hover,
+.footer-return-action:focus-visible {
+  color: #FFFFFF;
+  border-color: var(--project-accent, #F59E0B);
+  background: rgba(var(--project-accent-rgb, 245, 158, 11), 0.15);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* ── 11. RESPONSIVENESS & ADAPTIVE VIEWPORTS ── */
+@media (max-width: 992px) {
+  .experience-dossier-grid,
+  .architecture-composite-grid,
+  .challenge-resolution-card {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .experience-top-nav {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .project-experience-body {
+    padding: 2rem 4% 4rem;
+    gap: 2.5rem;
+  }
+  .experience-hero-frame {
+    height: 240px;
+  }
+  .features-cards-grid,
+  .footer-nav-grid {
+    grid-template-columns: 1fr;
+  }
+  .experience-actions-bar {
+    padding: 1.5rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .action-cta-btn {
+    justify-content: center;
+    width: 100%;
+  }
+  .experience-top-nav {
+    padding: 0.75rem 4%;
+  }
+  .experience-return-btn {
+    font-size: 0.65rem;
+    padding: 0.45rem 0.75rem;
+  }
+  .experience-waypoint-pill {
+    display: none;
+  }
+}
+
+/* ── 12. ACCESSIBILITY: REDUCED MOTION ── */
+@media (prefers-reduced-motion: reduce) {
+  .action-arrow-wrap,
+  .action-arrow-svg,
+  .arrow-glow-trail,
+  .experience-hero-frame,
+  .project-experience-backdrop,
+  .feature-artifact-card {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+}
