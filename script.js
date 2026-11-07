@@ -240,9 +240,12 @@
     // Mass Accretion, Growth & Pulsing (Authentic Space Theme Design)
     function getResponsiveInitialScale() {
       const w = window.innerWidth;
-      if (w >= 1024) return 0.34;
-      if (w >= 768) return 0.30;
-      return 0.26;
+      const h = window.innerHeight;
+      if (w >= 1440 && h >= 900) return 0.38;
+      if (w >= 1025 && h <= 800) return 0.30;
+      if (w >= 1025) return 0.34;
+      if (w >= 768) return 0.24;
+      return 0.18;
     }
     const INITIAL_SCALE = getResponsiveInitialScale();
     const MAX_SCALE = 0.72;     // Disciplined maximum size after multiple consumptions
@@ -341,9 +344,23 @@
       }
 
       const heroHeight = (heroEl && heroEl.offsetHeight > 0) ? heroEl.offsetHeight : (window.innerHeight || 800);
+      const h = window.innerHeight || heroHeight;
       const defaultX = Math.round(heroWidth * 0.50);
-      const defaultY = Math.round(heroHeight * 0.44);
-      return { x: defaultX, y: defaultY };
+      
+      // On desktop: balanced cinematic focal placement with generous negative space
+      if (w >= 1025) {
+        const rightX = Math.round(heroWidth * 0.65);
+        const rightY = h <= 768 ? Math.round(heroHeight * 0.44) : Math.round(heroHeight * 0.46);
+        return { x: rightX, y: rightY };
+      }
+      
+      // On tablet: center in generous lower visual zone below monograph & actions
+      if (w >= 600) {
+        return { x: defaultX, y: Math.round(heroHeight * 0.63) };
+      }
+      
+      // On mobile: center in spacious open sector between actions and bottom cockpit bar
+      return { x: defaultX, y: Math.min(heroHeight - 130, Math.round(heroHeight * 0.72)) };
     }
 
     // Safe boundaries: allows the black hole to move across the full intended hero area,
@@ -1539,22 +1556,35 @@
     }
 
     function showIntroHud() {
+      // Phase 2.6 / Polish Requirement 2: Guidance banner removed permanently from hero
+      const hud = document.getElementById('blackHoleIntroHud');
+      if (hud) {
+        hud.style.display = 'none';
+        hud.style.visibility = 'hidden';
+      }
+    }
+
+    function toggleIntroHud() {
       const hud = document.getElementById('blackHoleIntroHud');
       if (!hud) return;
-      if (!checkHeroConfinement()) return;
+      if (hud.classList.contains('is-user-open')) {
+        dismissIntroHud();
+      } else {
+        hud.classList.remove('is-dismissed', 'is-hero-hidden');
+        hud.classList.add('is-user-open');
+        updateIntroHudPosition();
+      }
+    }
+
+    function dismissIntroHud() {
+      const hud = document.getElementById('blackHoleIntroHud');
+      if (hud) {
+        hud.classList.remove('is-user-open');
+        hud.classList.add('is-dismissed');
+      }
       try {
-        if (sessionStorage.getItem('bh_intro_dismissed') === '1') return;
+        sessionStorage.setItem('bh_intro_dismissed', '1');
       } catch (e) {}
-
-      updateIntroHudPosition();
-      hud.classList.remove('is-dismissed');
-      hud.classList.add('is-visible');
-
-      setTimeout(() => {
-        if (hud && !hud.classList.contains('is-dismissed')) {
-          hud.classList.add('is-dismissed');
-        }
-      }, 12000);
     }
 
     function dismissIntroHud() {
@@ -1569,36 +1599,13 @@
     }
 
     function updateIntroHudPosition() {
+      // Phase 2.6 / Polish Requirement 2: Guidance banner removed permanently from hero
       const hud = document.getElementById('blackHoleIntroHud');
-      if (!hud) return;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-      const headlineEl = document.getElementById('heroHeadline');
-      const portraitEl = document.getElementById('arPortraitTerminal');
-
-      if (w >= 1024 && portraitEl) {
-        const portRect = portraitEl.getBoundingClientRect();
-        const hudWidth = 240;
-        const maxLeft = portRect.left - hudWidth - 24;
-        const centeredLeft = currentScreenX - hudWidth * 0.5;
-        const hudLeft = Math.min(maxLeft, Math.max(40, centeredLeft));
-        const topPos = Math.max(currentScreenY + 105, 215);
-        hud.style.position = 'fixed';
-        hud.style.left = `${Math.round(hudLeft)}px`;
-        hud.style.top = `${Math.round(topPos)}px`;
-        hud.style.bottom = 'auto';
-        hud.style.transform = 'translateY(0) scale(1)';
-      } else if (portraitEl) {
-        const hudWidth = Math.min(260, w - 32);
-        const topPos = Math.round(currentScreenY + 52);
-        hud.style.position = 'fixed';
-        hud.style.left = '50%';
-        hud.style.transform = 'translateX(-50%)';
-        hud.style.top = `${topPos}px`;
-        hud.style.bottom = 'auto';
+      if (hud) {
+        hud.style.display = 'none';
+        hud.style.visibility = 'hidden';
       }
     }
-
     function triggerPreDestructionGatheringPulse(onComplete) {
       if (BlackHoleLifecycle.isDestroying() || BlackHoleLifecycle.isDestroyed() || BlackHoleLifecycle.isRestoring()) return;
       if (!BlackHoleLifecycle.canTransitionTo('DESTROYING')) return;
@@ -4310,6 +4317,10 @@
     }
 
     function initTelemetryBadge() {
+      if (document.documentElement.getAttribute('data-theme') === 'space') {
+        // Space cockpit console handles telemetry at bottom bar
+        return;
+      }
       let badge = document.getElementById('gravityTelemetryBadge');
       if (!badge) {
         badge = document.createElement('div');
@@ -7887,8 +7898,18 @@
     let starAnimId = null;
     let targetParallaxX = 0, targetParallaxY = 0;
     let currentParallaxX = 0, currentParallaxY = 0;
+    let journeyProgress = 0.0;
+    let journeyVelocity = 0.0;
+    let smoothedVelocity = 0.0;
+    let isJourneyMoving = false;
     let nextCometSpawnTime = Date.now() + 2500 + Math.random() * 3500;
     const isReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function setJourneyState(prog, vel, moving) {
+      journeyProgress = typeof prog === 'number' ? prog : 0.0;
+      journeyVelocity = typeof vel === 'number' ? vel : 0.0;
+      isJourneyMoving = Boolean(moving);
+    }
 
     function init() {
       canvas = document.getElementById('spaceStarfield');
@@ -8075,6 +8096,10 @@
 
         ctx.clearRect(0, 0, width, height);
 
+        // Smooth journey velocity for organic star flight
+        smoothedVelocity += (journeyVelocity - smoothedVelocity) * 0.16;
+        if (Math.abs(smoothedVelocity) < 0.00001) smoothedVelocity = 0.0;
+
         // ── 1. Render Multi-Layer Starfield ──
         for (let i = 0; i < stars.length; i++) {
           const s = stars[i];
@@ -8144,16 +8169,17 @@
             }
           }
 
-          // Parallax depth multiplier
+          // Parallax depth multiplier and camera journey flight participation
           const depthMultiplier = s.layer === 0 ? 8 : (s.layer === 1 ? 18 : 30);
+          const journeySpeed = s.layer === 0 ? 70 : (s.layer === 1 ? 190 : 380);
           let px = s.x - currentParallaxX * depthMultiplier;
-          let py = s.y - currentParallaxY * depthMultiplier;
+          let py = s.y - currentParallaxY * depthMultiplier - (smoothedVelocity * journeySpeed);
 
           // Wrap around edges before gravitational deflection
-          if (px < -10) px += width + 20;
-          if (px > width + 10) px -= width + 20;
-          if (py < -10) py += height + 20;
-          if (py > height + 10) py -= height + 20;
+          if (px < -15) px += width + 30;
+          if (px > width + 15) px -= width + 30;
+          if (py < -15) py += height + 30;
+          if (py > height + 15) py -= height + 30;
 
           // Relativistic Gravitational Lensing (curved light deflection around the event horizon)
           if (bh && bh.isHeroActive) {
@@ -8193,18 +8219,35 @@
             if (s.x > width) s.x -= width;
             if (s.y < 0) s.y += height;
             if (s.y > height) s.y -= height;
+          }
 
+          // Directional velocity motion streak (Phase 2.6 Requirement 4)
+          const streakLen = (!isReducedMotion && Math.abs(smoothedVelocity) > 0.00015)
+            ? Math.min(12, Math.abs(smoothedVelocity) * (s.layer + 1) * 320)
+            : 0;
+
+          if (streakLen > 1.2) {
+            const dirY = smoothedVelocity >= 0 ? 1 : -1;
             ctx.beginPath();
-            ctx.arc(px, py, s.radius, 0, Math.PI * 2);
-            ctx.fillStyle = s.color + alpha.toFixed(3) + ')';
-            ctx.fill();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px, py - dirY * streakLen);
+            ctx.lineWidth = Math.max(1, s.radius * (s.layer === 2 ? 1.0 : 0.85));
+            ctx.strokeStyle = (s.layer === 2) ? s.color + alpha.toFixed(3) + ')' : s.color;
+            ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+            ctx.stroke();
+            ctx.globalAlpha = 1;
           } else {
             ctx.beginPath();
             ctx.arc(px, py, s.radius, 0, Math.PI * 2);
-            ctx.fillStyle = s.color;
-            ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
-            ctx.fill();
-            ctx.globalAlpha = 1;
+            if (s.layer === 2) {
+              ctx.fillStyle = s.color + alpha.toFixed(3) + ')';
+              ctx.fill();
+            } else {
+              ctx.fillStyle = s.color;
+              ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+              ctx.fill();
+              ctx.globalAlpha = 1;
+            }
           }
         }
 
@@ -8295,6 +8338,7 @@
       resume: function () {
         isVisible = true;
       },
+      setJourneyState: setJourneyState,
       spawnComet: spawnComet,
       getComets: () => comets
     };
@@ -8354,27 +8398,47 @@
         }
       }, { passive: true });
 
-      // Category filter nav tabs
+      // Category filter nav tabs (Phase 2.6 Requirement 6: Display ONLY Selected Category)
       const filterNav = document.querySelector('.constellation-filter-nav');
       if (filterNav) {
         const filterBtns = filterNav.querySelectorAll('.constellation-filter-btn');
         const categoryGroups = document.querySelectorAll('.skills-category-group');
 
+        // Initial default: Activate category 1 (Programming Languages), hide all others
+        let activeCategory = 'languages';
+        filterBtns.forEach((btn, idx) => {
+          const cat = btn.getAttribute('data-filter');
+          const isDefault = (cat === 'languages' || idx === 0);
+          btn.classList.toggle('is-active', isDefault);
+          btn.setAttribute('aria-selected', isDefault ? 'true' : 'false');
+          if (isDefault) activeCategory = cat;
+        });
+
+        categoryGroups.forEach(group => {
+          const grpCat = group.getAttribute('data-category');
+          const isDefault = (grpCat === activeCategory);
+          if (isDefault) {
+            group.style.display = '';
+            group.removeAttribute('hidden');
+            group.style.opacity = '1';
+            group.classList.add('is-active');
+          } else {
+            group.style.display = 'none';
+            group.setAttribute('hidden', '');
+            group.style.opacity = '0';
+            group.classList.remove('is-active');
+          }
+        });
+
         filterBtns.forEach(btn => {
           btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            const filter = btn.getAttribute('data-filter') || 'all';
-            const wasActive = btn.classList.contains('is-active');
+            const targetFilter = btn.getAttribute('data-filter');
+            if (!targetFilter) return;
 
-            if (wasActive) {
-              // Clicking the already active category deselects it and shows all
-              btn.classList.remove('is-active');
-              btn.setAttribute('aria-selected', 'false');
-              categoryGroups.forEach(group => {
-                group.style.display = '';
-                group.removeAttribute('hidden');
-              });
+            // Clicking the active category retains it; NEVER resets to show all
+            if (btn.classList.contains('is-active') && targetFilter === activeCategory) {
               return;
             }
 
@@ -8384,15 +8448,22 @@
             });
             btn.classList.add('is-active');
             btn.setAttribute('aria-selected', 'true');
+            activeCategory = targetFilter;
 
             categoryGroups.forEach(group => {
               const grpCat = group.getAttribute('data-category');
-              if (grpCat === filter) {
+              if (grpCat === targetFilter) {
                 group.style.display = '';
                 group.removeAttribute('hidden');
+                group.classList.add('skills-group-entering', 'is-active');
+                void group.offsetWidth;
+                group.style.opacity = '1';
+                setTimeout(() => group.classList.remove('skills-group-entering'), 350);
               } else {
+                group.style.opacity = '0';
                 group.style.display = 'none';
                 group.setAttribute('hidden', '');
+                group.classList.remove('is-active', 'skills-group-entering');
               }
             });
           });
@@ -9038,6 +9109,10 @@
         viewNetflix.setAttribute('aria-hidden', 'true');
       }
 
+      // Suspend Space journey controller to halt scroll RAF & listeners
+      if (window.MasterJourneyController && typeof window.MasterJourneyController.suspend === 'function') {
+        window.MasterJourneyController.suspend();
+      }
       // Pause Space animations to reduce CPU/GPU
       if (window.SpaceBlackHoleHero3D && window.SpaceBlackHoleHero3D.pause) {
         window.SpaceBlackHoleHero3D.pause();
@@ -9082,6 +9157,10 @@
       }
 
       // Resume Space animations
+      // Resume Space journey controller
+      if (window.MasterJourneyController && typeof window.MasterJourneyController.resume === 'function') {
+        window.MasterJourneyController.resume();
+      }
       if (window.SpaceBlackHoleHero3D && window.SpaceBlackHoleHero3D.resume) {
         window.SpaceBlackHoleHero3D.resume();
       }
@@ -9118,6 +9197,10 @@
         viewSpace.setAttribute('aria-hidden', 'true');
       }
 
+      // Suspend Space journey controller
+      if (window.MasterJourneyController && typeof window.MasterJourneyController.suspend === 'function') {
+        window.MasterJourneyController.suspend();
+      }
       // Pause Space animations
       if (window.SpaceBlackHoleHero3D && window.SpaceBlackHoleHero3D.pause) {
         window.SpaceBlackHoleHero3D.pause();
@@ -9270,3 +9353,94 @@
   };
 })();
 
+
+
+// ── 3D CELESTIAL TACTICAL SPHERE & ASTROLABE (Space Hero Right Zone) ──
+(function initCelestialHolosphere() {
+  function setup() {
+    const canvas = document.getElementById('celestialHolosphereCanvas');
+    if (!canvas || typeof THREE === 'undefined') return;
+
+    const width = 300;
+    const height = 300;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+    camera.position.z = 4.2;
+
+    const renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      alpha: true,
+      antialias: true
+    });
+    renderer.setSize(width, height, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    const group = new THREE.Group();
+    scene.add(group);
+
+    // 1. Outer Wireframe Meridian Sphere (Amber)
+    const sphereGeo = new THREE.SphereGeometry(1.25, 20, 20);
+    const sphereMat = new THREE.MeshBasicMaterial({
+      color: 0xf59e0b,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.35
+    });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    group.add(sphereMesh);
+
+    // 2. Inner Glowing Core Points (Gold)
+    const coreGeo = new THREE.SphereGeometry(0.75, 24, 24);
+    const coreMat = new THREE.PointsMaterial({
+      color: 0xfbbf24,
+      size: 0.035,
+      transparent: true,
+      opacity: 0.85
+    });
+    const corePoints = new THREE.Points(coreGeo, coreMat);
+    group.add(corePoints);
+
+    // 3. Astrolabe Gimbal Rings (Inclined Orbits)
+    const ringMat1 = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.65 });
+    const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.5 });
+    
+    const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.018, 12, 64), ringMat1);
+    ring1.rotation.x = Math.PI / 3;
+    group.add(ring1);
+
+    const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.65, 0.015, 12, 64), ringMat2);
+    ring2.rotation.y = Math.PI / 4;
+    group.add(ring2);
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('pointermove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.left + rect.width * 0.5;
+      const cy = rect.top + rect.height * 0.5;
+      mouseX = (e.clientX - cx) * 0.0015;
+      mouseY = (e.clientY - cy) * 0.0015;
+    }, { passive: true });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (document.documentElement.getAttribute('data-theme') !== 'space') return;
+
+      sphereMesh.rotation.y += 0.006;
+      corePoints.rotation.y -= 0.004;
+      ring1.rotation.z += 0.008;
+      ring2.rotation.x += 0.007;
+
+      group.rotation.x += (mouseY - group.rotation.x) * 0.05;
+      group.rotation.y += (mouseX - group.rotation.y) * 0.05;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setup);
+  } else {
+    setTimeout(setup, 100);
+  }
+})();
