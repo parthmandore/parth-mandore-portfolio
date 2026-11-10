@@ -50,26 +50,36 @@ html:not([data-theme="space"]) .scroll-spine-driver {
   display: none !important;
 }
 
-/* 3. Cockpit Telemetry Readout HUD (Phase 1 Progress & Camera Target) */
+/* ══════════════════════════════════════════════════════════════════
+   3. SLEEK SPACECRAFT AVIONICS NAVIGATION HUD (Requirement 3)
+   ══════════════════════════════════════════════════════════════════ */
 .journey-telemetry-hud {
   position: fixed;
-  top: 76px;
-  right: 24px;
+  top: 96px;
+  right: 20px;
   z-index: 9990;
-  width: 250px;
-  background: rgba(8, 8, 12, 0.92);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), 0 0 16px rgba(245, 158, 11, 0.1);
-  border-radius: 2px;
+  width: 224px;
+  background: linear-gradient(
+    145deg,
+    rgba(6, 8, 14, 0.90) 0%,
+    rgba(3, 4, 8, 0.94) 100%
+  ) !important;
+  border: 1px solid rgba(245, 158, 11, 0.32) !important;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.88),
+    0 0 16px rgba(245, 158, 11, 0.08),
+    inset 0 0 12px rgba(245, 158, 11, 0.03) !important;
+  border-radius: 6px !important;
   color: #E2E8F0;
-  font-family: 'Space Mono', 'Courier New', monospace;
-  font-size: 11px;
-  line-height: 1.5;
+  font-family: 'Space Mono', 'SF Mono', monospace;
+  font-size: 9.5px;
+  line-height: 1.4;
   pointer-events: auto;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
   overflow: hidden;
+  user-select: none;
 }
 
 html:not([data-theme="space"]) .journey-telemetry-hud {
@@ -77,59 +87,103 @@ html:not([data-theme="space"]) .journey-telemetry-hud {
 }
 
 .journey-telemetry-hud.is-minimized {
-  transform: translateX(calc(100% - 36px));
-  opacity: 0.85;
+  transform: translateX(calc(100% - 32px));
+  opacity: 0.75;
 }
 
 .journey-telemetry-hud.is-minimized:hover {
   opacity: 1;
 }
 
+.journey-telemetry-hud.is-minimized .hud-telemetry-body,
+.journey-telemetry-hud.is-minimized .hud-telemetry-footer,
+.journey-telemetry-hud.is-minimized .hud-brand-title,
+.journey-telemetry-hud.is-minimized .hud-telemetry-actions {
+  display: none !important;
+}
+
+.journey-telemetry-hud.is-minimized .hud-telemetry-header {
+  border-bottom: none;
+  padding: 8px 6px;
+  justify-content: center;
+}
+
 .hud-telemetry-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
-  background: rgba(245, 158, 11, 0.12);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.3);
+  padding: 7px 10px;
+  background: rgba(245, 158, 11, 0.08);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.22);
   cursor: pointer;
   user-select: none;
 }
 
-.hud-telemetry-title {
+.hud-telemetry-brand {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.hud-brand-title {
   color: #F59E0B;
   font-weight: 700;
   letter-spacing: 0.08em;
-  font-size: 10px;
+  font-size: 8.5px;
   text-transform: uppercase;
 }
 
 .hud-telemetry-pip {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #F59E0B;
-  box-shadow: 0 0 8px #F59E0B;
+  box-shadow: 0 0 6px #F59E0B;
   animation: hudPipPulse 2s infinite ease-in-out;
 }
 
 @keyframes hudPipPulse {
-  0%, 100% { opacity: 0.4; transform: scale(0.9); }
-  50% { opacity: 1; transform: scale(1.15); }
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #F59E0B; }
+}
+
+.hud-telemetry-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-lock-badge {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.hud-lock-badge.is-clear {
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.hud-lock-badge.is-locked {
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
 .hud-toggle-btn {
   background: transparent;
   border: none;
   color: #94A3B8;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 2px;
   font-family: inherit;
   line-height: 1;
+  transition: color 0.15s ease;
 }
 
 .hud-toggle-btn:hover {
@@ -137,49 +191,62 @@ html:not([data-theme="space"]) .journey-telemetry-hud {
 }
 
 .hud-telemetry-body {
-  padding: 10px 12px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
-.hud-telemetry-row {
+.hud-sector-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-block-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.hud-sector-name {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #06B6D4;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-progress-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
-  padding-bottom: 4px;
 }
 
-.hud-telemetry-label {
-  color: #94A3B8;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-}
-
-.hud-telemetry-value {
-  color: #FFFFFF;
-  font-weight: 600;
-}
-
-.hud-telemetry-value.is-amber {
+.hud-progress-value {
+  font-size: 9.5px;
+  font-weight: 700;
   color: #F59E0B;
-}
-
-.hud-telemetry-value.is-green {
-  color: #10B981;
-}
-
-.hud-telemetry-value.is-cyan {
-  color: #06B6D4;
+  letter-spacing: 0.04em;
 }
 
 .hud-progress-bar-wrap {
   width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 1px;
-  margin-top: 4px;
   overflow: hidden;
 }
 
@@ -187,8 +254,44 @@ html:not([data-theme="space"]) .journey-telemetry-hud {
   height: 100%;
   width: 0%;
   background: linear-gradient(90deg, #F59E0B, #FBBF24);
-  box-shadow: 0 0 6px rgba(245, 158, 11, 0.6);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
   transition: width 0.05s linear;
+}
+
+.hud-telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-grid-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hud-grid-label {
+  font-size: 7.5px;
+  color: #64748B;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hud-grid-val {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #E2E8F0;
+  letter-spacing: 0.02em;
+}
+
+.hud-grid-val.is-amber {
+  color: #F59E0B;
+}
+
+.hud-grid-val.is-green {
+  color: #10B981;
 }
 
 .hud-telemetry-footer {
@@ -196,10 +299,31 @@ html:not([data-theme="space"]) .journey-telemetry-hud {
   justify-content: space-between;
   align-items: center;
   padding: 4px 10px;
-  background: rgba(0, 0, 0, 0.4);
-  font-size: 9px;
+  background: rgba(0, 0, 0, 0.45);
+  font-size: 7.5px;
   color: #64748B;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hud-status-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.06em;
+}
+
+.hud-status-dot.pulse-green {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 4px #10B981;
+}
+
+.hud-key-hint {
+  font-family: inherit;
+  color: rgba(245, 158, 11, 0.7);
+  font-weight: 700;
 }
 
 /* 4. Responsive Media Rules */
@@ -249,11 +373,14 @@ html[data-theme="space"] #hero .space-hero-dock {
   width: 100vw !important;
   height: 100vh !important;
   overflow: hidden !important;
-  z-index: 10 !important;
+  z-index: 12 !important;
   pointer-events: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
-html[data-theme="space"] #works.works-showcase-section {
+html[data-theme="space"] #works.works-showcase-section,
+html[data-theme="space"] #works {
   position: fixed !important;
   top: 0 !important;
   left: 0 !important;
@@ -262,6 +389,12 @@ html[data-theme="space"] #works.works-showcase-section {
   overflow: hidden !important;
   pointer-events: none !important;
   z-index: 10 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+#galaxyHudOverlay.galaxy-hud-overlay {
+  z-index: 25 !important;
 }
 
 html[data-theme="space"] #works a,
@@ -319,7 +452,7 @@ html[data-theme="space"] #disciplines {
   border-top: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  padding: 88px 5% 80px !important;
+  padding: 68px 5% 90px !important;
   box-sizing: border-box !important;
   perspective: 1200px;
   scrollbar-width: thin;
@@ -336,6 +469,114 @@ html[data-theme="space"] #disciplines::-webkit-scrollbar-track {
 html[data-theme="space"] #disciplines::-webkit-scrollbar-thumb {
   background: rgba(245, 158, 11, 0.4);
   border-radius: 3px;
+}
+
+/* Compact Sector 04 Astrometric Header & Constellation Filters */
+html[data-theme="space"] #disciplines .disciplines-header {
+  margin-bottom: 1.2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.8rem !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-sub-rubric {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.22em !important;
+  color: var(--accent-amber, #f59e0b) !important;
+  text-transform: uppercase !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-headline {
+  font-size: clamp(1.8rem, 2.4vw, 2.5rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.01em !important;
+  color: #FAF9F6 !important;
+  margin: 0 !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-lead {
+  font-size: 0.88rem !important;
+  line-height: 1.45 !important;
+  color: rgba(226, 222, 216, 0.75) !important;
+  max-width: 720px !important;
+  margin: 0 !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-nav {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  margin-top: 0.4rem !important;
+  margin-bottom: 1.2rem !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-btn {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.70rem !important;
+  letter-spacing: 0.12em !important;
+  padding: 0.35rem 0.8rem !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  background: rgba(3, 4, 8, 0.65) !important;
+  color: rgba(226, 222, 216, 0.85) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  transition: all 0.2s ease !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-btn:hover,
+html[data-theme="space"] #disciplines .constellation-filter-btn.is-active {
+  border-color: var(--cat-color, #f59e0b) !important;
+  background: rgba(var(--cat-rgb, 245, 158, 11), 0.15) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 12px rgba(var(--cat-rgb, 245, 158, 11), 0.3) !important;
+}
+
+/* Skills Catalog & Cards Layout: Ensure all 39 Technologies are visibly rendered and interactive */
+html[data-theme="space"] #disciplines .skills-catalog {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2.5rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+  margin-top: 1rem !important;
+  padding-bottom: 120px !important;
+}
+
+html[data-theme="space"] #disciplines .skills-category-group {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  margin-bottom: 1rem !important;
+}
+
+html[data-theme="space"] #disciplines .skills-matrix {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 1.25rem !important;
+  margin-top: 1rem !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry {
+  display: flex !important;
+  flex-direction: column !important;
+  background: rgba(8, 10, 16, 0.75) !important;
+  border: 1px solid rgba(245, 158, 11, 0.20) !important;
+  border-radius: 8px !important;
+  padding: 1.2rem !important;
+  backdrop-filter: blur(8px) !important;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15) !important;
 }
 
 /* Interactive elements inside fixed disciplines viewport */
@@ -516,43 +757,817 @@ html[data-theme="space"] .constellation-filter-nav {
   margin-bottom: 2rem;
 }
 
-/* TARGET RETICLE & PLANETARY HUD SECTOR 01 SUPPRESSION: Reticle and Sector 02 Planetary HUD only appear during Sector 02 Planetary Encounters */
-html[data-theme="space"]:not([data-cockpit-mode="projects"]) #galaxyPlanetReticle,
-html[data-theme="space"][data-cockpit-mode="launch"] #galaxyPlanetReticle,
-html[data-theme="space"] .galaxy-planet-reticle:not(.is-sector02-active),
-html[data-theme="space"]:not([data-cockpit-mode="projects"]) #galaxyHudOverlay,
-html[data-theme="space"][data-cockpit-mode="launch"] #galaxyHudOverlay,
-html[data-theme="space"]:not([data-cockpit-mode="projects"]) .galaxy-hud-bottombar,
-html[data-theme="space"][data-cockpit-mode="launch"] .galaxy-hud-bottombar {
+/* TARGET RETICLE & PLANETARY HUD: Visibility is managed smoothly by GalaxyJourney and MasterJourneyController */
+html[data-theme="space"][data-cockpit-mode="launch"] #galaxyPlanetReticle {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
   pointer-events: none !important;
 }
 
-/* Auto-minimize Telemetry HUD on laptop (<=1400px) and mobile (<=768px) for zero-overlap elegance */
-@media (max-width: 1400px) {
+/* Telemetry HUD Responsive Stacking */
+@media (min-width: 1601px) {
   .journey-telemetry-hud {
-    transform: translateX(calc(100% - 36px));
-    opacity: 0.85;
-  }
-  .journey-telemetry-hud:hover,
-  .journey-telemetry-hud.is-user-expanded {
-    transform: translateX(0);
-    opacity: 1;
+    right: 24px !important;
+    width: 240px !important;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1600px) and (min-width: 1301px) {
+  .journey-telemetry-hud {
+    right: 16px !important;
+    width: 230px !important;
+  }
+}
+
+@media (max-width: 1300px) and (min-width: 1025px) {
+  .journey-telemetry-hud {
+    right: 10px !important;
+    width: 200px !important;
+    font-size: 8.5px !important;
+  }
+}
+
+/* Tablet (769px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
   .journey-telemetry-hud {
     transform: translateX(calc(100% - 32px)) !important;
-    width: 240px !important;
-    font-size: 9px !important;
-    bottom: 55px !important;
-    top: auto !important;
+    width: 210px !important;
+    font-size: 8.5px !important;
+    top: 96px !important;
   }
   .journey-telemetry-hud:hover,
   .journey-telemetry-hud.is-user-expanded {
     transform: translateX(0) !important;
+  }
+}
+
+/* Mobile Devices (<= 768px): Suppress telemetry HUD on mobile */
+@media (max-width: 768px) {
+  .journey-telemetry-hud {
+    display: none !important;
+  }
+}
+
+/* ===================================================================
+   ZERO-OVERLAP MASTER HERO ARCHITECTURE (All 6 Standard Viewports)
+   =================================================================== */
+
+/* A. Compact Fixed Space Navbar */
+html[data-theme="space"] #atelier-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important;
+  padding: clamp(0.35rem, 0.8vh, 0.6rem) clamp(0.75rem, 2vw, 2.5rem) !important;
+  pointer-events: none !important;
+}
+
+html[data-theme="space"] .atelier-nav {
+  max-width: min(1680px, 94vw) !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.42rem 1.4rem !important;
+  background: var(--nav-bg) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.35) !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(245, 158, 11, 0.08) !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 1440px) {
+  html[data-theme="space"] .nav-tools .studio-pill,
+  html[data-theme="space"] .nav-tools .location-pill:not(.cockpit-mode-pill) {
+    display: none !important;
+  }
+}
+
+/* B. Hero Pavilion Flexbox & Safe Padding */
+html[data-theme="space"] .pavilion-hero {
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding-top: clamp(82px, 11vh, 115px) !important;
+  padding-bottom: clamp(65px, 8vh, 85px) !important;
+  padding-left: clamp(1.25rem, 3.5vw, 3.5rem) !important;
+  padding-right: clamp(1.25rem, 3.5vw, 3.5rem) !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Hide duplicate legacy telemetry badge in Space theme so cockpit bottom bar has sole authority */
+#gravityTelemetryBadge,
+.gravitational-telemetry-badge {
+  display: none !important;
+}
+
+/* In Space Theme, the footer belongs exclusively to Sector 05 (Beacon Nexus Contact) */
+html[data-theme="space"]:not([data-cockpit-mode="contact"]) #atelier-footer {
+  display: none !important;
+}
+
+
+/* C. Hero Unified Grid & Zone Separation */
+html[data-theme="space"] .space-hero-unified-layout {
+  max-width: min(1440px, 86vw) !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1.15fr 0.85fr !important;
+  align-items: center !important;
+  gap: clamp(1.5rem, 3vw, 3.5rem) !important;
+  position: relative !important;
+  z-index: 10 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Dedicated Safe Clearance for Right Telemetry HUD on Laptop/Desktop (<= 1650px) */
+@media (min-width: 1025px) and (max-width: 1650px) {
+  html[data-theme="space"] .space-hero-unified-layout {
+    max-width: calc(100vw - 340px) !important;
+    margin-left: clamp(1rem, 2vw, 2.5rem) !important;
+    margin-right: auto !important;
+  }
+}
+
+/* D. Monograph Heading & Left Visual Zone */
+html[data-theme="space"] .space-hero-monograph {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: clamp(0.75rem, 1.8vh, 1.35rem) !important;
+  z-index: 12 !important;
+}
+
+html[data-theme="space"] .space-hero-headline {
+  font-size: clamp(2.3rem, 4.2vw, 5.0rem) !important;
+  line-height: 0.95 !important;
+  margin: 0 !important;
+  letter-spacing: -0.02em !important;
+}
+
+html[data-theme="space"] .space-monograph-lead {
+  max-width: min(540px, 44vw) !important;
+  font-size: clamp(0.88rem, 1.1vw, 1.05rem) !important;
+  line-height: 1.55 !important;
+  color: rgba(226, 232, 240, 0.9) !important;
+}
+
+html[data-theme="space"] .hero-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  margin-top: 0.2rem !important;
+}
+
+html[data-theme="space"] .space-btn-expedition,
+html[data-theme="space"] .space-btn-cv {
+  padding: 0.65rem 1.35rem !important;
+  font-size: 0.74rem !important;
+}
+
+/* E. Right Zone: 3D Celestial Tactical Sphere & Astrolabe */
+html[data-theme="space"] .space-hero-plinth {
+  position: relative !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+html[data-theme="space"] .space-orbital-constellation {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 520px !important;
+  height: 480px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* Astrolabe figure & labels completely removed for Space Theme: Replaced by interactive 3D Black Hole */
+html[data-theme="space"] #spaceCelestialCore,
+html[data-theme="space"] .space-celestial-core,
+html[data-theme="space"] #celestialHolosphereCanvas,
+html[data-theme="space"] .celestial-core-hud,
+html[data-theme="space"] .celestial-data-tag {
+  display: none !important;
+}
+
+html[data-theme="space"] .celestial-data-tag.tag-top {
+  position: absolute !important;
+  top: -12px !important;
+}
+
+html[data-theme="space"] .celestial-data-tag.tag-bottom {
+  position: absolute !important;
+  bottom: -16px !important;
+}
+
+/* Calibrated Keplerian Orbital Badges: Zero Collision 4-Corner Non-Intersecting Geometry */
+html[data-theme="space"] .space-orbital-constellation {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 480px !important;
+  height: 420px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* 1. Top-Left: Spring Boot 3 */
+html[data-theme="space"] .badge-orbit-1 {
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+/* 2. Top-Right: pgvector */
+html[data-theme="space"] .badge-orbit-3 {
+  top: 10px !important;
+  right: 10px !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+/* 3. Bottom-Right: FastAPI + ONNX */
+html[data-theme="space"] .badge-orbit-4 {
+  bottom: 12px !important;
+  right: 10px !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* 4. Bottom-Left: Docker */
+html[data-theme="space"] .badge-orbit-6 {
+  bottom: 12px !important;
+  left: 10px !important;
+  right: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* Secondary Badges: Preserved in stack, hidden in hero to ensure ZERO overlapping */
+html[data-theme="space"] .badge-orbit-2,
+html[data-theme="space"] .badge-orbit-5 {
+  display: none !important;
+}
+
+/* F. Gravity Field Online Guidance Panel */
+html[data-theme="space"] .blackhole-intro-hud {
+  position: fixed !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 68px !important;
+  top: auto !important;
+  right: auto !important;
+}
+
+/* Compact Heights (<= 800px): 1366x768 & 1280x720 Laptop Composition */
+@media (max-height: 800px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 96px !important;
+    padding-bottom: 54px !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    font-size: clamp(2.0rem, 3.4vw, 3.0rem) !important;
+    line-height: 0.96 !important;
+  }
+  html[data-theme="space"] .space-monograph-lead {
+    font-size: 0.84rem !important;
+    line-height: 1.44 !important;
+    max-width: 440px !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    gap: 0.70rem !important;
+  }
+  html[data-theme="space"] .space-btn-expedition,
+  html[data-theme="space"] .space-btn-cv {
+    padding: 0.52rem 1.1rem !important;
+    font-size: 0.70rem !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    margin-top: 0.5rem !important;
+    padding-top: 0.5rem !important;
+  }
+  html[data-theme="space"] .space-orbital-constellation {
+    max-width: 400px !important;
+    height: 320px !important;
+  }
+  
+  
+  /* Two diagonally opposing hero badges: Zero collision on laptop */
+  html[data-theme="space"] .badge-orbit-1 { top: 6px !important; left: 10px !important; }
+  html[data-theme="space"] .badge-orbit-4 { bottom: 8px !important; right: 10px !important; }
+  html[data-theme="space"] .badge-orbit-3,
+  html[data-theme="space"] .badge-orbit-6 {
+    display: none !important;
+  }
+  
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+}
+
+/* G. Tablet Viewport (768px - 1024px) */
+@media (max-width: 1024px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 88px !important;
+    padding-bottom: 60px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  html[data-theme="space"] .space-hero-unified-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    padding-top: 0 !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    align-items: center !important;
+    text-align: center !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    gap: 0.75rem !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    align-items: center !important;
+    font-size: clamp(2.2rem, 5.2vw, 3.0rem) !important;
+  }
+  html[data-theme="space"] .space-hero-role-title {
+    margin: 0 auto !important;
+  }
+  html[data-theme="space"] .hero-actions {
+    justify-content: center !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    display: none !important;
+  }
+  html[data-theme="space"] .space-hero-plinth {
+    display: none !important;
+  }
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+}
+
+/* H. Mobile Viewport (<= 768px, including 390x844) */
+@media (max-width: 768px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 96px !important;
+    padding-bottom: 56px !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  html[data-theme="space"] .space-hero-unified-layout {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem !important;
+    padding-top: 0 !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    gap: 0.55rem !important;
+    max-width: 100% !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    font-size: clamp(1.85rem, 7.5vw, 2.3rem) !important;
+    line-height: 0.98 !important;
+    align-items: center !important;
+  }
+  html[data-theme="space"] .space-monograph-lead {
+    font-size: 0.80rem !important;
+    line-height: 1.4 !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+  html[data-theme="space"] .hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+    align-items: center !important;
+  }
+  html[data-theme="space"] .hero-actions .atelier-btn {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+    padding: 0.55rem 1rem !important;
+  }
+  html[data-theme="space"] .space-hero-plinth {
+    display: none !important;
+  }
+  html[data-theme="space"] .orbital-tech-badge {
+    display: none !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    display: none !important;
+  }
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+  html[data-theme="space"] .spatial-scroll-indicator {
+    display: none !important;
+  }
+}
+
+/* I. Cookie Banner Clearance */
+html[data-theme="space"] .cookie-banner {
+  bottom: clamp(65px, 8vh, 85px) !important;
+}
+
+html[data-theme="space"] #hero.pavilion-hero,
+html[data-theme="space"] #hero {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIXED CONTINUOUS COCKPIT BOTTOM AVIONICS BAR DOCKING
+   ═══════════════════════════════════════════════════════════════════ */
+html[data-theme="space"] #spaceCockpitBottomBar,
+html[data-theme="space"] .space-cockpit-bottom-bar {
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: auto !important;
+  height: 52px !important;
+  z-index: 9985 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 1.5rem !important;
+  background: rgba(5, 6, 10, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-top: 1px solid rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.7) !important;
+  pointer-events: auto !important;
+}
+
+html[data-theme="space"] .cockpit-bar-left,
+html[data-theme="space"] .cockpit-bar-center,
+html[data-theme="space"] .cockpit-bar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+}
+
+html[data-theme="space"] .cockpit-action-btn {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.68rem !important;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 768px) {
+  html[data-theme="space"] #spaceCockpitBottomBar {
+    height: 48px !important;
+    padding: 0 0.75rem !important;
+  }
+  html[data-theme="space"] .cockpit-bar-left,
+  html[data-theme="space"] .cockpit-bar-right {
+    display: none !important;
+  }
+  html[data-theme="space"] .cockpit-bar-center {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   FUTURISTIC SPACECRAFT COCKPIT FLIGHT INSTRUMENTS DECK (REQ 1)
+   ══════════════════════════════════════════════════════════════════ */
+.space-cockpit-instruments-deck {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-top: 1.75rem !important;
+  width: 100% !important;
+  max-width: 620px !important;
+  pointer-events: auto !important;
+  z-index: 22 !important;
+}
+
+.cockpit-instrument-card {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: rgba(6, 8, 14, 0.78);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 6px;
+  padding: 10px 12px;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(245, 158, 11, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease,
+              background 0.25s ease;
+  cursor: default;
+  text-decoration: none;
+}
+
+.cockpit-instrument-card.is-link {
+  cursor: pointer;
+}
+
+.cockpit-instrument-card:hover {
+  transform: translateY(-3px);
+  background: rgba(12, 16, 26, 0.92);
+  border-color: rgba(245, 158, 11, 0.65);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8), 0 0 18px rgba(245, 158, 11, 0.2);
+}
+
+.instrument-meta-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.instrument-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.instrument-beacon.amber-pulse {
+  background: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+  animation: beaconPulseAmber 2.2s infinite ease-in-out;
+}
+
+.instrument-beacon.cyan-pulse {
+  background: #06B6D4;
+  box-shadow: 0 0 8px #06B6D4;
+  animation: beaconPulseCyan 2.4s infinite ease-in-out;
+}
+
+.instrument-beacon.green-pulse {
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: beaconPulseGreen 2s infinite ease-in-out;
+}
+
+@keyframes beaconPulseAmber {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #F59E0B; }
+}
+
+@keyframes beaconPulseCyan {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #06B6D4; }
+}
+
+@keyframes beaconPulseGreen {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #10B981; }
+}
+
+.instrument-sys-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.6);
+  text-transform: uppercase;
+}
+
+.instrument-idx {
+  margin-left: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(245, 158, 11, 0.5);
+}
+
+.instrument-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #F59E0B;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.instrument-metric {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: #CBD5E1;
+  line-height: 1.3;
+}
+
+.instrument-metric .metric-main {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.instrument-metric .metric-divider {
+  color: rgba(245, 158, 11, 0.5);
+  font-size: 8px;
+}
+
+.instrument-metric .metric-desc {
+  font-size: 8px;
+  color: #94A3B8;
+  letter-spacing: 0.04em;
+}
+
+.instrument-metric.status-active .metric-main {
+  color: #10B981;
+}
+
+.instrument-metric .metric-arrow {
+  color: #10B981;
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.cockpit-instrument-card.is-link:hover .metric-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+  .space-cockpit-instruments-deck {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REQUIREMENT 4: SAFE SECTOR 02 DOSSIER CORRIDOR (ZERO OVERLAP)
+   ══════════════════════════════════════════════════════════════════ */
+@media (min-width: 1025px) {
+  html[data-theme="space"] .galaxy-hud-center {
+    padding-right: clamp(260px, 17vw, 290px) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html[data-theme="space"] .galaxy-hud-center {
+    padding-right: 1.5rem !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REQUIREMENT 5 & 7: SECTOR 04 SKILLS TOP CLEARANCE & HOVER POLISH
+   ══════════════════════════════════════════════════════════════════ */
+html[data-theme="space"] #disciplines {
+  padding: 84px 5% 100px !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover {
+  transform: translateY(-5px) !important;
+  background: rgba(14, 18, 28, 0.94) !important;
+  border-color: rgba(245, 158, 11, 0.70) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), 0 0 20px rgba(245, 158, 11, 0.25) !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover .skill-entry-title,
+html[data-theme="space"] #disciplines .skill-entry:hover .skill-entry-heading {
+  color: #FFFFFF !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.6) !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry .skill-repo-link:hover {
+  color: #F59E0B !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 2.6 REFINEMENT: HERO ZERO-COLLISION & 3D CAMERA SYNCHRONIZATION
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1. Strictly hide all floating badges in the hero so zero collisions occur */
+html[data-theme="space"] .space-orbital-constellation .orbital-tech-badge,
+html[data-theme="space"] .badge-orbit-1,
+html[data-theme="space"] .badge-orbit-2,
+html[data-theme="space"] .badge-orbit-3,
+html[data-theme="space"] .badge-orbit-4,
+html[data-theme="space"] .badge-orbit-5,
+html[data-theme="space"] .badge-orbit-6 {
+  display: none !important;
+}
+
+/* 2. Hero 3D Perspective Plane */
+html[data-theme="space"] #hero {
+  perspective: 1200px !important;
+  perspective-origin: 50% 50% !important;
+}
+
+html[data-theme="space"] .space-hero-monograph,
+html[data-theme="space"] .space-monograph-lead,
+html[data-theme="space"] .space-hero-cta-group,
+html[data-theme="space"] .space-cockpit-instruments-deck {
+  transform-style: preserve-3d !important;
+  will-change: transform, opacity !important;
+  transition: transform 0.08s ease-out, opacity 0.08s ease-out;
+}
+
+/* 3. Responsive Navigation & Guaranteed Theme Switcher Visibility */
+html[data-theme="space"] .atelier-nav .nav-tools {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-shrink: 0 !important;
+}
+
+#spaceThemeDropdownWrapper {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 10005 !important;
+}
+
+#spaceThemeDropdownMenu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 10010 !important;
+  min-width: 190px !important;
+}
+
+@media (max-width: 1680px) {
+  html[data-theme="space"] .atelier-nav .nav-tools .location-pill:not(.cockpit-mode-pill) {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1280px) {
+  html[data-theme="space"] .atelier-nav .nav-tools .cockpit-mode-pill {
+    display: none !important;
+  }
+  html[data-theme="space"] .atelier-nav .nav-center {
+    display: none !important;
+  }
+}
+
+/* 4. Skills Category Smooth Crossfade */
+html[data-theme="space"] .skills-category-group {
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="space"] .skills-category-group.skills-group-entering {
+  animation: skillsCategoryFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes skillsCategoryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Navbar Compact Layout & Theme Dropdown Safety */
+@media (max-width: 768px) {
+  html[data-theme="space"] .atelier-nav {
+    width: 96% !important;
+    padding: 0 0.5rem !important;
+    justify-content: space-between !important;
+  }
+  html[data-theme="space"] .atelier-nav .brand-sub {
+    display: none !important;
+  }
+  html[data-theme="space"] .atelier-nav .brand-title {
+    font-size: 0.82rem !important;
+  }
+  html[data-theme="space"] .atelier-nav .nav-tools .location-pill {
+    display: none !important;
+  }
+  html[data-theme="space"] #spaceThemeDropdownWrapper {
+    margin-right: 0.25rem !important;
+  }
+  html[data-theme="space"] .theme-dropdown-trigger {
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.70rem !important;
   }
 }

@@ -383,12 +383,14 @@
   function setupNavbarNavigation() {
     const navCheckpoints = {
       '#hero': 0.00,
-      '#works': 0.22,
+      '#works': 0.205,
       '#disciplines': 0.85,
       '#dispatch': 0.96
     };
 
-    const links = document.querySelectorAll('#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"]');
+    const links = document.querySelectorAll(
+      '#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"], .space-btn-expedition, .spatial-scroll-indicator, a[href="#works"], a[href="#disciplines"], a[href="#dispatch"]'
+    );
     links.forEach(link => {
       link.addEventListener('click', function (e) {
         if (!isSpaceTheme()) return;
@@ -429,51 +431,98 @@
     }
 
     const heroCanvas = document.getElementById('hero3DCanvas');
+    const heroEl = document.getElementById('hero');
     const heroLayout = document.querySelector('#hero .space-hero-unified-layout') || document.querySelector('#hero .hero-layout');
     const bhContainer = document.getElementById('blackHoleContainer');
     const bhIntroHud = document.getElementById('blackHoleIntroHud');
 
     // ── 1. SECTOR 01: SINGULARITY CORE & HANDOFF WINDOW (0.00 <= t <= 0.18) ──
     if (t <= 0.18) {
+      if (heroEl) {
+        heroEl.style.opacity = '1';
+        heroEl.style.visibility = 'visible';
+      }
       // Ensure Black Hole engine is running RAF loop
       if (window.SpaceBlackHoleHero3D && typeof window.SpaceBlackHoleHero3D.resume === 'function') {
         window.SpaceBlackHoleHero3D.resume();
       }
 
-      // Phase B 5-Stage Transition Window (0.00 <= t <= 0.18)
-      // Hero Canvas Opacity: Solid 1.0 from t=0 to 0.09 (Stages 1 & 2),
-      // then soft Hermite crossfade 1.0 -> 0.0 across [0.09, 0.14] (Stage 3 Deep Space Transit)
+      // Phase 2.6: Crisp, Zero-Overlap Black Hole Lifecycle Handoff
+      // Hero Canvas Opacity: Solid 1.0 from t=0 to 0.07,
+      // then smooth Hermite crossfade 1.0 -> 0.0 across [0.07, 0.095] (Dissolves completely into Deep Space Transit Void before Sun emerges at t=0.13)
       let heroCanvasAlpha = 1.0;
-      if (t > 0.09) {
-        const fadeU = Math.min(1.0, (t - 0.09) / 0.05);
+      if (t > 0.07) {
+        const fadeU = Math.min(1.0, (t - 0.07) / 0.025);
         const smoothFade = fadeU * fadeU * (3.0 - 2.0 * fadeU);
         heroCanvasAlpha = Math.max(0.0, 1.0 - smoothFade);
       }
 
       if (heroCanvas) {
         heroCanvas.style.opacity = heroCanvasAlpha.toFixed(4);
-        heroCanvas.style.display = heroCanvasAlpha > 0.0001 ? 'block' : 'none';
-        heroCanvas.style.visibility = heroCanvasAlpha > 0.0001 ? 'visible' : 'hidden';
+        heroCanvas.style.display = heroCanvasAlpha > 0.001 ? 'block' : 'none';
+        heroCanvas.style.visibility = heroCanvasAlpha > 0.001 ? 'visible' : 'hidden';
       }
 
-      // Hero Text Monograph & Intro HUD: Crisp and readable through Stage 1 (t <= 0.04),
-      // then smooth leftward drift & fade across [0.04, 0.085]
-      let textFade = 1.0;
-      if (t > 0.04) {
-        const rawT = Math.min(1.0, (t - 0.04) / 0.045);
-        textFade = Math.max(0.0, 1.0 - rawT * rawT * (3.0 - 2.0 * rawT));
-      }
-      const textSlideX = -180.0 * (1.0 - textFade);
+      // Phase 2.6 Requirement 3: Synchronize ENTIRE Home Hero with 3D Camera Movement
+      // All hero elements participate in spatial depth flight:
+      // u: 0.0 at rest -> 1.0 at t=0.10
+      const u = Math.min(1.0, t / 0.10);
+      const smoothU = u * u * (3.0 - 2.0 * u);
+      const heroFade = Math.max(0.0, 1.0 - smoothU);
+
+      const monographEl = document.querySelector('.space-hero-monograph');
+      const leadEl = document.querySelector('.space-monograph-lead') || document.querySelector('.space-hero-lead');
+      const ctaEl = document.querySelector('.hero-actions') || document.querySelector('.space-hero-cta-group');
+      const cockpitDeckEl = document.querySelector('.space-cockpit-instruments-deck');
+      const accretionFooter = document.getElementById('spaceAccretionStatusPill') || document.querySelector('.space-accretion-hud');
 
       if (heroLayout) {
-        heroLayout.style.opacity = textFade.toFixed(3);
-        heroLayout.style.transform = `translate3d(${textSlideX.toFixed(2)}px, 0, 0)`;
-        heroLayout.style.pointerEvents = t > 0.06 ? 'none' : 'auto';
+        heroLayout.style.opacity = heroFade.toFixed(3);
+        heroLayout.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+      }
+
+      if (monographEl) {
+        const tx = (-u * 260.0).toFixed(2);
+        const ty = (-u * 40.0).toFixed(2);
+        const tz = (-u * 380.0).toFixed(2);
+        const scale = (1.0 - u * 0.26).toFixed(3);
+        monographEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+        monographEl.style.opacity = heroFade.toFixed(3);
+      }
+
+      if (leadEl) {
+        const tx = (-u * 200.0).toFixed(2);
+        const ty = (-u * 20.0).toFixed(2);
+        const tz = (-u * 300.0).toFixed(2);
+        const scale = (1.0 - u * 0.20).toFixed(3);
+        leadEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+      }
+
+      if (ctaEl) {
+        const tx = (-u * 160.0).toFixed(2);
+        const ty = (u * 30.0).toFixed(2);
+        const tz = (-u * 240.0).toFixed(2);
+        const scale = (1.0 - u * 0.16).toFixed(3);
+        ctaEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+      }
+
+      if (cockpitDeckEl) {
+        const tx = (-u * 110.0).toFixed(2);
+        const ty = (u * 70.0).toFixed(2);
+        const tz = (-u * 220.0).toFixed(2);
+        const scale = (1.0 - u * 0.14).toFixed(3);
+        cockpitDeckEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+        cockpitDeckEl.style.opacity = heroFade.toFixed(3);
       }
 
       if (bhIntroHud) {
-        bhIntroHud.style.opacity = textFade.toFixed(3);
-        bhIntroHud.style.pointerEvents = t > 0.06 ? 'none' : 'auto';
+        bhIntroHud.style.opacity = heroFade.toFixed(3);
+        bhIntroHud.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+      }
+
+      if (accretionFooter) {
+        accretionFooter.style.opacity = heroFade.toFixed(3);
+        accretionFooter.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
       }
 
       if (bhContainer) {
@@ -483,6 +532,11 @@
     // ── 2. SECTOR 02+: DEEP SPACE EXPLORATION & PLANETARY CORRIDOR (t > 0.18) ──
     else {
       // Fully transitioned past the Singularity
+      if (heroEl) {
+        heroEl.style.opacity = '0';
+        heroEl.style.visibility = 'hidden';
+        heroEl.style.pointerEvents = 'none';
+      }
       if (heroCanvas) {
         heroCanvas.style.opacity = '0';
         heroCanvas.style.visibility = 'hidden';
@@ -593,6 +647,9 @@
       updateTelemetryHud();
     }
     syncVisualHandoff(currentProgress, velocity);
+    if (window.SpaceStarfield && typeof window.SpaceStarfield.setJourneyState === 'function') {
+      window.SpaceStarfield.setJourneyState(currentProgress, velocity, isMoving);
+    }
   }
 
   /**
@@ -646,11 +703,54 @@
     // Modulate target progress
     // Phase C Requirement 1: Calibrated interplanetary pacing
     // Sector 02 has ~2.8x higher scroll resolution for slow, immersive cinematic planetary exploration
-    let divisor = 3200;
-    if (targetProgress >= 0.16 && targetProgress <= 0.68) {
-      divisor = 7000;
+    // AUTHORITATIVE CONTROL: Prevent native body scroll to eliminate racing/doubling
+    if (e.cancelable) {
+      e.preventDefault();
     }
-    const scrollDeltaProgress = (delta / divisor);
+
+    // Clamp single-event delta spike
+    const clampedDelta = Math.max(-60, Math.min(60, delta));
+
+    // Modulate target progress with calibrated pacing (Phase 2.6 Requirement 4: Brisk Solar-to-Projects Corridor)
+    let divisor = 4500;
+    if (targetProgress >= 0.095 && targetProgress < 0.195) {
+      divisor = 2400; // Accelerated dynamic corridor: brisk direct transit from solar system view into Planet 1 presentation
+    } else if (targetProgress >= 0.195 && targetProgress <= 0.58) {
+      divisor = 9200; // Calibrated for smooth, comfortable, detailed planetary exploration and dossiers
+    } else if (targetProgress > 0.58 && targetProgress < 0.74) {
+      divisor = 2800; // Requirement 5: Brisk comfortable corridor through empty interstellar void from Planet 7 to Skills
+    } else if (targetProgress >= 0.74 && targetProgress < 0.90) {
+      divisor = 6500; // Smooth transit and skills discovery
+    }
+    
+    let scrollDeltaProgress = (clampedDelta / divisor);
+
+    // Planetary Waypoint Magnetic Snapping
+    const WAYPOINTS = [
+      0.000, // Sector 01 Hero
+      0.205, // Planet 01 RepoMentor AI
+      0.266, // Planet 02 GymBuddy AI
+      0.327, // Planet 03 Career AI Platform
+      0.388, // Planet 04 Spotify Clone
+      0.450, // Planet 05 URL Shortener
+      0.511, // Planet 06 MLOps Pipeline
+      0.572, // Planet 07 DSA Journey
+      0.850, // Sector 04 Skills Constellation
+      0.980  // Sector 05 Beacon Nexus Contact
+    ];
+
+    const currentT = targetProgress;
+    for (let i = 0; i < WAYPOINTS.length; i++) {
+      const wp = WAYPOINTS[i];
+      const dist = Math.abs(currentT - wp);
+      if (dist < 0.016) {
+        // Strong magnetic resistance when inside waypoint gravitational well
+        // Damps scroll progression by 55%, gently locking user onto the planet/sector
+        scrollDeltaProgress *= 0.45;
+        break;
+      }
+    }
+
     const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + scrollDeltaProgress));
     setTargetProgress(newTarget, true);
   }
@@ -766,52 +866,60 @@
     hudContainerEl.id = 'journeyTelemetryHud';
     hudContainerEl.className = 'journey-telemetry-hud';
     hudContainerEl.setAttribute('role', 'region');
-    hudContainerEl.setAttribute('aria-label', 'Master Journey Telemetry Telemetry Deck');
+    hudContainerEl.setAttribute('aria-label', 'Spacecraft Avionics Navigation HUD');
 
     hudContainerEl.innerHTML = `
       <div class="hud-telemetry-header" id="hudTelemetryHeader" title="Click to Toggle Telemetry Deck (Key: [T])">
-        <div class="hud-telemetry-title">
-          <span class="hud-telemetry-pip"></span>
-          <span>JOURNEY TELEMETRY // P-1</span>
+        <div class="hud-telemetry-brand">
+          <span class="hud-telemetry-pip" aria-hidden="true"></span>
+          <span class="hud-brand-title">NAV.AVIONICS // TRACER</span>
         </div>
-        <button type="button" class="hud-toggle-btn" id="hudToggleBtn" aria-label="Minimize Telemetry HUD">&minus;</button>
+        <div class="hud-telemetry-actions">
+          <span class="hud-lock-badge" id="hudLockVal">SYS.ACTIVE</span>
+          <button type="button" class="hud-toggle-btn" id="hudToggleBtn" aria-label="Minimize Telemetry HUD">&minus;</button>
+        </div>
       </div>
       <div class="hud-telemetry-body">
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">PROGRESS:</span>
-          <span class="hud-telemetry-value is-amber" id="hudProgressVal">00.0%</span>
+        <div class="hud-sector-block">
+          <span class="hud-block-label">CURRENT SECTOR</span>
+          <div class="hud-sector-name" id="hudSectorVal">01 // SINGULARITY APPROACH</div>
         </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">SECTOR:</span>
-          <span class="hud-telemetry-value is-cyan" id="hudSectorVal">01 // SINGULARITY</span>
+
+        <div class="hud-progress-block">
+          <div class="hud-progress-meta">
+            <span class="hud-block-label">TRAJECTORY</span>
+            <span class="hud-progress-value" id="hudProgressVal">00.0%</span>
+          </div>
+          <div class="hud-progress-bar-wrap">
+            <div class="hud-progress-bar-fill" id="hudProgressFill"></div>
+          </div>
         </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">TARGET t:</span>
-          <span class="hud-telemetry-value" id="hudTargetVal">0.0000</span>
-        </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">CURRENT t:</span>
-          <span class="hud-telemetry-value" id="hudCurrVal">0.0000</span>
-        </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">VELOCITY:</span>
-          <span class="hud-telemetry-value" id="hudVelocityVal">0.0000/f</span>
-        </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">STATUS:</span>
-          <span class="hud-telemetry-value is-green" id="hudMotionVal">SETTLED</span>
-        </div>
-        <div class="hud-telemetry-row">
-          <span class="hud-telemetry-label">INPUT LOCK:</span>
-          <span class="hud-telemetry-value" id="hudLockVal">NONE</span>
-        </div>
-        <div class="hud-progress-bar-wrap">
-          <div class="hud-progress-bar-fill" id="hudProgressFill"></div>
+
+        <div class="hud-telemetry-grid">
+          <div class="hud-grid-cell">
+            <span class="hud-grid-label">TARGET t</span>
+            <span class="hud-grid-val" id="hudTargetVal">0.0000</span>
+          </div>
+          <div class="hud-grid-cell">
+            <span class="hud-grid-label">CURRENT t</span>
+            <span class="hud-grid-val" id="hudCurrVal">0.0000</span>
+          </div>
+          <div class="hud-grid-cell">
+            <span class="hud-grid-label">IMPULSE</span>
+            <span class="hud-grid-val" id="hudVelocityVal">+0.0000/f</span>
+          </div>
+          <div class="hud-grid-cell">
+            <span class="hud-grid-label">STATUS</span>
+            <span class="hud-grid-val is-green" id="hudMotionVal">SETTLED</span>
+          </div>
         </div>
       </div>
       <div class="hud-telemetry-footer">
-        <span>PHASE 1 SPINAL RIG</span>
-        <span>KEY: [T] HIDE</span>
+        <span class="hud-status-chip">
+          <span class="hud-status-dot pulse-green"></span>
+          AVIONICS LOCK
+        </span>
+        <span class="hud-key-hint">KEY: [T]</span>
       </div>
     `;
 
@@ -832,8 +940,8 @@
     if (header) {
       header.addEventListener('click', toggleHudMinimization);
     }
-    // Auto-minimize on laptop & tablet screens (<=1400px) for unobtrusive cockpit avionics
-    if (window.innerWidth <= 1400 && hudContainerEl) {
+    // Auto-minimize on tablet screens (<=1024px) for unobtrusive cockpit avionics
+    if (window.innerWidth <= 1024 && hudContainerEl) {
       hudContainerEl.classList.add('is-minimized');
       const toggleBtn = document.getElementById('hudToggleBtn');
       if (toggleBtn) toggleBtn.textContent = '+';
@@ -870,13 +978,13 @@
 
     if (hudMotionVal) {
       hudMotionVal.textContent = isMoving ? 'CRUISING' : 'SETTLED';
-      hudMotionVal.className = 'hud-telemetry-value ' + (isMoving ? 'is-amber' : 'is-green');
+      hudMotionVal.className = 'hud-grid-val ' + (isMoving ? 'is-amber' : 'is-green');
     }
 
     if (hudLockVal) {
       const lockReason = getActiveLockReason();
-      hudLockVal.textContent = lockReason;
-      hudLockVal.className = 'hud-telemetry-value ' + (lockReason !== 'NONE' ? 'is-amber' : 'is-green');
+      hudLockVal.textContent = lockReason === 'NONE' ? 'SYS.ACTIVE' : lockReason;
+      hudLockVal.className = 'hud-lock-badge ' + (lockReason !== 'NONE' ? 'is-locked' : 'is-clear');
     }
   }
 
@@ -908,7 +1016,7 @@
 
     // Event Listeners
     window.addEventListener('scroll', onWindowScroll, { passive: true });
-    window.addEventListener('wheel', onWindowWheel, { passive: true });
+    window.addEventListener('wheel', onWindowWheel, { passive: false });
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
