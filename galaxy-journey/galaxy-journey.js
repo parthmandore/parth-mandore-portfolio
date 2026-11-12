@@ -1076,8 +1076,8 @@
       : (typeof progress === 'number' ? progress : 0.0);
     const t = Math.max(0.0, Math.min(1.0, mProg));
 
-    if (t <= 0.13) {
-      // Sector 01 Hero Focus & Deep Space Transit Void (t <= 0.13): 100% hidden solar system (ZERO simultaneous visibility with black hole)
+    if (t <= 0.08) {
+      // Sector 01 Hero Focus (t <= 0.08): Black hole is dominant, solar system fully hidden
       if (centralStarGroup) {
         centralStarGroup.visible = false;
         centralStarGroup.scale.set(0.0001, 0.0001, 0.0001);
@@ -1086,6 +1086,7 @@
       if (starCoronaMesh) starCoronaMesh.visible = false;
       if (coreLight) coreLight.intensity = 0.0;
       if (coreWarmLight) coreWarmLight.intensity = 0.0;
+      if (ambientLight) ambientLight.intensity = 0.015;
       if (planetsGroup) {
         planetsGroup.visible = false;
         planetsGroup.scale.set(0.001, 0.001, 0.001);
@@ -1114,14 +1115,69 @@
         dossier.style.opacity = '0';
         dossier.style.pointerEvents = 'none';
       }
+    } else if (t <= 0.12) {
+      // Early Stellar Hint (0.08 < t <= 0.12): The Sun appears as a tiny distant bright point
+      // Only the central star (Sun) mesh fades in as a distant glowing speck — no planets yet
+      const hintAlpha = (t - 0.08) / 0.04;
+      const hintReveal = hintAlpha * hintAlpha; // Quadratic ease-in for subtle emergence
+
+      if (centralStarGroup) {
+        centralStarGroup.visible = true;
+        const tinyScale = 0.05 + hintReveal * 0.15; // Very small: 5% to 20%
+        centralStarGroup.scale.set(tinyScale, tinyScale, tinyScale);
+      }
+      if (centralStarMesh) {
+        centralStarMesh.visible = true;
+      }
+      if (starCoronaMesh) {
+        starCoronaMesh.visible = true;
+        if (starCoronaMesh.material) starCoronaMesh.material.opacity = hintReveal * 0.3;
+        const coronaScale = 0.05 + hintReveal * 0.1;
+        starCoronaMesh.scale.set(coronaScale, coronaScale, coronaScale);
+      }
+      if (coreLight) coreLight.intensity = hintReveal * 0.6;
+      if (coreWarmLight) coreWarmLight.intensity = hintReveal * 0.3;
+      if (ambientLight) ambientLight.intensity = 0.015 + hintReveal * 0.01;
+
+      // Planets, orbits, asteroids remain hidden during the hint phase
+      if (planetsGroup) {
+        planetsGroup.visible = false;
+        planetsGroup.scale.set(0.001, 0.001, 0.001);
+      }
+      if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
+      if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
+      planetMeshes.forEach(pm => {
+        if (pm.group) pm.group.visible = false;
+      });
+
+      if (hudEl) {
+        hudEl.style.display = 'none';
+        hudEl.style.opacity = '0';
+        hudEl.style.visibility = 'hidden';
+        hudEl.style.pointerEvents = 'none';
+      }
+      const reticle = document.getElementById('galaxyPlanetReticle');
+      if (reticle) {
+        reticle.style.display = 'none';
+        reticle.style.opacity = '0';
+        reticle.classList.remove('is-sector02-active', 'is-scanning', 'is-locked');
+      }
+      const dossier = document.getElementById('galaxyDossierCard');
+      if (dossier) {
+        dossier.style.opacity = '0';
+        dossier.style.pointerEvents = 'none';
+      }
     } else if (t <= 0.19) {
-      // Emergence Transition (0.13 < t <= 0.19): Gradual celestial reveal as spacecraft approaches Sol
-      const alpha = (t - 0.13) / 0.06;
+      // Full Emergence Transition (0.12 < t <= 0.19): Solar system scales up with planets and orbits
+      const alpha = (t - 0.12) / 0.07;
       const reveal = 0.5 * (1.0 - Math.cos(Math.PI * alpha));
 
       if (centralStarGroup) {
         centralStarGroup.visible = true;
         centralStarGroup.scale.set(reveal, reveal, reveal);
+      }
+      if (centralStarMesh) {
+        centralStarMesh.visible = true;
       }
       if (starCoronaMesh) {
         starCoronaMesh.visible = true;
@@ -1172,60 +1228,1246 @@
         dossier.style.opacity = '0';
         dossier.style.pointerEvents = 'none';
       }
-    } else if (t < 0.72) {
-      // Sector 02 & Sector 03: Planetary Survey (Solar system fully revealed for exploration)
+    } else if (t <= 0.572) {
+      // Sector 02: Sol-7 Planetary Survey (Full solar system visibility up to Planet 07)
+      if (scene && scene.fog) scene.fog.density = 0.00065;
+      if (camera && Math.abs(camera.near - 1.0) > 0.05) {
+        camera.near = 1.0;
+        camera.updateProjectionMatrix();
+      }
       if (centralStarGroup) {
         centralStarGroup.visible = true;
         centralStarGroup.scale.set(1, 1, 1);
       }
+      if (centralStarMesh) {
+        centralStarMesh.visible = true;
+        if (centralStarMesh.material) { centralStarMesh.material.transparent = true; centralStarMesh.material.opacity = 1.0; }
+      }
       if (starCoronaMesh) {
         starCoronaMesh.visible = true;
-        if (starCoronaMesh.material) starCoronaMesh.material.opacity = 1.0;
+        if (starCoronaMesh.material) { starCoronaMesh.material.transparent = true; starCoronaMesh.material.opacity = 1.0; }
         starCoronaMesh.scale.set(1, 1, 1);
       }
       if (coreLight) coreLight.intensity = 2.8;
       if (coreWarmLight) coreWarmLight.intensity = 1.4;
+      if (ambientLight) ambientLight.intensity = 0.28;
       if (planetsGroup) {
         planetsGroup.visible = true;
         planetsGroup.scale.set(1, 1, 1);
         planetMeshes.forEach(pm => {
           if (pm.group) pm.group.visible = true;
-          if (pm.mesh && pm.mesh.material) pm.mesh.material.opacity = 1.0;
+          if (pm.mesh && pm.mesh.material) { pm.mesh.material.transparent = true; pm.mesh.material.opacity = 1.0; }
         });
       }
-      if (orbitalRingsGroup) orbitalRingsGroup.visible = true;
-      if (asteroidBeltGroup) asteroidBeltGroup.visible = true;
+      if (orbitalRingsGroup) {
+        orbitalRingsGroup.visible = true;
+        orbitalRingsGroup.children.forEach(ring => {
+          if (ring.material) {
+            if (!ring.userData.baseOpacity) ring.userData.baseOpacity = ring.material.opacity || 0.45;
+            ring.material.opacity = ring.userData.baseOpacity;
+          }
+        });
+      }
+      if (asteroidBeltGroup) {
+        asteroidBeltGroup.visible = true;
+        if (instancedAsteroidMesh && instancedAsteroidMesh.material) instancedAsteroidMesh.material.opacity = 1.0;
+      }
 
-      if (t <= 0.65 && hudEl) {
+      if (hudEl) {
         hudEl.style.display = 'flex';
         hudEl.style.opacity = '1';
         hudEl.style.visibility = 'visible';
         hudEl.style.pointerEvents = 'auto';
       }
     } else {
-      // Requirement 6: Sector 04 (Skills, t >= 0.72) & Sector 05 (Contact, t >= 0.90): Sun is completely receded and extinguished in deep space
+      // Planet 07 -> Sky Map Continuous Transition (p in [0, 1]): NO POP-OUT!
+      // Every visual element fades strictly as a continuous function of transitionProgress.
+      const p = Math.max(0.0, Math.min(1.0, (t - 0.572) / (0.850 - 0.572)));
+      const smooth = (a, b, x) => {
+        const u = Math.max(0.0, Math.min(1.0, (x - a) / Math.max(0.0001, b - a)));
+        return u * u * (3.0 - 2.0 * u);
+      };
+
+      const orbitAlpha = 1.0 - smooth(0.00, 0.24, p);
+      const planetAlpha = 1.0 - smooth(0.18, 0.56, p);
+      const sunAlpha = 1.0 - smooth(0.24, 0.64, p);
+      const hudAlpha = 1.0 - smooth(0.00, 0.10, p);
+
+      if (scene && scene.fog) {
+        scene.fog.density = 0.00065 * (1.0 - smooth(0.0, 0.28, p));
+      }
+      if (camera) {
+        const desiredNear = 1.0 + 7.0 * smooth(0.12, 0.40, p);
+        if (Math.abs(camera.near - desiredNear) > 0.15) {
+          camera.near = desiredNear;
+          camera.updateProjectionMatrix();
+        }
+      }
+
       if (centralStarGroup) {
-        centralStarGroup.visible = false;
-        centralStarGroup.scale.set(0.0001, 0.0001, 0.0001);
+        const sunVis = sunAlpha > 0.003;
+        centralStarGroup.visible = sunVis;
+        centralStarGroup.scale.setScalar(Math.max(0.01, 1.0 - smooth(0.20, 0.65, p) * 0.72));
       }
       if (centralStarMesh) {
-        centralStarMesh.visible = false;
+        centralStarMesh.visible = sunAlpha > 0.003;
+        if (centralStarMesh.material) {
+          centralStarMesh.material.transparent = true;
+          centralStarMesh.material.opacity = sunAlpha;
+        }
       }
       if (starCoronaMesh) {
-        starCoronaMesh.visible = false;
-        starCoronaMesh.scale.set(0.0001, 0.0001, 0.0001);
+        starCoronaMesh.visible = sunAlpha > 0.003;
+        if (starCoronaMesh.material) {
+          starCoronaMesh.material.transparent = true;
+          starCoronaMesh.material.opacity = sunAlpha;
+        }
+        starCoronaMesh.scale.setScalar(Math.max(0.01, 1.0 - smooth(0.20, 0.65, p) * 0.65));
       }
-      if (coreLight) coreLight.intensity = 0.0;
-      if (coreWarmLight) coreWarmLight.intensity = 0.0;
-      if (planetsGroup) planetsGroup.visible = false;
-      if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
-      if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
+      if (coreLight) coreLight.intensity = 2.8 * sunAlpha;
+      if (coreWarmLight) coreWarmLight.intensity = 1.4 * sunAlpha;
+      if (ambientLight) ambientLight.intensity = 0.015 + 0.265 * planetAlpha;
+
+      if (planetsGroup) {
+        const pVis = planetAlpha > 0.003;
+        planetsGroup.visible = pVis;
+        planetsGroup.scale.set(1, 1, 1); // Real 3D camera pullback provides true perspective shrinkage
+        planetMeshes.forEach(pm => {
+          if (pm.group) pm.group.visible = pVis;
+          if (pm.mesh && pm.mesh.material) {
+            pm.mesh.material.transparent = true;
+            pm.mesh.material.opacity = planetAlpha;
+          }
+        });
+      }
+      if (orbitalRingsGroup) {
+        const oVis = orbitAlpha > 0.003;
+        orbitalRingsGroup.visible = oVis;
+        orbitalRingsGroup.children.forEach(ring => {
+          if (ring.material) {
+            ring.material.transparent = true;
+            if (!ring.userData.baseOpacity) ring.userData.baseOpacity = ring.material.opacity || 0.45;
+            ring.material.opacity = ring.userData.baseOpacity * orbitAlpha;
+          }
+        });
+      }
+      if (asteroidBeltGroup) {
+        asteroidBeltGroup.visible = planetAlpha > 0.003;
+        if (instancedAsteroidMesh && instancedAsteroidMesh.material) {
+          instancedAsteroidMesh.material.transparent = true;
+          instancedAsteroidMesh.material.opacity = planetAlpha;
+        }
+      }
+
       if (hudEl) {
-        hudEl.style.display = 'none';
-        hudEl.style.opacity = '0';
-        hudEl.style.pointerEvents = 'none';
+        if (hudAlpha > 0.005) {
+          hudEl.style.display = 'flex';
+          hudEl.style.opacity = hudAlpha.toFixed(3);
+          hudEl.style.visibility = 'visible';
+          hudEl.style.pointerEvents = hudAlpha > 0.4 ? 'auto' : 'none';
+        } else {
+          hudEl.style.display = 'none';
+          hudEl.style.opacity = '0';
+          hudEl.style.visibility = 'hidden';
+          hudEl.style.pointerEvents = 'none';
+        }
+      }
+      if (hudAlpha <= 0.005) {
+        const reticle = document.getElementById('galaxyPlanetReticle');
+        if (reticle) reticle.style.opacity = '0';
+        const dossier = document.getElementById('galaxyDossierCard');
+        if (dossier) {
+          dossier.style.opacity = '0';
+          dossier.style.pointerEvents = 'none';
+        }
       }
     }
+  }
+
+  // ── 03C. SAME-SCENE 3D SKY MAP (PHASE 2: ONE CAMERA, TRUE 3D PARALLAX ALIGNMENT) ──
+  const SKY_MAP_CONFIG = {
+    // Camera alignment destination facing ~21° rotated sky patch away from Solar System
+    camPos: { x: 640, y: 620, z: 3150 },
+    forward: { x: 0.35, y: 0.17, z: -0.921 },
+    depthRange: [880, 3650],        // Wide depth ratio (~4.15x) along each star's ray so parallax visibly slides stars!
+    decoyStarCount: 310,
+    parallaxStarCount: 1100,        // 3 speed-layered deep-space background stars inside same Points cloud
+    maxMouseParallaxPx: 4.5,        // Strictly <= 6 px at rest (transitionProgress = 1)
+    yawDeg: 21,
+    // Scattered, organic non-grid 7 constellations in NDC [-0.62, +0.62] x [-0.46, +0.44]
+    SKY_MAP: {
+      languages: { x: -0.49, y:  0.34, scale: 0.140, rotation: -0.22 },
+      backend:   { x:  0.03, y:  0.35, scale: 0.155, rotation:  0.14 },
+      frontend:  { x:  0.50, y:  0.24, scale: 0.135, rotation: -0.18 },
+      databases: { x: -0.52, y: -0.14, scale: 0.132, rotation:  0.26 },
+      ai:        { x:  0.02, y: -0.02, scale: 0.142, rotation: -0.10 },
+      tools:     { x:  0.48, y: -0.25, scale: 0.132, rotation:  0.22 },
+      cs:        { x: -0.14, y: -0.42, scale: 0.122, rotation: -0.20 }
+    }
+  };
+
+  let skyMapGroup = null;
+  let skyMapMilkyWayMesh = null;
+  let skyMapMilkyWayMat = null;
+  let skyMapPoints = null;
+  let skyMapPointsMat = null;
+  let skyMapLines = null;
+  let skyMapLinesMat = null;
+  let skyMapLabelsOverlay = null;
+  let skyMapHintEl = null;
+  let skyMapBasePositions = null;
+  let skyMapStarMeta = [];   // Constellation stars + helper stars metadata for line projection & labels
+  let skyMapEdgeList = [];   // { secIdx, metaA, metaB }
+  let skyMapSectorCenters = []; // { secIdx, key, title, count, worldCenter, labelEl, baseColorRGB }
+  let skyMapFpsThrottleRatio = 1.0;
+  let skyMouseNormX = 0;
+  let skyMouseNormY = 0;
+  let smoothSkyMouseX = 0;
+  let smoothSkyMouseY = 0;
+
+  // Phase 3 & Phase 4: Interactive Sky Map + Open/Close Zoom + 0.4s 3D-to-2D Handoff
+  const DETAIL_ZOOM_FRAC = 0.65;       // 0..0.65 (~720ms) zoom flight; 0.65..1.00 (~400ms) nearly still crossfade
+  const DETAIL_OPEN_MS = 1120;
+  const DETAIL_CLOSE_MS = 1020;
+  let hoveredSkySectorIdx = -1;
+  let detailMode = 'skymap';           // 'skymap' | 'opening' | 'detail' | 'closing'
+  let detailSectorIdx = 0;
+  let detailProgress = 0.0;            // 0 = wide Sky Map, 1 = settled 2D Detail View
+  let detailLastTickMs = 0;
+  let detailSectorSwapOffset = { x: 0, y: 0 };
+  let skyMapPanOffset = { x: 0, y: 0 };
+
+  function getSkyMapBasis() {
+    const cam = new THREE.Vector3(SKY_MAP_CONFIG.camPos.x, SKY_MAP_CONFIG.camPos.y, SKY_MAP_CONFIG.camPos.z);
+    const fwd = new THREE.Vector3(SKY_MAP_CONFIG.forward.x, SKY_MAP_CONFIG.forward.y, SKY_MAP_CONFIG.forward.z).normalize();
+    const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+    const up = new THREE.Vector3().crossVectors(right, fwd).normalize();
+    return { cam, fwd, right, up };
+  }
+
+  function createMilkyWayCanvasTexture() {
+    const w = 768;
+    const h = 384;
+    const cvs = document.createElement('canvas');
+    cvs.width = w;
+    cvs.height = h;
+    const ctx = cvs.getContext('2d');
+    ctx.clearRect(0, 0, w, h);
+
+    // Deterministic PRNG for organic cloud puffs & dust knots
+    let seed = 42197;
+    const rand = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+
+    ctx.save();
+    ctx.translate(w * 0.5, h * 0.5);
+    ctx.rotate(-0.32);
+
+    // Broad soft atmospheric galactic glow (diffuse nebula gradient, zero hard line)
+    const band = ctx.createLinearGradient(0, -165, 0, 165);
+    band.addColorStop(0.0, 'rgba(18, 26, 46, 0)');
+    band.addColorStop(0.28, 'rgba(30, 44, 72, 0.08)');
+    band.addColorStop(0.50, 'rgba(54, 68, 102, 0.14)');
+    band.addColorStop(0.72, 'rgba(30, 44, 72, 0.08)');
+    band.addColorStop(1.0, 'rgba(18, 26, 46, 0)');
+    ctx.fillStyle = band;
+    ctx.fillRect(-w * 0.65, -165, w * 1.3, 330);
+
+    // Soft cloudy star-cloud wisps scattered organically (no central stripe!)
+    for (let i = 0; i < 84; i++) {
+      const cx = (rand() - 0.5) * w * 0.88;
+      const cy = (rand() - 0.5) * 95;
+      const r = 38 + rand() * 68;
+      const warm = rand() > 0.52;
+      const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      rg.addColorStop(0, warm ? 'rgba(92, 86, 102, 0.036)' : 'rgba(54, 72, 112, 0.044)');
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Gentle staggered dark dust knots scattered off-center so no straight rift appears
+    ctx.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 20; i++) {
+      const dx = (rand() - 0.5) * w * 0.78;
+      const dy = (rand() - 0.5) * 76;
+      const rx = 50 + rand() * 80;
+      const ry = 22 + rand() * 26;
+      const rg = ctx.createRadialGradient(dx, dy, 4, dx, dy, rx);
+      rg.addColorStop(0, 'rgba(0,0,0,0.16)');
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.save();
+      ctx.scale(1, ry / rx);
+      ctx.beginPath();
+      ctx.arc(dx, dy * (rx / ry), rx, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // Elliptical border vignette mask so ALL 4 canvas edges reach exact alpha=0 (eliminates rectangle seam!)
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.translate(w * 0.5, h * 0.5);
+    ctx.scale(1.0, h / w);
+    const mask = ctx.createRadialGradient(0, 0, w * 0.14, 0, 0, w * 0.46);
+    mask.addColorStop(0.0, 'rgba(0,0,0,1)');
+    mask.addColorStop(0.62, 'rgba(0,0,0,0.75)');
+    mask.addColorStop(1.0, 'rgba(0,0,0,0)');
+    ctx.fillStyle = mask;
+    ctx.beginPath();
+    ctx.arc(0, 0, w * 0.48, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    // Fine non-repeating dither grain to prevent 8-bit quantization stipple on dark displays
+    try {
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        if (d[i + 3] > 2) {
+          const j = ((rand() - 0.5) * 4) | 0;
+          d[i] = Math.max(0, Math.min(255, d[i] + j));
+          d[i + 1] = Math.max(0, Math.min(255, d[i + 1] + j));
+          d[i + 2] = Math.max(0, Math.min(255, d[i + 2] + j));
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    } catch (_e) {}
+
+    const tex = new THREE.CanvasTexture(cvs);
+    tex.generateMipmaps = false;
+    tex.minFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    return tex;
+  }
+
+  function tempToRgbArray(tempName) {
+    const pal = {
+      'blue-white': [0.78, 0.88, 1.00],
+      'white':      [0.98, 0.98, 1.00],
+      'yellow':     [1.00, 0.90, 0.66],
+      'orange':     [1.00, 0.74, 0.48]
+    };
+    return pal[tempName] || pal['white'];
+  }
+
+  function ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect) {
+    const tanHalfFov = Math.tan((46.0 * Math.PI / 180.0) * 0.5);
+    const hHalf = depth * tanHalfFov;
+    const wHalf = hHalf * aspect;
+    return basis.cam.clone()
+      .addScaledVector(basis.fwd, depth)
+      .addScaledVector(basis.right, ndcX * wHalf)
+      .addScaledVector(basis.up, ndcY * hHalf);
+  }
+
+  function buildSkyMapStage() {
+    if (!scene) return;
+    if (skyMapGroup) {
+      scene.remove(skyMapGroup);
+    }
+
+    skyMapGroup = new THREE.Group();
+    skyMapGroup.visible = false;
+    scene.add(skyMapGroup);
+
+    const basis = getSkyMapBasis();
+    const aspect = Math.max(0.55, Math.min(2.1, (containerEl?.clientWidth || window.innerWidth) / Math.max(1, containerEl?.clientHeight || window.innerHeight)));
+
+    // 1. Procedural Milky Way Plane (drawn behind sky stars, depthTest: false)
+    const mwTex = createMilkyWayCanvasTexture();
+    const mwGeo = new THREE.PlaneGeometry(7800, 4200);
+    skyMapMilkyWayMat = new THREE.MeshBasicMaterial({
+      map: mwTex,
+      transparent: true,
+      opacity: 0.0,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    skyMapMilkyWayMesh = new THREE.Mesh(mwGeo, skyMapMilkyWayMat);
+    const mwCenter = basis.cam.clone().addScaledVector(basis.fwd, 4400);
+    skyMapMilkyWayMesh.position.copy(mwCenter);
+    skyMapMilkyWayMesh.lookAt(basis.cam);
+    skyMapMilkyWayMesh.renderOrder = -20;
+    skyMapGroup.add(skyMapMilkyWayMesh);
+
+    // 2. Harvest shared shapes & project brightness from TechnologyConstellation
+    if (window.TechnologyConstellation && typeof window.TechnologyConstellation.init === 'function') {
+      window.TechnologyConstellation.init();
+    }
+    const sectors = (window.TechnologyConstellation && typeof window.TechnologyConstellation.getSectorData === 'function')
+      ? window.TechnologyConstellation.getSectorData()
+      : [];
+
+    // Seeded PRNG for deterministic star depths & decoy positions
+    let seed = 73913;
+    const rand = () => {
+      seed = (seed * 16807) % 2147483647;
+      return (seed - 1) / 2147483646;
+    };
+
+    const starRecords = [];
+    skyMapStarMeta = [];
+    skyMapEdgeList = [];
+    skyMapSectorCenters = [];
+
+    const [minD, maxD] = SKY_MAP_CONFIG.depthRange;
+
+    // Build placeholder label overlay once
+    if (!skyMapLabelsOverlay) {
+      skyMapLabelsOverlay = document.createElement('div');
+      skyMapLabelsOverlay.id = 'skyMapLabelsLayer';
+      skyMapLabelsOverlay.setAttribute('aria-hidden', 'true');
+      skyMapLabelsOverlay.style.cssText = [
+        'position:fixed',
+        'inset:0',
+        'pointer-events:none',
+        'z-index:12',
+        'opacity:0',
+        'visibility:hidden'
+      ].join(';');
+      const mountParent = document.getElementById('worksGalaxyStage') || document.body;
+      mountParent.appendChild(skyMapLabelsOverlay);
+    }
+    skyMapLabelsOverlay.innerHTML = '';
+
+    // Dismissible subtle exploration hint (remembered in sessionStorage)
+    const hintDismissed = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('agy_skymap_hint_dismissed') === '1');
+    if (!hintDismissed) {
+      skyMapHintEl = document.createElement('div');
+      skyMapHintEl.id = 'skyMapHint';
+      skyMapHintEl.className = 'sky-map-hint';
+      skyMapHintEl.innerHTML = `<span>Click any constellation to inspect its stack</span><button type="button" class="sky-map-hint-close" aria-label="Dismiss hint">&times;</button>`;
+      const closeBtn = skyMapHintEl.querySelector('.sky-map-hint-close');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          dismissSkyMapHint();
+        });
+      }
+      skyMapLabelsOverlay.appendChild(skyMapHintEl);
+    } else {
+      skyMapHintEl = null;
+    }
+
+    // 2A. Constellation Stars (placed along SKY_CAM_POS -> SKY_MAP rays at varied depths)
+    sectors.forEach((sec, secIdx) => {
+      const slot = SKY_MAP_CONFIG.SKY_MAP[sec.key];
+      if (!slot) return;
+
+      const cosR = Math.cos(slot.rotation);
+      const sinR = Math.sin(slot.rotation);
+      const startRecordIdx = skyMapStarMeta.length;
+
+      let minStarNdcY = Infinity;
+      let sumStarNdcX = 0;
+      const secStarMetas = [];
+
+      sec.stars.forEach((st, localIdx) => {
+        const rx = st.x * cosR - st.y * sinR;
+        const ry = st.x * sinR + st.y * cosR;
+        // Aspect-corrected figure scale so silhouettes keep identical proportions on sky map
+        const ndcX = slot.x + (rx * slot.scale) / Math.max(1.0, aspect * 0.65);
+        const ndcY = slot.y - ry * slot.scale;
+        if (ndcY < minStarNdcY) minStarNdcY = ndcY;
+        sumStarNdcX += ndcX;
+        const depth = minD + rand() * (maxD - minD);
+        const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
+        const rgb = tempToRgbArray(st.temp);
+        // Match TechnologyConstellation.drawRealPointStar halo diameter (~2 * glowR) for 3D->2D handoff
+        const glowR2d = st.isHelper ? 9.0 : (13.0 + Math.max(0.42, st.brightness) * 17.0);
+
+        const rec = {
+          kind: 0, // 0 = constellation star
+          recordIndex: starRecords.length,
+          secIdx,
+          localIdx,
+          isHelper: !!st.isHelper,
+          ndcX,
+          ndcY,
+          depth,
+          baseWorldPos: worldPos.clone(),
+          detailWorldPos: worldPos.clone(),
+          worldPos,
+          rgb,
+          size: st.isHelper ? 14.0 : (18.0 + st.brightness * 22.0),
+          detailSize: glowR2d * 2.15,
+          brightness: st.isHelper ? (st.faint || 0.30) : Math.max(0.42, st.brightness),
+          hasSpikes: (st.hasSpikes && !st.isHelper) ? 1.0 : 0.0,
+          phase: rand() * Math.PI * 2,
+          revealOrder: secIdx * 0.03 + localIdx * 0.025
+        };
+        starRecords.push(rec);
+        skyMapStarMeta.push(rec);
+        secStarMetas.push(rec);
+      });
+
+      // Exact bounding-box bottom placement (~24px below lowest star of this constellation)
+      const labelNdcX = sec.stars.length > 0 ? (sumStarNdcX / sec.stars.length) : slot.x;
+      const labelNdcY = (Number.isFinite(minStarNdcY) ? minStarNdcY : (slot.y - slot.scale)) - 0.052;
+      const centerWorld = ndcToSkyWorld(labelNdcX, labelNdcY, 2200, basis, aspect);
+
+      const itemBtn = document.createElement('button');
+      itemBtn.type = 'button';
+      itemBtn.className = 'sky-map-item';
+      itemBtn.setAttribute('data-sector-key', sec.key);
+      itemBtn.setAttribute('data-sector-idx', String(secIdx));
+      itemBtn.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
+      itemBtn.innerHTML = `<span class="sky-map-label-pill">${sec.title} &middot; ${sec.techCount}</span>`;
+
+      itemBtn.addEventListener('pointerenter', () => setHoveredSkySector(secIdx));
+      itemBtn.addEventListener('pointerleave', () => {
+        if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
+      });
+      itemBtn.addEventListener('focus', () => setHoveredSkySector(secIdx));
+      itemBtn.addEventListener('blur', () => {
+        if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
+      });
+      itemBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openConstellation(secIdx);
+      });
+
+      skyMapLabelsOverlay.appendChild(itemBtn);
+
+      skyMapSectorCenters.push({
+        secIdx,
+        key: sec.key,
+        title: sec.title,
+        count: sec.techCount,
+        slot,
+        worldCenter: centerWorld,
+        stars: secStarMetas,
+        labelEl: itemBtn
+      });
+
+      sec.edges.forEach(([aLocal, bLocal]) => {
+        const metaA = skyMapStarMeta[startRecordIdx + aLocal];
+        const metaB = skyMapStarMeta[startRecordIdx + bLocal];
+        if (metaA && metaB) {
+          skyMapEdgeList.push({ secIdx, metaA, metaB });
+        }
+      });
+    });
+
+    // 2B. Faint Decoy Stars inside SAME depth shell so before alignment constellations blend cleanly
+    const temps = ['blue-white', 'white', 'yellow', 'orange'];
+    for (let i = 0; i < SKY_MAP_CONFIG.decoyStarCount; i++) {
+      const ndcX = (rand() * 2 - 1) * 1.15;
+      const ndcY = (rand() * 2 - 1) * 1.05;
+      const depth = (minD - 150) + rand() * (maxD - minD + 450);
+      const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
+      const rgb = tempToRgbArray(temps[Math.floor(rand() * temps.length)]);
+      const lum = Math.pow(rand(), 3.2);
+      starRecords.push({
+        kind: 1, // decoy
+        worldPos,
+        rgb,
+        size: 8.0 + lum * 12.0,
+        brightness: 0.16 + lum * 0.42,
+        hasSpikes: 0.0,
+        phase: rand() * Math.PI * 2,
+        revealOrder: 0
+      });
+    }
+
+    // 2C. 3 Parallax Deep-Sky Starfield Layers (same single Points draw call!)
+    for (let i = 0; i < SKY_MAP_CONFIG.parallaxStarCount; i++) {
+      const layer = i % 3;
+      const ndcX = (rand() * 2 - 1) * 1.9;
+      const ndcY = (rand() * 2 - 1) * 1.6;
+      const depth = 900 + layer * 1050 + rand() * 850;
+      const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
+      const rgb = tempToRgbArray(temps[Math.floor(rand() * temps.length)]);
+      const lum = Math.pow(rand(), 3.8);
+      starRecords.push({
+        kind: 2, // sky background layer
+        layer,
+        worldPos,
+        rgb,
+        size: 5.0 + lum * 11.0,
+        brightness: 0.14 + lum * 0.55,
+        hasSpikes: 0.0,
+        phase: rand() * Math.PI * 2,
+        revealOrder: 0
+      });
+    }
+
+    // Pack ALL stars into ONE THREE.BufferGeometry (1 draw call!)
+    const total = starRecords.length;
+    const positions = new Float32Array(total * 3);
+    const colors = new Float32Array(total * 3);
+    const sizes = new Float32Array(total);
+    const detailSizes = new Float32Array(total);
+    const secIds = new Float32Array(total);
+    const attrsMeta = new Float32Array(total * 4); // x: brightness, y: phase, z: hasSpikes, w: kind/reveal
+
+    for (let i = 0; i < total; i++) {
+      const r = starRecords[i];
+      positions[i * 3 + 0] = r.worldPos.x;
+      positions[i * 3 + 1] = r.worldPos.y;
+      positions[i * 3 + 2] = r.worldPos.z;
+      colors[i * 3 + 0] = r.rgb[0];
+      colors[i * 3 + 1] = r.rgb[1];
+      colors[i * 3 + 2] = r.rgb[2];
+      sizes[i] = r.size;
+      detailSizes[i] = r.detailSize || r.size;
+      secIds[i] = r.kind === 0 ? r.secIdx : -1.0;
+      attrsMeta[i * 4 + 0] = r.brightness;
+      attrsMeta[i * 4 + 1] = r.phase;
+      attrsMeta[i * 4 + 2] = r.hasSpikes;
+      attrsMeta[i * 4 + 3] = r.kind === 0 ? (0.1 + r.revealOrder) : (r.kind === 1 ? -1.0 : -2.0);
+    }
+
+    skyMapBasePositions = new Float32Array(positions);
+
+    const ptsGeo = new THREE.BufferGeometry();
+    ptsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    ptsGeo.setAttribute('aColor', new THREE.BufferAttribute(colors, 3));
+    ptsGeo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
+    ptsGeo.setAttribute('aDetailSize', new THREE.BufferAttribute(detailSizes, 1));
+    ptsGeo.setAttribute('aSecIdx', new THREE.BufferAttribute(secIds, 1));
+    ptsGeo.setAttribute('aMeta', new THREE.BufferAttribute(attrsMeta, 4));
+    ptsGeo.userData.totalCount = total;
+
+    skyMapPointsMat = new THREE.ShaderMaterial({
+      uniforms: {
+        uTime: { value: 0.0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) },
+        uTransitionP: { value: 0.0 },
+        uOpacity: { value: 0.0 },
+        uReducedMotion: { value: isReducedMotion ? 1.0 : 0.0 },
+        uHoveredSector: { value: -1.0 },
+        uActiveDetailSec: { value: -1.0 },
+        uDetailZoom: { value: 0.0 },
+        uDetailFadeOut: { value: 1.0 }
+      },
+      vertexShader: `
+        attribute vec3 aColor;
+        attribute float aSize;
+        attribute float aDetailSize;
+        attribute float aSecIdx;
+        attribute vec4 aMeta;
+        uniform float uPixelRatio;
+        uniform float uTransitionP;
+        uniform float uTime;
+        uniform float uReducedMotion;
+        uniform float uHoveredSector;
+        uniform float uActiveDetailSec;
+        uniform float uDetailZoom;
+        uniform float uDetailFadeOut;
+        varying vec3 vColor;
+        varying float vAlpha;
+        varying float vSpikes;
+
+        float smoothstepLocal(float a, float b, float x) {
+          float u = clamp((x - a) / max(0.0001, b - a), 0.0, 1.0);
+          return u * u * (3.0 - 2.0 * u);
+        }
+
+        void main() {
+          vColor = aColor;
+
+          float baseBright = aMeta.x;
+          float phase = aMeta.y;
+          float kindTag = aMeta.w;
+
+          // Star brightness curve across transitionProgress:
+          float vis = smoothstepLocal(0.15, 0.45, uTransitionP);
+          if (kindTag > 0.0) {
+            float seqStart = 0.44 + (kindTag - 0.1) * 0.62;
+            float baseAt55 = 0.36;
+            vis = baseAt55 * smoothstepLocal(0.24, 0.50, uTransitionP) +
+                  (1.0 - baseAt55) * smoothstepLocal(seqStart, seqStart + 0.18, uTransitionP);
+          }
+
+          float hoverBoost = 1.0;
+          float detailVis = 1.0;
+          float activeMatch = 0.0;
+          if (aSecIdx >= 0.0) {
+            if (uHoveredSector >= -0.5 && uDetailZoom <= 0.01) {
+              float isHov = 1.0 - step(0.25, abs(aSecIdx - uHoveredSector));
+              hoverBoost = mix(0.62, 1.28, isHov);
+            }
+            if (uActiveDetailSec >= -0.5) {
+              activeMatch = 1.0 - step(0.25, abs(aSecIdx - uActiveDetailSec));
+              float otherFade = 1.0 - smoothstepLocal(0.0, 0.45, uDetailZoom);
+              detailVis = mix(otherFade, uDetailFadeOut, activeMatch);
+            }
+          }
+
+          float spikeReveal = smoothstepLocal(0.54, 0.82, uTransitionP);
+          vSpikes = aMeta.z * spikeReveal;
+
+          float breathe = uReducedMotion > 0.5 ? 1.0 : (1.0 + 0.03 * sin(uTime * 1.7 + phase));
+          vAlpha = baseBright * vis * breathe * hoverBoost * detailVis;
+
+          float ptSize = mix(aSize * (0.88 + 0.24 * vis), aDetailSize, activeMatch * uDetailZoom);
+          if (hoverBoost > 1.05) ptSize *= 1.12;
+
+          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = ptSize * uPixelRatio;
+          gl_Position = projectionMatrix * mvPos;
+        }
+      `,
+      fragmentShader: `
+        uniform float uOpacity;
+        varying vec3 vColor;
+        varying float vAlpha;
+        varying float vSpikes;
+
+        void main() {
+          vec2 uv = gl_PointCoord - vec2(0.5);
+          float d = length(uv) * 2.0;
+          if (d > 1.0) discard;
+
+          // Pinpoint astronomical PSF: hot core + smooth exponential falloff
+          float core = exp(-d * d * 26.0);
+          float halo = exp(-d * 4.2) * 0.42;
+          float spikes = 0.0;
+          if (vSpikes > 0.02) {
+            float sx = exp(-abs(uv.y) * 34.0) * exp(-abs(uv.x) * 4.5);
+            float sy = exp(-abs(uv.x) * 34.0) * exp(-abs(uv.y) * 4.5);
+            spikes = (sx + sy) * 0.52 * vSpikes;
+          }
+
+          float intensity = clamp(core + halo + spikes, 0.0, 1.0);
+          vec3 col = mix(vColor, vec3(1.0), core * 0.85);
+          gl_FragColor = vec4(col, intensity * vAlpha * uOpacity);
+        }
+      `,
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    skyMapPoints = new THREE.Points(ptsGeo, skyMapPointsMat);
+    skyMapPoints.renderOrder = 5;
+    skyMapGroup.add(skyMapPoints);
+
+    // 3. Constellation Lines (LineSegments with per-vertex colors for hover highlight & gold->2D blend)
+    const lineVerts = new Float32Array(skyMapEdgeList.length * 6);
+    const lineCols = new Float32Array(skyMapEdgeList.length * 6);
+    for (let i = 0; i < lineCols.length; i += 3) {
+      lineCols[i + 0] = 0.902;
+      lineCols[i + 1] = 0.745;
+      lineCols[i + 2] = 0.416;
+    }
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(lineVerts, 3));
+    lineGeo.setAttribute('color', new THREE.BufferAttribute(lineCols, 3));
+    skyMapLinesMat = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.0,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+    skyMapLines = new THREE.LineSegments(lineGeo, skyMapLinesMat);
+    skyMapLines.renderOrder = 6;
+    skyMapGroup.add(skyMapLines);
+  }
+
+  function dismissSkyMapHint() {
+    if (skyMapHintEl) {
+      skyMapHintEl.style.opacity = '0';
+      skyMapHintEl.style.pointerEvents = 'none';
+      setTimeout(() => {
+        if (skyMapHintEl && skyMapHintEl.parentNode) {
+          skyMapHintEl.parentNode.removeChild(skyMapHintEl);
+        }
+        skyMapHintEl = null;
+      }, 360);
+    }
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('agy_skymap_hint_dismissed', '1');
+      }
+    } catch (_e) {}
+  }
+
+  function setHoveredSkySector(secIdx) {
+    if (detailMode !== 'skymap') secIdx = -1;
+    hoveredSkySectorIdx = secIdx;
+    if (secIdx >= 0) dismissSkyMapHint();
+    if (skyMapPointsMat && skyMapPointsMat.uniforms.uHoveredSector) {
+      skyMapPointsMat.uniforms.uHoveredSector.value = secIdx;
+    }
+    skyMapSectorCenters.forEach(item => {
+      if (!item.labelEl) return;
+      item.labelEl.classList.toggle('is-hovered', secIdx >= 0 && item.secIdx === secIdx);
+      item.labelEl.classList.toggle('is-dimmed', secIdx >= 0 && item.secIdx !== secIdx);
+    });
+  }
+
+  function getZoomCameraPose(secIdx, basis, aspect) {
+    const item = skyMapSectorCenters[secIdx];
+    const slot = item ? item.slot : { x: 0, y: 0, scale: 0.14, rotation: 0 };
+    const rayPt = ndcToSkyWorld(slot.x, slot.y, 2200, basis, aspect);
+    const dir = rayPt.clone().sub(basis.cam).normalize();
+    const camZoom = basis.cam.clone().addScaledVector(dir, 640);
+    const lookZoom = rayPt.clone().addScaledVector(dir, 1480);
+    return { camZoom, lookZoom, dir, slot };
+  }
+
+  function computeDetailStarTargets(secIdx) {
+    if (typeof THREE === 'undefined' || !containerEl) return;
+    const w = window.innerWidth || containerEl.clientWidth || 1366;
+    const h = window.innerHeight || containerEl.clientHeight || 768;
+    const aspect = Math.max(0.45, Math.min(2.4, w / Math.max(1, h)));
+    const basis = getSkyMapBasis();
+    const { camZoom, lookZoom } = getZoomCameraPose(secIdx, basis, aspect);
+
+    // Construct temporary exact camera matching settled zoomed pose (fov 42, zero roll)
+    const refCam = new THREE.PerspectiveCamera(42.0, aspect, 1.0, 7500);
+    refCam.position.copy(camZoom);
+    refCam.up.set(0, 1, 0);
+    refCam.lookAt(lookZoom);
+    refCam.updateMatrixWorld();
+    refCam.updateProjectionMatrix();
+
+    // Read exact 2D Detail View pixel targets from TechnologyConstellation so last 3D frame matches within <1px
+    const metrics = (window.TechnologyConstellation && typeof window.TechnologyConstellation.getLayoutMetrics === 'function')
+      ? window.TechnologyConstellation.getLayoutMetrics()
+      : null;
+    if (!metrics || !metrics.stars) return;
+
+    const starByLocal = new Map(metrics.stars.map(s => [s.idx, s]));
+    skyMapStarMeta.forEach(m => {
+      if (m.secIdx !== secIdx) return;
+      const tStar = starByLocal.get(m.localIdx);
+      if (!tStar) return;
+      const ndcX = (tStar.sx / w) * 2.0 - 1.0;
+      const ndcY = 1.0 - (tStar.sy / h) * 2.0;
+      const p3 = new THREE.Vector3(ndcX, ndcY, 0.5).unproject(refCam);
+      const rayDir = p3.sub(camZoom).normalize();
+      m.detailWorldPos.copy(camZoom).addScaledVector(rayDir, 2200.0);
+    });
+  }
+
+  function openConstellation(keyOrIdx) {
+    if (!skyMapSectorCenters.length) return;
+    let idx = typeof keyOrIdx === 'number'
+      ? keyOrIdx
+      : skyMapSectorCenters.findIndex(s => s.key === keyOrIdx);
+    if (idx < 0 || idx >= skyMapSectorCenters.length) return;
+
+    const masterT = window.MasterJourneyController ? window.MasterJourneyController.getProgress() : 0.85;
+    if (window.MasterJourneyController && masterT < 0.848) {
+      window.MasterJourneyController.setTransitionProgress(1.0, true);
+    }
+
+    dismissSkyMapHint();
+    setHoveredSkySector(-1);
+    detailSectorIdx = idx;
+
+    if (window.TechnologyConstellation) {
+      if (typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
+        window.TechnologyConstellation.setSharedBackdropMode(true);
+      }
+      if (typeof window.TechnologyConstellation.selectSector === 'function') {
+        window.TechnologyConstellation.selectSector(idx, { instant: true, skipEntrance: true, fromThree: true });
+      }
+    }
+
+    computeDetailStarTargets(idx);
+    detailLastTickMs = performance.now();
+    detailMode = 'opening';
+  }
+
+  function closeConstellationDetail(instant = false) {
+    if (detailMode === 'skymap' && detailProgress <= 0.001) return;
+    setHoveredSkySector(-1);
+    if (instant || isReducedMotion) {
+      detailProgress = 0.0;
+      detailMode = 'skymap';
+      if (window.TechnologyConstellation && typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
+        window.TechnologyConstellation.setSharedBackdropMode(false);
+      }
+      const discEl = document.getElementById('disciplines');
+      if (discEl) {
+        discEl.style.opacity = '0';
+        discEl.style.visibility = 'hidden';
+        discEl.style.pointerEvents = 'none';
+        discEl.classList.remove('is-interactive');
+      }
+      return;
+    }
+    detailLastTickMs = performance.now();
+    detailMode = 'closing';
+  }
+
+  function setActiveDetailSector(keyOrIdx) {
+    const idx = typeof keyOrIdx === 'number'
+      ? keyOrIdx
+      : skyMapSectorCenters.findIndex(s => s.key === keyOrIdx);
+    if (idx < 0 || idx >= skyMapSectorCenters.length || idx === detailSectorIdx) return;
+    detailSectorIdx = idx;
+    computeDetailStarTargets(idx);
+  }
+
+  function tickDetailTransition() {
+    if (detailMode !== 'opening' && detailMode !== 'closing') return;
+    const now = performance.now();
+    const dtMs = Math.max(0, Math.min(50, now - (detailLastTickMs || now)));
+    detailLastTickMs = now;
+    if (detailMode === 'opening') {
+      const dur = isReducedMotion ? 240 : DETAIL_OPEN_MS;
+      detailProgress = Math.min(1.0, detailProgress + dtMs / dur);
+      if (detailProgress >= 1.0) {
+        detailProgress = 1.0;
+        detailMode = 'detail';
+      }
+    } else {
+      const dur = isReducedMotion ? 220 : DETAIL_CLOSE_MS;
+      detailProgress = Math.max(0.0, detailProgress - dtMs / dur);
+      if (detailProgress <= 0.0) {
+        detailProgress = 0.0;
+        detailMode = 'skymap';
+        if (window.TechnologyConstellation && typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
+          window.TechnologyConstellation.setSharedBackdropMode(false);
+        }
+      }
+    }
+  }
+
+  function updateSkyMapStage(p, elapsedSec, masterT) {
+    if (!skyMapGroup || !camera) return;
+
+    const smooth = (a, b, x) => {
+      const u = Math.max(0.0, Math.min(1.0, (x - a) / Math.max(0.0001, b - a)));
+      return u * u * (3.0 - 2.0 * u);
+    };
+
+    // Smooth cross-dissolve out when scrolling past Sky Map (0.85) toward Sector 04 Contact (0.88..1.00)
+    const contactFade = (typeof masterT === 'number' && masterT > 0.865)
+      ? (1.0 - smooth(0.865, 0.915, masterT))
+      : 1.0;
+
+    const disciplinesEl = document.getElementById('disciplines');
+    const isDestroyed = (typeof BlackHoleLifecycle !== 'undefined' &&
+      (BlackHoleLifecycle.isDestroyed() || BlackHoleLifecycle.isDestroying() || BlackHoleLifecycle.isReadyToDestroy()));
+
+    // Hide cleanly when completely back in solar system OR settled in Contact
+    if (p <= 0.01 || contactFade <= 0.005) {
+      skyMapGroup.visible = false;
+      if (skyMapLabelsOverlay) {
+        skyMapLabelsOverlay.style.opacity = '0';
+        skyMapLabelsOverlay.style.visibility = 'hidden';
+        skyMapLabelsOverlay.style.pointerEvents = 'none';
+      }
+      if (disciplinesEl && detailMode !== 'detail') {
+        disciplinesEl.style.opacity = '0';
+        disciplinesEl.style.visibility = 'hidden';
+        disciplinesEl.style.pointerEvents = 'none';
+        disciplinesEl.classList.remove('is-interactive');
+      }
+      return;
+    }
+
+    skyMapGroup.visible = true;
+
+    const zoomU = Math.max(0.0, Math.min(1.0, detailProgress / DETAIL_ZOOM_FRAC));
+    const handoffAlpha = smooth(DETAIL_ZOOM_FRAC, 1.0, detailProgress);
+    const activeSecForShader = detailProgress > 0.001 ? detailSectorIdx : -1.0;
+
+    // 1. Subtle Milky Way Fade In (0.22 -> 0.58) — stays continuous behind Detail View!
+    if (skyMapMilkyWayMat) {
+      skyMapMilkyWayMat.opacity = 0.55 * smooth(0.22, 0.58, p) * contactFade;
+    }
+
+    // 2. Interpolate selected constellation star 3D positions smoothly from Sky Map rays to exact 2D layout targets
+    if (skyMapPoints && skyMapBasePositions) {
+      const ptsPosAttr = skyMapPoints.geometry.getAttribute('position');
+      const posBlend = smooth(0.22, 0.96, zoomU);
+      let anyMoved = false;
+      skyMapStarMeta.forEach(m => {
+        const i3 = m.recordIndex * 3;
+        if (detailProgress > 0.001 && m.secIdx === detailSectorIdx) {
+          m.worldPos.copy(m.baseWorldPos).lerp(m.detailWorldPos, posBlend);
+          anyMoved = true;
+        } else {
+          m.worldPos.copy(m.baseWorldPos);
+        }
+        ptsPosAttr.array[i3 + 0] = m.worldPos.x;
+        ptsPosAttr.array[i3 + 1] = m.worldPos.y;
+        ptsPosAttr.array[i3 + 2] = m.worldPos.z;
+      });
+      if (anyMoved || detailMode !== 'skymap') {
+        ptsPosAttr.needsUpdate = true;
+      }
+    }
+
+    // 3. Point Cloud Uniforms (identical 1,410 deep-sky stars stay opaque behind Detail View)
+    if (skyMapPointsMat) {
+      skyMapPointsMat.uniforms.uTime.value = elapsedSec;
+      skyMapPointsMat.uniforms.uTransitionP.value = p;
+      skyMapPointsMat.uniforms.uOpacity.value = smooth(0.08, 0.35, p) * contactFade;
+      skyMapPointsMat.uniforms.uHoveredSector.value = (detailMode === 'skymap') ? hoveredSkySectorIdx : -1.0;
+      skyMapPointsMat.uniforms.uActiveDetailSec.value = activeSecForShader;
+      skyMapPointsMat.uniforms.uDetailZoom.value = smooth(0.0, 1.0, zoomU);
+      skyMapPointsMat.uniforms.uDetailFadeOut.value = 1.0 - handoffAlpha;
+    }
+
+    // 4. Thin Constellation Lines Drawing (0.68 -> 0.88), hover highlight, and gold->silver-blue 3D/2D handoff
+    const lineDraw = smooth(0.68, 0.88, p);
+    if (skyMapLines && skyMapLinesMat) {
+      const otherLinesFade = detailProgress > 0.001 ? (1.0 - smooth(0.0, 0.42, zoomU)) : 1.0;
+      const activeLineFade = 1.0 - handoffAlpha;
+      const baseLineAlpha = 0.46 * Math.pow(Math.max(0.0, lineDraw), 0.72) * contactFade;
+      skyMapLines.visible = lineDraw > 0.005 && contactFade > 0.005 && activeLineFade > 0.005;
+      skyMapLinesMat.opacity = baseLineAlpha;
+
+      if (skyMapLines.visible) {
+        const posAttr = skyMapLines.geometry.getAttribute('position');
+        const colAttr = skyMapLines.geometry.getAttribute('color');
+        const coolingBlend = smooth(0.35, 0.92, zoomU);
+        for (let i = 0; i < skyMapEdgeList.length; i++) {
+          const e = skyMapEdgeList[i];
+          const a = e.metaA.worldPos;
+          const b = e.metaB.worldPos;
+          const dir = new THREE.Vector3().subVectors(b, a);
+          const len = Math.max(0.001, dir.length());
+          dir.divideScalar(len);
+
+          // Gap smoothly converges to exact 11px-equivalent of 2D Detail View during zoom
+          const isTargetSec = detailProgress > 0.001 && e.secIdx === detailSectorIdx;
+          const gapFrac = isTargetSec ? (0.011 + (0.0052 - 0.011) * coolingBlend) : 0.011;
+          const gapA = a.distanceTo(camera.position) * gapFrac;
+          const gapB = b.distanceTo(camera.position) * gapFrac;
+          const usableLen = Math.max(1.0, len - gapA - gapB);
+          const pA = a.clone().addScaledVector(dir, gapA);
+          const pB = pA.clone().addScaledVector(dir, usableLen * lineDraw);
+
+          posAttr.setXYZ(i * 2, pA.x, pA.y, pA.z);
+          posAttr.setXYZ(i * 2 + 1, pB.x, pB.y, pB.z);
+
+          let lum = 1.0;
+          let rCol = 0.902, gCol = 0.745, bCol = 0.416; // #e6be6a gold
+          if (detailProgress > 0.001) {
+            if (isTargetSec) {
+              rCol = 0.902 + (0.855 - 0.902) * coolingBlend;
+              gCol = 0.745 + (0.894 - 0.745) * coolingBlend;
+              bCol = 0.416 + (0.973 - 0.416) * coolingBlend;
+              lum = (1.0 - 0.48 * coolingBlend) * activeLineFade;
+            } else {
+              lum = otherLinesFade;
+            }
+          } else if (hoveredSkySectorIdx >= 0) {
+            lum = (e.secIdx === hoveredSkySectorIdx) ? 1.55 : 0.45;
+          }
+          const cIdx = i * 6;
+          colAttr.array[cIdx + 0] = rCol * lum;
+          colAttr.array[cIdx + 1] = gCol * lum;
+          colAttr.array[cIdx + 2] = bCol * lum;
+          colAttr.array[cIdx + 3] = rCol * lum;
+          colAttr.array[cIdx + 4] = gCol * lum;
+          colAttr.array[cIdx + 5] = bCol * lum;
+        }
+        posAttr.needsUpdate = true;
+        colAttr.needsUpdate = true;
+      }
+    }
+
+    // 5. Interactive Sky Map Hitboxes & Labels (visible & clickable at p >= 0.85 when Detail is closed)
+    const detailMask = 1.0 - smooth(0.0, 0.22, detailProgress);
+    const labelAlpha = smooth(0.80, 0.96, p) * contactFade * detailMask;
+    const canClickSky = (detailMode === 'skymap' && p >= 0.84 && contactFade > 0.5 && !isDestroyed);
+    if (skyMapLabelsOverlay) {
+      if (labelAlpha > 0.01 && !isDestroyed) {
+        skyMapLabelsOverlay.style.visibility = 'visible';
+        skyMapLabelsOverlay.style.opacity = labelAlpha.toFixed(3);
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const isNarrow = w <= 768;
+
+        skyMapSectorCenters.forEach(item => {
+          let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+          if (item.stars && item.stars.length) {
+            item.stars.forEach(st => {
+              const pr = st.worldPos.clone().project(camera);
+              const px = (pr.x * 0.5 + 0.5) * w;
+              const py = (-pr.y * 0.5 + 0.5) * h;
+              if (px < minX) minX = px;
+              if (px > maxX) maxX = px;
+              if (py < minY) minY = py;
+              if (py > maxY) maxY = py;
+            });
+          }
+          const lblProj = item.worldCenter.clone().project(camera);
+          const lblX = (lblProj.x * 0.5 + 0.5) * w;
+          const lblY = (-lblProj.y * 0.5 + 0.5) * h;
+          if (!Number.isFinite(minX)) {
+            minX = lblX - 60; maxX = lblX + 60; minY = lblY - 70; maxY = lblY;
+          }
+
+          const boxW = Math.max(isNarrow ? 112 : 165, Math.min(isNarrow ? 140 : 280, (maxX - minX) + 52));
+          const lblPadBottom = isNarrow ? 34 : 28;
+          const boxH = Math.max(88, (Math.max(maxY, lblY) + lblPadBottom) - (minY - 22));
+          const cxBox = Math.max(boxW * 0.5 + 6, Math.min(w - boxW * 0.5 - 6, lblX));
+          const topBox = Math.max(58, Math.min(h - 64 - boxH, minY - 22));
+
+          item.labelEl.style.width = boxW.toFixed(0) + 'px';
+          item.labelEl.style.height = boxH.toFixed(0) + 'px';
+          item.labelEl.style.pointerEvents = canClickSky ? 'auto' : 'none';
+          item.labelEl.tabIndex = canClickSky ? 0 : -1;
+          item.labelEl.style.transform = `translate3d(${(cxBox - boxW * 0.5).toFixed(1)}px, ${topBox.toFixed(1)}px, 0)`;
+        });
+      } else {
+        skyMapLabelsOverlay.style.opacity = '0';
+        skyMapLabelsOverlay.style.visibility = 'hidden';
+        skyMapSectorCenters.forEach(item => {
+          item.labelEl.style.pointerEvents = 'none';
+        });
+      }
+    }
+
+    // 6. Seamless 0.40s Crossfade Handoff to 2D Constellation Detail View (#disciplines)
+    if (disciplinesEl) {
+      if (handoffAlpha > 0.005 && !isDestroyed && contactFade > 0.5) {
+        if (window.TechnologyConstellation && typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
+          window.TechnologyConstellation.setSharedBackdropMode(true);
+        }
+        disciplinesEl.style.visibility = 'visible';
+        disciplinesEl.style.opacity = handoffAlpha.toFixed(3);
+        const interactive = handoffAlpha >= 0.85 && detailMode === 'detail';
+        disciplinesEl.style.pointerEvents = interactive ? 'auto' : 'none';
+        disciplinesEl.classList.toggle('is-interactive', interactive);
+        if (window.TechnologyConstellation && typeof window.TechnologyConstellation.forceRenderNow === 'function') {
+          window.TechnologyConstellation.forceRenderNow();
+        }
+      } else {
+        disciplinesEl.style.opacity = '0';
+        disciplinesEl.style.visibility = 'hidden';
+        disciplinesEl.style.pointerEvents = 'none';
+        disciplinesEl.classList.remove('is-interactive');
+      }
+    }
+  }
+
+  // Continuous 4-Phase Flight Camera (0..0.25 Pull Back -> 0.25..0.55 Deep Space -> 0.55..0.85 Alignment -> 0.85..1.00 Arrival)
+  function evaluateSkillsTransitionCamera(p) {
+    const lastIdx = projects.length - 1;
+    const cur = arrivalPoses[lastIdx] || { camPos: new THREE.Vector3(-40, 95, 580), lookTarget: new THREE.Vector3(0, 0, 0) };
+    const basis = getSkyMapBasis();
+
+    const smooth = (a, b, x) => {
+      const u = Math.max(0.0, Math.min(1.0, (x - a) / Math.max(0.0001, b - a)));
+      return u * u * (3.0 - 2.0 * u);
+    };
+    const quintic = (u) => u * u * u * (u * (u * 6.0 - 15.0) + 10.0);
+
+    const P_00 = cur.camPos.clone();
+    const P_25 = new THREE.Vector3(-40, 260, 1280);
+    // Offset at p=0.55 keeps ALL 7 constellations inside viewport while guaranteeing ~160-260px differential parallax!
+    const P_55 = basis.cam.clone()
+      .addScaledVector(basis.fwd, -590)
+      .addScaledVector(basis.right, -445)
+      .addScaledVector(basis.up, 205);
+    const P_85 = basis.cam.clone()
+      .addScaledVector(basis.fwd, -55)
+      .addScaledVector(basis.right, -16)
+      .addScaledVector(basis.up, 7);
+    const P_100 = basis.cam.clone();
+
+    let camPos;
+    let fov = 46.0;
+    let roll = 0.0;
+
+    if (p <= 0.25) {
+      // Phase 1: Pull Back from Planet 07
+      const u = quintic(p / 0.25);
+      camPos = P_00.clone().lerp(P_25, u);
+      fov = 44.0 + 3.0 * u;
+    } else if (p <= 0.55) {
+      // Phase 2: Deep Space Cruise + ~21° Camera Turn + Light Sway + Wide FOV
+      const raw = (p - 0.25) / 0.30;
+      const u = quintic(raw);
+      camPos = P_25.clone().lerp(P_55, u);
+      fov = 47.0 + 5.0 * Math.sin(raw * Math.PI); // peaks ~52° at mid-speed
+      roll = -0.032 * Math.sin(raw * Math.PI);
+    } else if (p <= 0.85) {
+      // Phase 3: Parallax Alignment Glide (steady glide across 0.55->0.65->0.75->0.85 so stars visibly slide in)
+      const raw = (p - 0.55) / 0.30;
+      const sm = raw * raw * (3.0 - 2.0 * raw);
+      const u = 0.80 * raw + 0.20 * sm;
+      camPos = P_55.clone().lerp(P_85, u);
+      fov = 47.0 - 0.8 * u;
+      roll = -0.014 * (1.0 - u);
+    } else {
+      // Phase 4: Long Smooth Slow-Down Arrival (0.85 -> 1.00)
+      const raw = (p - 0.85) / 0.15;
+      const u = 1.0 - Math.pow(1.0 - raw, 3.0);
+      camPos = P_85.clone().lerp(P_100, u);
+      fov = 46.2 - 0.2 * u;
+      roll = 0.0;
+    }
+
+    // Mouse micro-parallax capped strictly <= 6 px at rest (fades to 0 during detail zoom so handoff < 1 px)
+    const restParallaxWeight = smooth(0.85, 1.0, p) * (1.0 - smooth(0.0, 0.35, detailProgress));
+    if (restParallaxWeight > 0.001) {
+      camPos.addScaledVector(basis.right, smoothSkyMouseX * 2.4 * restParallaxWeight);
+      camPos.addScaledVector(basis.up, -smoothSkyMouseY * 1.8 * restParallaxWeight);
+    }
+
+    // Look target transitions smoothly: Planet 07 -> Solar center (0..0.25) -> far Sky Map horizon target (0.25..0.55)
+    const L_SOLAR = new THREE.Vector3(0, 0, 0);
+    const L_SKY = basis.cam.clone().addScaledVector(basis.fwd, 4200);
+    let lookTarget;
+    if (p <= 0.25) {
+      const u = smooth(0.0, 0.22, p);
+      lookTarget = cur.lookTarget.clone().lerp(L_SOLAR, u);
+    } else if (p <= 0.55) {
+      const u = quintic((p - 0.25) / 0.30);
+      lookTarget = L_SOLAR.clone().lerp(L_SKY, u);
+    } else {
+      lookTarget = L_SKY.clone();
+    }
+
+    // Phase 4: Open / Close Constellation Zoom Camera + 0.40s nearly-still crossfade drift
+    if (detailProgress > 0.001 && skyMapSectorCenters.length) {
+      const w = containerEl ? (containerEl.clientWidth || window.innerWidth) : window.innerWidth;
+      const h = containerEl ? (containerEl.clientHeight || window.innerHeight) : window.innerHeight;
+      const aspect = Math.max(0.45, Math.min(2.4, w / Math.max(1, h)));
+      const { camZoom, lookZoom, dir } = getZoomCameraPose(detailSectorIdx, basis, aspect);
+      const zoomU = Math.max(0.0, Math.min(1.0, detailProgress / DETAIL_ZOOM_FRAC));
+      const zoomEase = zoomU * zoomU * zoomU * (zoomU * (zoomU * 6.0 - 15.0) + 10.0);
+      const handoffU = Math.max(0.0, Math.min(1.0, (detailProgress - DETAIL_ZOOM_FRAC) / (1.0 - DETAIL_ZOOM_FRAC)));
+
+      camPos.lerp(camZoom, zoomEase);
+      lookTarget.lerp(lookZoom, zoomEase);
+      fov = fov + (42.0 - fov) * zoomEase;
+      roll = roll * (1.0 - zoomEase);
+
+      // Camera stays nearly still (tiny +3 unit creep) across the 0.4s crossfade
+      if (handoffU > 0.001) {
+        camPos.addScaledVector(dir, 3.0 * handoffU);
+      }
+    }
+
+    return {
+      camPos,
+      lookTarget,
+      segIdx: lastIdx,
+      rawU: p,
+      easedU: p,
+      isDwell: false,
+      roll,
+      fov,
+      isDeparture: true,
+      transitionProgress: p
+    };
   }
 
   // ── 04. CORE THREE.JS INITIALIZATION ──
@@ -1269,7 +2511,7 @@
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x08070b, 0.00065);
 
-    camera = new THREE.PerspectiveCamera(46, width / height, 1.0, 4500);
+    camera = new THREE.PerspectiveCamera(46, width / height, 1.0, 7500);
     camera.position.set(0, 320, 640);
 
     // Scene is lit authentically from the Sun at (0, 0, 0)
@@ -1287,7 +2529,7 @@
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
 
-    // Build the Living Astronomical Solar System
+    // Build the Living Astronomical Solar System + Same-Scene 3D Sky Map
     buildGalacticCore();
     buildSpiralArms();
     buildPlanetarySystem();
@@ -1299,7 +2541,13 @@
       }
     }
     buildAsteroidField();
+    buildSkyMapStage();
     initPostProcessing(width, height);
+
+    window.addEventListener('mousemove', (e) => {
+      skyMouseNormX = (e.clientX / Math.max(1, window.innerWidth)) * 2 - 1;
+      skyMouseNormY = (e.clientY / Math.max(1, window.innerHeight)) * 2 - 1;
+    }, { passive: true });
 
     // Sector 01 Initial Staging (ensure solar system is 100% hidden at t=0)
     updateSector01VisualStaging(0.0);
@@ -1322,10 +2570,14 @@
 
     // Initial Waypoint Update & Preloader Dismissal
     updateDossier(0);
-    setTimeout(() => {
-      const preloader = document.getElementById('galaxyPreloader');
+    const preloader = document.getElementById('galaxyPreloader');
+    if (typeof window !== 'undefined' && window.location.search && window.location.search.includes('skipIntro=1')) {
       if (preloader) preloader.classList.add('is-hidden');
-    }, 1200);
+    } else {
+      setTimeout(() => {
+        if (preloader) preloader.classList.add('is-hidden');
+      }, 1200);
+    }
     console.info('[GalaxyJourney] Cinematic Solar-System Experience online.');
   }
 
@@ -1432,9 +2684,9 @@
         float macroPlasma  = fbm(flowCoord * 1.8 + vec3(0.0, 0.0, uTime * 0.07)) * 0.5;
         float heat = clamp(0.5 + 0.5 * (granuleNoise + fineGranules + macroPlasma), 0.0, 1.0);
 
-        // Physical Eddington Solar Limb Darkening (darker, softer edges)
+        // Physical Eddington Solar Limb Darkening (darker, softer edges with minimum self-radiance)
         vec3 norm = normalize(vNormal);
-        float mu = max(0.0, dot(norm, vec3(0.0, 0.0, 1.0)));
+        float mu = clamp(dot(norm, vec3(0.0, 0.0, 1.0)), 0.35, 1.0);
         float limbDarkening = pow(mu, 0.70);
 
         // Limb Prominences & Dynamic Spicules
@@ -1444,21 +2696,24 @@
 
         // Radiant Planck Solar Spectrum
         vec3 coreWhiteGold  = vec3(1.00, 0.98, 0.94);
-        vec3 solarYellow    = vec3(1.00, 0.84, 0.32);
-        vec3 plasmaAmber    = vec3(0.96, 0.52, 0.08);
-        vec3 limbCrimson    = vec3(0.58, 0.14, 0.02);
+        vec3 solarYellow    = vec3(1.00, 0.86, 0.36);
+        vec3 plasmaAmber    = vec3(0.98, 0.56, 0.10);
+        vec3 limbCrimson    = vec3(0.85, 0.38, 0.08);
 
         vec3 surfaceColor = mix(plasmaAmber, solarYellow, heat);
-        surfaceColor = mix(surfaceColor, coreWhiteGold, pow(heat, 2.2) * 0.85);
+        surfaceColor = mix(surfaceColor, coreWhiteGold, pow(heat, 2.0) * 0.88);
 
         // Photorealistic NASA SDO Granulation Overlay (Zero hard black spots)
         vec4 sunTex = texture2D(uSunTexture, vUv);
-        surfaceColor = mix(surfaceColor, surfaceColor * sunTex.rgb * 1.40, 0.38);
+        float texLum = dot(sunTex.rgb, vec3(0.299, 0.587, 0.114));
+        if (texLum > 0.02) {
+          surfaceColor = mix(surfaceColor, surfaceColor * sunTex.rgb * 1.45, 0.38);
+        }
 
         vec3 finalColor = mix(limbCrimson, surfaceColor, limbDarkening);
-        finalColor += vec3(1.0, 0.55, 0.15) * prominence;
+        finalColor += vec3(1.0, 0.65, 0.25) * prominence;
 
-        gl_FragColor = vec4(finalColor * (1.12 + 0.35 * limbDarkening), 1.0);
+        gl_FragColor = vec4(finalColor * (1.20 + 0.40 * limbDarkening), 1.0);
       }
     `;
 
@@ -1509,7 +2764,7 @@
             + 0.10 * sin(14.0 * theta - uTime * 0.25)
             + 0.06 * cos(22.0 * theta + uTime * 1.10);
 
-          float innerMask = smoothstep(0.24, 0.36, r);
+          float innerMask = smoothstep(0.16, 0.30, r);
           // Inner intense K-corona + outer F-corona streamers
           float kCorona = exp(-r * 5.2) * 2.2;
           float fCorona = pow(max(0.0, 1.0 - r), 2.6) * rays * dipole;
@@ -2449,49 +3704,106 @@
     const P0 = cur ? cur.camPos.clone().add(new THREE.Vector3(-160, 110, 240)) : new THREE.Vector3(-210, 155, 360);
     const SUN = new THREE.Vector3(0, 0, 0);
 
-    // Deep space origin position at Home (t=0): Situated further back and leftward
-    const HOME_CAM = new THREE.Vector3(P0.x - 280.0, P0.y + 35.0, P0.z + 320.0);
-
     const clampedP = Math.max(0.0, Math.min(1.0, progress));
-    // Quintic Hermite smoothstep for natural, weightless aerospace movement
-    const u = clampedP * clampedP * clampedP * (clampedP * (clampedP * 6.0 - 15.0) + 10.0);
 
-    // Smooth Bezier flight path from HOME_CAM into P0
-    const P_mid = new THREE.Vector3(
-      HOME_CAM.x * 0.40 + P0.x * 0.60 + 40.0,
-      HOME_CAM.y * 0.40 + P0.y * 0.60 + 15.0,
-      HOME_CAM.z * 0.40 + P0.z * 0.60 - 30.0
-    );
-    const omt = 1.0 - u;
-    const camPos = new THREE.Vector3(
-      omt * omt * HOME_CAM.x + 2 * omt * u * P_mid.x + u * u * P0.x,
-      omt * omt * HOME_CAM.y + 2 * omt * u * P_mid.y + u * u * P0.y,
-      omt * omt * HOME_CAM.z + 2 * omt * u * P_mid.z + u * u * P0.z
-    );
+    // Deep space origin position at Home (t=0): Camera starts close to the black hole singularity
+    const HOME_CAM = new THREE.Vector3(P0.x - 320.0, P0.y + 45.0, P0.z + 360.0);
 
-    // Horizontal yaw calculation: at Home, spacecraft faces deep space (55° left of Sun)
-    const vHomeToSun = SUN.clone().sub(HOME_CAM).normalize();
-    const angleHomeToSun = Math.atan2(vHomeToSun.x, vHomeToSun.z);
-    const yawOffset = (55.0 * Math.PI) / 180.0;
-    const angleHomeForward = angleHomeToSun - yawOffset;
+    // ═══════════════════════════════════════════════════════════════════════
+    // 3-STAGE CINEMATIC GALAXY ODYSSEY — Feels like navigating through space
+    // ═══════════════════════════════════════════════════════════════════════
+    //
+    // Stage 1 (0.00 <= p <= 0.35): ZOOM OUT — Camera pulls straight back along
+    //   its own forward axis, as if the viewer is receding from the singularity.
+    //   The black hole shrinks naturally while surrounding stars become visible.
+    //   NO sideways motion. Pure depth retreat.
+    //
+    // Stage 2 (0.35 < p <= 0.68): ARC PAN — Camera sweeps in a gentle arc
+    //   through the starfield, banking slightly like a spacecraft adjusting course.
+    //   Stars stream past with parallax. A distant bright point (the Sun) begins
+    //   to grow on the far side.
+    //
+    // Stage 3 (0.68 < p <= 1.00): ZOOM IN — Camera accelerates toward the
+    //   glowing Sun, locking on and swooping into the solar system orbital plane.
+    //   Planets and orbital rings emerge from the growing stellar brilliance.
 
-    // Smooth yaw rotation towards the right (turning toward the solar system)
-    const curAngle = angleHomeForward + u * (angleHomeToSun - angleHomeForward);
-    const forwardLookDist = 700.0;
-
-    const initialLook = new THREE.Vector3(
-      camPos.x + forwardLookDist * Math.sin(curAngle),
-      camPos.y - 30.0 * (1.0 - u),
-      camPos.z + forwardLookDist * Math.cos(curAngle)
+    // Stage 1 Zoom-Out Apex: Pull straight back along camera's forward axis
+    const P_ZOOM_OUT = new THREE.Vector3(
+      HOME_CAM.x,
+      HOME_CAM.y + 140.0,
+      HOME_CAM.z + 380.0
     );
 
-    const lookTarget = initialLook.clone().lerp(SUN, u);
+    // Stage 2 Arc Waypoint: Shifted rightward and forward toward the Sun's neighbourhood
+    const P_ARC_MID = new THREE.Vector3(
+      HOME_CAM.x * 0.15 + P0.x * 0.85 + 80.0,
+      HOME_CAM.y * 0.20 + P0.y * 0.80 + 90.0,
+      HOME_CAM.z * 0.25 + P0.z * 0.75 + 60.0
+    );
 
-    // Gyroscopic roll during the spacecraft banking turn (max ~ -0.045 rad, -2.6 deg)
-    const roll = -0.045 * Math.sin(clampedP * Math.PI);
+    let camPos;
+    if (clampedP <= 0.35) {
+      // Stage 1: Pure zoom out (straight back)
+      const t1 = clampedP / 0.35;
+      const ease1 = t1 * t1 * t1 * (t1 * (t1 * 6.0 - 15.0) + 10.0); // Quintic Hermite
+      camPos = new THREE.Vector3().lerpVectors(HOME_CAM, P_ZOOM_OUT, ease1);
+    } else if (clampedP <= 0.68) {
+      // Stage 2: Arc sweep through starfield
+      const t2 = (clampedP - 0.35) / 0.33;
+      const ease2 = t2 * t2 * t2 * (t2 * (t2 * 6.0 - 15.0) + 10.0);
+      // Cubic Bezier arc for natural curvature
+      const ctrl1 = P_ZOOM_OUT.clone().add(new THREE.Vector3(60, -20, -80));
+      const ctrl2 = P_ARC_MID.clone().add(new THREE.Vector3(-40, 30, 50));
+      const oneMinusT = 1.0 - ease2;
+      const b0 = oneMinusT * oneMinusT * oneMinusT;
+      const b1 = 3.0 * oneMinusT * oneMinusT * ease2;
+      const b2 = 3.0 * oneMinusT * ease2 * ease2;
+      const b3 = ease2 * ease2 * ease2;
+      camPos = new THREE.Vector3(
+        b0 * P_ZOOM_OUT.x + b1 * ctrl1.x + b2 * ctrl2.x + b3 * P_ARC_MID.x,
+        b0 * P_ZOOM_OUT.y + b1 * ctrl1.y + b2 * ctrl2.y + b3 * P_ARC_MID.y,
+        b0 * P_ZOOM_OUT.z + b1 * ctrl1.z + b2 * ctrl2.z + b3 * P_ARC_MID.z
+      );
+    } else {
+      // Stage 3: Zoom in toward the solar system arrival point
+      const t3 = (clampedP - 0.68) / 0.32;
+      const ease3 = t3 * t3 * t3 * (t3 * (t3 * 6.0 - 15.0) + 10.0);
+      camPos = new THREE.Vector3().lerpVectors(P_ARC_MID, P0, ease3);
+    }
 
-    // Subtle FOV breathing to emphasize cosmic depth during the turn
-    const fov = 45.0 + 3.0 * Math.sin(clampedP * Math.PI);
+    // ── Dynamic FOV ──
+    // Starts at 44°, expands to ~52° at zoom-out apex (immersive wide), narrows to 44° on zoom-in
+    const fov = 44.0 + 8.0 * Math.sin(clampedP * Math.PI);
+
+    // ── Dynamic Banking Roll ──
+    // No roll during zoom-out, gentle bank during arc, settle to zero on approach
+    const rollPhase = Math.max(0.0, (clampedP - 0.25) / 0.50);
+    const roll = -0.055 * Math.sin(rollPhase * Math.PI);
+
+    // ── Look Target ──
+    // Stage 1: Gaze stays locked on the singularity (receding)
+    // Stage 2: Gaze sweeps forward along the arc, distant Sun becomes visible
+    // Stage 3: Gaze locks onto the Sun / solar system centre
+    const u = clampedP * clampedP * (3.0 - 2.0 * clampedP);
+
+    let lookTarget;
+    if (clampedP <= 0.30) {
+      // Look back at where we came from (the singularity) while zooming out
+      const singu = HOME_CAM.clone().add(new THREE.Vector3(0, -30, -200));
+      const forwardSpace = P_ZOOM_OUT.clone().add(new THREE.Vector3(50, -10, -300));
+      const w = clampedP / 0.30;
+      const ew = w * w * (3.0 - 2.0 * w);
+      lookTarget = singu.clone().lerp(forwardSpace, ew);
+    } else if (clampedP <= 0.65) {
+      // Sweep gaze through deep space toward the Sun's general direction
+      const forwardSpace = P_ZOOM_OUT.clone().add(new THREE.Vector3(50, -10, -300));
+      const w = (clampedP - 0.30) / 0.35;
+      const ew = w * w * (3.0 - 2.0 * w);
+      lookTarget = forwardSpace.clone().lerp(SUN, ew);
+    } else {
+      // Lock gaze on the Sun / solar system
+      lookTarget = SUN.clone();
+    }
 
     return { camPos, lookTarget, roll, fov, progress: clampedP };
   }
@@ -2500,19 +3812,20 @@
     if (!isActive) return;
     if (window.MasterJourneyController) return; // Master Journey Controller is the single authority for hero 3D camera synchronization
     const clampedP = Math.max(0.0, Math.min(1.0, p));
-    const slideX = -160.0 * clampedP;
     const fadeOpacity = Math.max(0.0, 1.0 - clampedP * 1.35);
+    // Pure zoom-out: scale down in place, no artificial sideways slide
+    const scale = (1.0 - clampedP * 0.3).toFixed(3);
 
     const heroLayout = document.querySelector('#hero .space-hero-unified-layout') || document.querySelector('#hero .hero-layout');
     if (heroLayout) {
-      heroLayout.style.transform = `translate3d(${slideX.toFixed(2)}px, 0, 0)`;
+      heroLayout.style.transform = `scale(${scale})`;
       heroLayout.style.opacity = fadeOpacity.toFixed(3);
       heroLayout.style.pointerEvents = clampedP > 0.5 ? 'none' : 'auto';
     }
 
     const bhContainer = document.getElementById('blackHoleContainer');
     if (bhContainer) {
-      bhContainer.style.transform = `translate3d(calc(var(--bh-x, 0px) + ${(slideX * 1.2).toFixed(2)}px), var(--bh-y, 0px), 0)`;
+      bhContainer.style.transform = `translate3d(var(--bh-x, 0px), var(--bh-y, 0px), 0) scale(${scale})`;
       bhContainer.style.opacity = fadeOpacity.toFixed(3);
       bhContainer.style.pointerEvents = clampedP > 0.5 ? 'none' : 'auto';
     }
@@ -2675,90 +3988,15 @@
       }
     }
 
-    // ── STAGES 1, 2, 3: CINEMATIC DEPARTURE, RAPID ZOOM OUT & DEEP SPACE VOID ──
+    // ── PLANET 07 -> SKY MAP TRANSITION CAMERA (0.00 <= p <= 1.00) ──
     const lastIdx = count - 1;
     const lastDEnd = (projects[lastIdx].encounter && projects[lastIdx].encounter.dwellPlateau) ? projects[lastIdx].encounter.dwellPlateau[1] : 0.855;
-    if (clampedP > lastDEnd) {
-      const cur = arrivalPoses[lastIdx];
-      const depU = Math.min(1.0, (clampedP - lastDEnd) / Math.max(0.001, (1.0 - lastDEnd)));
-      
-      let camPos, lookTarget, cruiseFov, easedU, stage, orbitVis, warpBlur, solarFade;
-
-      if (depU < 0.30) {
-        // STAGE 1 — DEPARTURE (0.0 <= depU < 0.30)
-        // Disengage from Planet 07, elevate and pull back; entire solar system begins to recede
-        stage = 1;
-        const s1 = depU / 0.30;
-        const e1 = s1 * s1 * (3.0 - 2.0 * s1);
-        easedU = e1;
-        
-        const P_start = cur.camPos;
-        const P_mid = new THREE.Vector3(-25, 180, 480);
-        camPos = P_start.clone().lerp(P_mid, e1);
-        
-        const L_start = cur.lookTarget;
-        const L_solar = new THREE.Vector3(0, 0, 0);
-        lookTarget = L_start.clone().lerp(L_solar, e1);
-        
-        orbitVis = 1.0 - 0.70 * e1; // Orbit lines dim down
-        warpBlur = 0.0;
-        solarFade = 0.0;
-        cruiseFov = 44.0 + 3.0 * Math.sin(s1 * Math.PI);
-
-      } else if (depU < 0.75) {
-        // STAGE 2 — RAPID ZOOM OUT (0.30 <= depU < 0.75)
-        // Accelerate backwards exponentially; solar system shrinks rapidly into a tiny cluster
-        stage = 2;
-        const s2 = (depU - 0.30) / 0.45;
-        const e2 = Math.pow(s2, 1.85); // Accelerating departure curve
-        easedU = e2;
-
-        const P_mid = new THREE.Vector3(-25, 180, 480);
-        const P_deep = new THREE.Vector3(0, 750, 2600);
-        camPos = P_mid.clone().lerp(P_deep, e2);
-        
-        lookTarget = new THREE.Vector3(0, 0, 0);
-        
-        orbitVis = 0.0; // Orbit lines disappear
-        warpBlur = 0.38 * Math.sin(s2 * Math.PI); // Peak motion blur at mid-zoom
-        solarFade = 0.0;
-        cruiseFov = 44.0 + 10.0 * Math.sin(s2 * Math.PI); // FOV expands for hyper-speed sensation
-
-      } else {
-        // STAGE 3 — DEEP SPACE VOID (0.75 <= depU <= 1.00)
-        // Distant solar system blurs and dissolves, illumination fades into darkness, settling in deep space
-        stage = 3;
-        const s3 = (depU - 0.75) / 0.25;
-        const e3 = s3 * s3 * (3.0 - 2.0 * s3);
-        easedU = e3;
-
-        const P_deep = new THREE.Vector3(0, 750, 2600);
-        const P_settle = new THREE.Vector3(0, 820, 2900);
-        camPos = P_deep.clone().lerp(P_settle, e3);
-        
-        lookTarget = new THREE.Vector3(0, 0, 0);
-        
-        orbitVis = 0.0;
-        warpBlur = 0.0;
-        solarFade = e3; // Sun & planetary illumination fades out smoothly to 0
-        cruiseFov = 44.0;
-      }
-
-      return {
-        camPos,
-        lookTarget,
-        segIdx: lastIdx,
-        rawU: depU,
-        easedU,
-        isDwell: false,
-        roll: 0.0,
-        fov: cruiseFov,
-        isDeparture: true,
-        departureStage: stage,
-        orbitVisibility: orbitVis,
-        motionBlur: warpBlur,
-        solarFade: solarFade
-      };
+    if (clampedP > 0.835 || clampedP > lastDEnd) {
+      const mCtrl = window.MasterJourneyController;
+      const p = (mCtrl && typeof mCtrl.getTransitionProgress === 'function')
+        ? mCtrl.getTransitionProgress()
+        : Math.max(0.0, Math.min(1.0, (clampedP - 0.835) / 0.165));
+      return evaluateSkillsTransitionCamera(p);
     }
 
     // Edge cases (below 0)
@@ -3002,6 +4240,14 @@
             </div>
             <h2 class="discovery-title" id="galaxyProjectTitle">RepoMentor AI</h2>
             <p class="discovery-tagline" id="galaxyProjectTagline">Codebase Intelligence, Static AST Security Audits &amp; Grounded RAG Platform</p>
+          </div>
+
+          <!-- Project Visual Preview Frame -->
+          <div class="discovery-preview-frame">
+            <img id="galaxyProjectPreviewImg" class="discovery-preview-img" src="assets/repomentor.webp" alt="Project Visual Telemetry" />
+            <div class="discovery-preview-overlay" aria-hidden="true">
+              <span class="preview-status-tag">TELEMETRY // OPTICAL FEED</span>
+            </div>
           </div>
 
           <!-- Verified Technology Chips (Top 4) -->
@@ -3453,12 +4699,12 @@
         hudEl.style.pointerEvents = 'none';
       }
     } 
-    // Sector 02: Sol-7 Planetary Corridor (0.18 < t <= 0.65)
-    else if (t <= 0.65) {
+    // Sector 02: Sol-7 Planetary Corridor (0.18 < t <= 0.572 -> pSol7 in [0, 0.835])
+    else if (t <= 0.572) {
       targetHomeTransitionProgress = 1.0;
       homeTransitionProgress = 1.0;
 
-      const pSol7 = Math.max(0.0, Math.min(1.0, (t - 0.18) / (0.65 - 0.18)));
+      const pSol7 = Math.max(0.0, Math.min(0.835, ((t - 0.18) / (0.572 - 0.18)) * 0.835));
       targetScrollProgress = pSol7;
       currentScrollProgress = pSol7;
 
@@ -3475,13 +4721,15 @@
           hudEl.style.pointerEvents = 'auto';
         }
       }
-    } 
-    // Sector 03+: Interstellar Void Departure & Beyond (t > 0.65)
+    }
+    // Planet 07 -> Sky Map Continuous Flight (0.572 < t <= 0.850 -> pSol7 in [0.835, 1.0])
     else {
       targetHomeTransitionProgress = 1.0;
       homeTransitionProgress = 1.0;
-      targetScrollProgress = 1.0;
-      currentScrollProgress = 1.0;
+      const tp = Math.max(0.0, Math.min(1.0, (t - 0.572) / (0.850 - 0.572)));
+      const pMapped = 0.835 + tp * (1.0 - 0.835);
+      targetScrollProgress = pMapped;
+      currentScrollProgress = pMapped;
     }
   }
 
@@ -3494,54 +4742,13 @@
     const disciplinesEl = document.getElementById('disciplines');
     if (!disciplinesEl) return;
 
-    const p = currentSkillsDiscoveryProgress;
-    if (p > 0.01) {
-      disciplinesEl.style.opacity = '1';
-      disciplinesEl.style.visibility = 'visible';
-      disciplinesEl.style.pointerEvents = 'auto';
-      disciplinesEl.classList.add('is-interactive');
-    } else {
+    // Defer #disciplines visibility to Phase 4 handoffAlpha when on Sky Map; hide cleanly if scrolled away
+    if (detailMode === 'skymap' && detailProgress <= 0.005) {
       disciplinesEl.style.opacity = '0';
       disciplinesEl.style.visibility = 'hidden';
       disciplinesEl.style.pointerEvents = 'none';
       disciplinesEl.classList.remove('is-interactive');
     }
-
-    // Requirement 5: Hold scrollTop at 0 for initial entrance (p <= 0.22) so header, filters, and first category are 100% visible
-    const maxScroll = Math.max(0, disciplinesEl.scrollHeight - disciplinesEl.clientHeight);
-    if (maxScroll > 0) {
-      if (p <= 0.22) {
-        disciplinesEl.scrollTop = 0;
-      } else {
-        const scrollU = (p - 0.22) / 0.78;
-        disciplinesEl.scrollTop = scrollU * maxScroll;
-      }
-    }
-
-    if (isReducedMotion) {
-      finalizeSkillsDiscovery(true);
-      return;
-    }
-    const rubric = disciplinesEl.querySelector('.section-rubric');
-    const header = disciplinesEl.querySelector('.disciplines-header');
-    const filterNav = disciplinesEl.querySelector('.constellation-filter-nav');
-    const watermark = disciplinesEl.querySelector('.section-ghost-watermark');
-    const categoryGroups = disciplinesEl.querySelectorAll('.skills-category-group');
-
-    // Header & Rubric Reveal
-    const headerAlpha = Math.min(1.0, p / 0.15);
-    if (rubric) rubric.style.opacity = headerAlpha.toFixed(3);
-    if (header) header.style.opacity = headerAlpha.toFixed(3);
-    if (watermark) watermark.style.opacity = (headerAlpha * 0.12).toFixed(3);
-    if (filterNav) filterNav.style.opacity = headerAlpha.toFixed(3);
-
-    // Ensure all 7 Category Groups and 39 Cards are visibly active, rendered, and clickable
-    categoryGroups.forEach((group, idx) => {
-      if (group.hasAttribute('hidden')) return;
-      group.style.opacity = '1';
-      group.style.transform = 'none';
-      group.style.pointerEvents = 'auto';
-    });
   }
 
   function finalizeSkillsDiscovery(isSettled) {
@@ -4359,6 +5566,18 @@
     if (categoryBadge) categoryBadge.textContent = `${p.category || 'Engineering Showcase'} • ${p.year || '2025'}`;
     if (tagline) tagline.textContent = p.tagline || p.description || '';
 
+    // Project Visual Preview Feed
+    const previewImg = hudEl.querySelector('#galaxyProjectPreviewImg');
+    if (previewImg) {
+      if (p.image) {
+        previewImg.src = p.image;
+        previewImg.alt = `${p.title} Preview`;
+        if (previewImg.parentElement) previewImg.parentElement.style.display = 'block';
+      } else if (previewImg.parentElement) {
+        previewImg.parentElement.style.display = 'none';
+      }
+    }
+
     // Verified Technology Stack Chips (Top 4)
     const techRow = hudEl.querySelector('#galaxyProjectTech');
     if (techRow) {
@@ -5022,9 +6241,15 @@
   // ── 13. 60/120FPS RAF RENDER LOOP & PLANETARY DYNAMICS ──
   function renderLoop() {
     if (!isInitialized) return;
+    if (document.hidden) {
+      requestAnimationFrame(renderLoop);
+      return;
+    }
     try {
       const delta = clock.getDelta();
       const elapsedTime = clock.getElapsedTime();
+      smoothSkyMouseX += (skyMouseNormX - smoothSkyMouseX) * 0.08;
+      smoothSkyMouseY += (skyMouseNormY - smoothSkyMouseY) * 0.08;
 
       if (isActive) {
         const heroEl = document.getElementById('hero');
@@ -5104,9 +6329,13 @@
         if (measuredFps < 45) {
           fpsLowStreakSeconds++;
           if (fpsLowStreakSeconds >= 3 && !hasAutoDroppedQuality) {
-            console.warn(`[PERF WATCHDOG] Sustained FPS ${measuredFps.toFixed(1)} < 45. Dropping pixel ratio to 1.0.`);
+            console.warn(`[PERF WATCHDOG] Sustained FPS ${measuredFps.toFixed(1)} < 45. Dropping pixel ratio & sky decoy load.`);
             hasAutoDroppedQuality = true;
             if (renderer) renderer.setPixelRatio(1.0);
+            if (skyMapPoints && skyMapPoints.geometry) {
+              const keepConstellationCount = skyMapStarMeta.length + Math.floor(SKY_MAP_CONFIG.decoyStarCount * 0.4) + Math.floor(SKY_MAP_CONFIG.parallaxStarCount * 0.4);
+              skyMapPoints.geometry.setDrawRange(0, Math.max(skyMapStarMeta.length, keepConstellationCount));
+            }
           }
         } else {
           fpsLowStreakSeconds = 0;
@@ -5254,101 +6483,38 @@
           foregroundStardustGroup.position.z = -45.0 * homeTransitionProgress;
         }
       } else {
+        // Advance open/close zoom animation before evaluating this frame's camera pose
+        tickDetailTransition();
+
         // Full planetary journey active
         pose = evaluateJourneyCamera(currentScrollProgress);
         camera.position.copy(pose.camPos);
 
-        if (camera && pose.fov && !isReducedMotion) {
-          camera.fov += (pose.fov - camera.fov) * 0.10;
+        if (camera && pose.fov) {
+          if (detailMode !== 'skymap' || isReducedMotion) {
+            camera.fov = pose.fov;
+          } else {
+            camera.fov += (pose.fov - camera.fov) * (pose.isDeparture ? 0.35 : 0.10);
+          }
           camera.updateProjectionMatrix();
         }
 
-        // Apply Departure Physics (Stages 1, 2, 3) or Standard Interplanetary Flight
+        const masterT = window.MasterJourneyController ? window.MasterJourneyController.getProgress() : 0.0;
+        const transitionP = (window.MasterJourneyController && typeof window.MasterJourneyController.getTransitionProgress === 'function')
+          ? window.MasterJourneyController.getTransitionProgress(masterT)
+          : 0.0;
+
+        // Apply pure-function staging (Solar system smoothly fades by distance/progress; zero pop-out)
         if (pose.isDeparture) {
-          // 1. Orbital paths visibility
-          if (orbitalRingsGroup) {
-            orbitalRingsGroup.children.forEach(ring => {
-              if (ring.material) {
-                ring.material.transparent = true;
-                if (!ring.userData.baseOpacity) ring.userData.baseOpacity = ring.material.opacity || 0.45;
-                ring.material.opacity = ring.userData.baseOpacity * (pose.orbitVisibility !== undefined ? pose.orbitVisibility : 1.0);
-              }
-            });
-          }
-
-          // 2. Motion blur uniform in postMaterial
           if (postMaterial && postMaterial.uniforms && postMaterial.uniforms.uMotionBlur) {
-            postMaterial.uniforms.uMotionBlur.value = !isReducedMotion ? (pose.motionBlur || 0.0) : 0.0;
+            postMaterial.uniforms.uMotionBlur.value = 0.0; // Strictly no warp streaks
           }
-
-          // 3. Solar system illumination and dissolution into pitch-black void
-          const fade = (pose.solarFade !== undefined) ? pose.solarFade : 0.0;
-          const currentMProg = (window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function')
-            ? window.MasterJourneyController.getProgress()
-            : currentScrollProgress;
-          const isSunCompletelyExtinguished = (fade >= 0.95) || (pose.departureStage === 3) || (currentMProg >= 0.72);
-
-          if (isSunCompletelyExtinguished) {
-            if (centralStarGroup) {
-              centralStarGroup.visible = false;
-              centralStarGroup.scale.set(0.0001, 0.0001, 0.0001);
-            }
-            if (centralStarMesh) centralStarMesh.visible = false;
-            if (starCoronaMesh) {
-              starCoronaMesh.visible = false;
-              starCoronaMesh.scale.set(0.0001, 0.0001, 0.0001);
-            }
-            if (coreLight) coreLight.intensity = 0.0;
-            if (coreWarmLight) coreWarmLight.intensity = 0.0;
-            if (planetsGroup) planetsGroup.visible = false;
-            if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
-            if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
-          } else {
-            if (centralStarGroup) {
-              centralStarGroup.visible = true;
-              centralStarGroup.children.forEach(child => {
-                if (child.isPointLight) {
-                  if (!child.userData.baseIntensity) child.userData.baseIntensity = child.intensity;
-                  child.intensity = child.userData.baseIntensity * (1.0 - fade);
-                }
-              });
-              centralStarGroup.scale.setScalar(Math.max(0.001, 1.0 - fade * 0.95));
-            }
-            if (centralStarMesh) centralStarMesh.visible = true;
-            if (starCoronaMesh && starCoronaMesh.material) {
-              starCoronaMesh.visible = true;
-              starCoronaMesh.material.transparent = true;
-              starCoronaMesh.material.opacity = Math.max(0.0, 1.0 - fade);
-              starCoronaMesh.scale.setScalar(Math.max(0.001, 1.0 - fade * 0.95));
-            }
-          }
-          if (planetsGroup) {
-            planetsGroup.scale.setScalar(Math.max(0.001, 1.0 - fade * 0.95));
-            planetMeshes.forEach(pm => {
-              if (pm.mesh && pm.mesh.material) {
-                pm.mesh.material.transparent = true;
-                pm.mesh.material.opacity = Math.max(0.0, 1.0 - fade);
-              }
-            });
-          }
-          if (asteroidBeltGroup && instancedAsteroidMesh && instancedAsteroidMesh.material) {
-            instancedAsteroidMesh.material.transparent = true;
-            instancedAsteroidMesh.material.opacity = Math.max(0.0, 1.0 - fade);
-          }
-
-          // 4. Foreground stardust speed streaks during rapid zoom out (Stage 2)
           if (foregroundStardustGroup) {
-            if (pose.departureStage === 2) {
-              const zoomFactor = (pose.rawU - 0.30) / 0.45;
-              foregroundStardustGroup.position.z = -zoomFactor * 320.0;
-              foregroundStardustGroup.position.y = -zoomFactor * 70.0;
-            } else {
-              foregroundStardustGroup.position.z = 0;
-              foregroundStardustGroup.position.y = 0;
-            }
+            foregroundStardustGroup.position.z = -transitionP * 220.0;
+            foregroundStardustGroup.position.y = -transitionP * 40.0;
           }
-        } else if ((window.MasterJourneyController ? window.MasterJourneyController.getProgress() : currentScrollProgress) > 0.18 && (window.MasterJourneyController ? window.MasterJourneyController.getProgress() : currentScrollProgress) < 0.74) {
-          // Restore full solar system illumination and visibility ONLY in Sector 02 / Sector 03 (Planetary Exploration)
+        } else if (masterT > 0.18 && masterT <= 0.572) {
+          // Interplanetary exploration inside Solar System (Planets 01..07)
           if (orbitalRingsGroup) {
             orbitalRingsGroup.children.forEach(ring => {
               if (ring.material && ring.userData.baseOpacity) {
@@ -5394,15 +6560,6 @@
               foregroundStardustGroup.position.z = 0;
             }
           }
-        } else if ((window.MasterJourneyController ? window.MasterJourneyController.getProgress() : currentScrollProgress) >= 0.74) {
-          // Sector 04 (Skills) & Sector 05 (Contact): Sun is fully extinguished / receded in deep space void
-          if (centralStarGroup) centralStarGroup.visible = false;
-          if (starCoronaMesh) starCoronaMesh.visible = false;
-          if (coreLight) coreLight.intensity = 0.0;
-          if (coreWarmLight) coreWarmLight.intensity = 0.0;
-          if (planetsGroup) planetsGroup.visible = false;
-          if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
-          if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
         }
 
         targetCameraRoll = (pose.roll || 0.0);
@@ -5417,15 +6574,17 @@
         camera.up.copy(rolledUp);
         camera.lookAt(pose.lookTarget);
 
+        // Update Same-Scene 3D Sky Map & Alignment Stars strictly from transitionP (with Contact cross-dissolve past 0.865)
+        updateSkyMapStage(transitionP, elapsedTime, masterT);
+
         if (ambientLight) {
           ambientLight.color.setHex(0x010204);
           ambientLight.intensity = 0.015;
         }
 
-        // 7. Synchronized Sector 01 Visual Staging & 5-Stage Arrival
-        const masterT = window.MasterJourneyController ? window.MasterJourneyController.getProgress() : 0.0;
+        // 7. Synchronized Sector 01 / Solar -> Sky Map Staging & Encounter State
         updateSector01VisualStaging(masterT);
-        if (masterT > 0.18) {
+        if (masterT > 0.18 && masterT <= 0.572) {
           updateArrivalState(currentScrollProgress);
         }
       }
@@ -5467,8 +6626,15 @@
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    if (skyMapPointsMat && skyMapPointsMat.uniforms && skyMapPointsMat.uniforms.uPixelRatio) {
+      skyMapPointsMat.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio || 1, 2);
+    }
 
     buildCameraFlightSpline();
+    buildSkyMapStage();
+    if (detailMode !== 'skymap' || detailProgress > 0.001) {
+      computeDetailStarTargets(detailSectorIdx);
+    }
   }
 
   function activate() {
@@ -5651,10 +6817,45 @@
     getScene: () => scene,
     getCamera: () => camera,
     getRenderer: () => renderer,
+    skyConfig: SKY_MAP_CONFIG,
+    getSkyMapMetrics: () => ({
+      totalSkyStars: (skyMapPoints && skyMapPoints.geometry && skyMapPoints.geometry.userData) ? skyMapPoints.geometry.userData.totalCount : 0,
+      constellationStars: skyMapStarMeta.length,
+      constellationEdges: skyMapEdgeList.length,
+      drawCalls: renderer && renderer.info ? renderer.info.render.calls : 0
+    }),
     getGalacticCoreState: () => ({
       visible: centralStarGroup ? centralStarGroup.visible : false,
       scale: centralStarGroup ? centralStarGroup.scale.x : 0.0,
       starCoronaVisible: starCoronaMesh ? starCoronaMesh.visible : false
+    }),
+    getSkyStarScreenPositions: () => {
+      if (!camera || !skyMapStarMeta.length) return [];
+      const w = window.innerWidth || 1366;
+      const h = window.innerHeight || 768;
+      return skyMapStarMeta.map(m => {
+        const v = m.worldPos.clone().project(camera);
+        return {
+          secIdx: m.secIdx,
+          localIdx: m.localIdx,
+          depth: Math.round(m.depth),
+          sx: (v.x * 0.5 + 0.5) * w,
+          sy: (-v.y * 0.5 + 0.5) * h,
+          inBounds: v.x >= -0.99 && v.x <= 0.99 && v.y >= -0.99 && v.y <= 0.99 && v.z < 1.0
+        };
+      });
+    },
+    openConstellation: openConstellation,
+    closeConstellationDetail: closeConstellationDetail,
+    setActiveDetailSector: setActiveDetailSector,
+    isConstellationDetailOpen: () => detailMode === 'detail' || detailMode === 'opening',
+    isConstellationDetailActive: () => detailMode !== 'skymap' || detailProgress > 0.005,
+    getDetailTransitionState: () => ({
+      detailMode,
+      detailProgress: Number(detailProgress.toFixed(4)),
+      detailSectorIdx,
+      zoomU: Number(Math.max(0, Math.min(1, detailProgress / DETAIL_ZOOM_FRAC)).toFixed(4)),
+      handoffAlpha: Number(Math.max(0, Math.min(1, (detailProgress - DETAIL_ZOOM_FRAC) / (1.0 - DETAIL_ZOOM_FRAC))).toFixed(4))
     })
   };
 }));
