@@ -1069,146 +1069,108 @@
     postScene.add(postQuad);
   }
 
-  // ── 03B. SECTOR 01 HERO VISUAL STAGING (ZERO SOLAR SYSTEM LEAKAGE) ──
+  // ── 03B. SECTOR 01 HERO VISUAL STAGING: ONE WORLD CONTINUOUS FLIGHT ──
   function updateSector01VisualStaging(progress) {
     const mProg = (window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function')
       ? window.MasterJourneyController.getProgress()
       : (typeof progress === 'number' ? progress : 0.0);
     const t = Math.max(0.0, Math.min(1.0, mProg));
 
-    if (t <= 0.08) {
-      // Sector 01 Hero Focus (t <= 0.08): Black hole is dominant, solar system fully hidden
-      if (centralStarGroup) {
-        centralStarGroup.visible = false;
-        centralStarGroup.scale.set(0.0001, 0.0001, 0.0001);
+    // Home flight progress p in [0.0, 1.0] across t in [0.00, 0.18]
+    let p = 1.0;
+    if (t < 0.18) {
+      p = Math.max(0.0, Math.min(1.0, t / 0.18));
+    } else if (typeof progress === 'number' && progress <= 1.0 && t === 0.0) {
+      p = progress;
+    }
+    if (window.MasterJourneyController && typeof window.MasterJourneyController.getHomeProgress === 'function') {
+      p = window.MasterJourneyController.getHomeProgress(t);
+    }
+
+    if (t <= 0.19) {
+      // 1. Central Star (Sun) - Visible ONLY when Black Hole has fully left the screen (p > 0.52)
+      // On the front page (Home, p=0.00 to p<=0.52), the Sun is completely hidden.
+      // Once the camera has turned and the black hole has fully exited the screen (p > 0.52),
+      // the Sun fades in and grows smoothly as we approach the Solar System.
+      if (p <= 0.52) {
+        if (centralStarGroup) centralStarGroup.visible = false;
+        if (centralStarMesh) centralStarMesh.visible = false;
+        if (starCoronaMesh) starCoronaMesh.visible = false;
+        if (coreLight) coreLight.intensity = 0.0;
+        if (coreWarmLight) coreWarmLight.intensity = 0.0;
+        if (ambientLight) ambientLight.intensity = 0.015;
+      } else {
+        const sunP = Math.min(1.0, (p - 0.52) / 0.48);
+        const sunScale = 0.08 + 0.92 * Math.pow(sunP, 1.75);
+        if (centralStarGroup) {
+          centralStarGroup.visible = true;
+          centralStarGroup.scale.set(sunScale, sunScale, sunScale);
+        }
+        if (centralStarMesh) {
+          centralStarMesh.visible = true;
+        }
+        if (starCoronaMesh) {
+          starCoronaMesh.visible = true;
+          const coronaOpacity = Math.min(1.0, sunP * 1.6) * (0.35 + 0.65 * sunP);
+          if (starCoronaMesh.material) starCoronaMesh.material.opacity = coronaOpacity;
+          const coronaScale = 0.10 + 0.90 * Math.pow(sunP, 1.6);
+          starCoronaMesh.scale.set(coronaScale, coronaScale, coronaScale);
+        }
+        if (coreLight) coreLight.intensity = 0.3 + 2.5 * sunP;
+        if (coreWarmLight) coreWarmLight.intensity = 0.15 + 1.25 * sunP;
+        if (ambientLight) ambientLight.intensity = 0.015 + 0.035 * sunP;
       }
-      if (centralStarMesh) centralStarMesh.visible = false;
-      if (starCoronaMesh) starCoronaMesh.visible = false;
-      if (coreLight) coreLight.intensity = 0.0;
-      if (coreWarmLight) coreWarmLight.intensity = 0.0;
-      if (ambientLight) ambientLight.intensity = 0.015;
+
+      // 2. Planets (0.75 - 0.92 Approach): resolve as small lit discs (crescents facing the Sun)
       if (planetsGroup) {
-        planetsGroup.visible = false;
-        planetsGroup.scale.set(0.001, 0.001, 0.001);
+        if (p < 0.72) {
+          planetsGroup.visible = false;
+          planetsGroup.scale.set(0.001, 0.001, 0.001);
+          planetMeshes.forEach(pm => {
+            if (pm.group) pm.group.visible = false;
+          });
+        } else {
+          planetsGroup.visible = true;
+          const pAlpha = Math.min(1.0, (p - 0.72) / 0.18);
+          planetsGroup.scale.set(1.0, 1.0, 1.0);
+          planetMeshes.forEach(pm => {
+            if (pm.group) pm.group.visible = true;
+            if (pm.mesh && pm.mesh.material) {
+              pm.mesh.material.opacity = pAlpha;
+              pm.mesh.material.transparent = true;
+            }
+          });
+        }
       }
-      if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
-      if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
 
-      planetMeshes.forEach(pm => {
-        if (pm.group) pm.group.visible = false;
-      });
-
-      if (hudEl) {
-        hudEl.style.display = 'none';
-        hudEl.style.opacity = '0';
-        hudEl.style.visibility = 'hidden';
-        hudEl.style.pointerEvents = 'none';
-      }
-      const reticle = document.getElementById('galaxyPlanetReticle');
-      if (reticle) {
-        reticle.style.display = 'none';
-        reticle.style.opacity = '0';
-        reticle.classList.remove('is-sector02-active', 'is-scanning', 'is-locked');
-      }
-      const dossier = document.getElementById('galaxyDossierCard');
-      if (dossier) {
-        dossier.style.opacity = '0';
-        dossier.style.pointerEvents = 'none';
-      }
-    } else if (t <= 0.12) {
-      // Early Stellar Hint (0.08 < t <= 0.12): The Sun appears as a tiny distant bright point
-      // Only the central star (Sun) mesh fades in as a distant glowing speck — no planets yet
-      const hintAlpha = (t - 0.08) / 0.04;
-      const hintReveal = hintAlpha * hintAlpha; // Quadratic ease-in for subtle emergence
-
-      if (centralStarGroup) {
-        centralStarGroup.visible = true;
-        const tinyScale = 0.05 + hintReveal * 0.15; // Very small: 5% to 20%
-        centralStarGroup.scale.set(tinyScale, tinyScale, tinyScale);
-      }
-      if (centralStarMesh) {
-        centralStarMesh.visible = true;
-      }
-      if (starCoronaMesh) {
-        starCoronaMesh.visible = true;
-        if (starCoronaMesh.material) starCoronaMesh.material.opacity = hintReveal * 0.3;
-        const coronaScale = 0.05 + hintReveal * 0.1;
-        starCoronaMesh.scale.set(coronaScale, coronaScale, coronaScale);
-      }
-      if (coreLight) coreLight.intensity = hintReveal * 0.6;
-      if (coreWarmLight) coreWarmLight.intensity = hintReveal * 0.3;
-      if (ambientLight) ambientLight.intensity = 0.015 + hintReveal * 0.01;
-
-      // Planets, orbits, asteroids remain hidden during the hint phase
-      if (planetsGroup) {
-        planetsGroup.visible = false;
-        planetsGroup.scale.set(0.001, 0.001, 0.001);
-      }
-      if (orbitalRingsGroup) orbitalRingsGroup.visible = false;
-      if (asteroidBeltGroup) asteroidBeltGroup.visible = false;
-      planetMeshes.forEach(pm => {
-        if (pm.group) pm.group.visible = false;
-      });
-
-      if (hudEl) {
-        hudEl.style.display = 'none';
-        hudEl.style.opacity = '0';
-        hudEl.style.visibility = 'hidden';
-        hudEl.style.pointerEvents = 'none';
-      }
-      const reticle = document.getElementById('galaxyPlanetReticle');
-      if (reticle) {
-        reticle.style.display = 'none';
-        reticle.style.opacity = '0';
-        reticle.classList.remove('is-sector02-active', 'is-scanning', 'is-locked');
-      }
-      const dossier = document.getElementById('galaxyDossierCard');
-      if (dossier) {
-        dossier.style.opacity = '0';
-        dossier.style.pointerEvents = 'none';
-      }
-    } else if (t <= 0.19) {
-      // Full Emergence Transition (0.12 < t <= 0.19): Solar system scales up with planets and orbits
-      const alpha = (t - 0.12) / 0.07;
-      const reveal = 0.5 * (1.0 - Math.cos(Math.PI * alpha));
-
-      if (centralStarGroup) {
-        centralStarGroup.visible = true;
-        centralStarGroup.scale.set(reveal, reveal, reveal);
-      }
-      if (centralStarMesh) {
-        centralStarMesh.visible = true;
-      }
-      if (starCoronaMesh) {
-        starCoronaMesh.visible = true;
-        if (starCoronaMesh.material) starCoronaMesh.material.opacity = reveal;
-        starCoronaMesh.scale.set(reveal, reveal, reveal);
-      }
-      if (coreLight) coreLight.intensity = reveal * 2.8;
-      if (coreWarmLight) coreWarmLight.intensity = reveal * 1.4;
-
+      // 3. Orbit Lines (fade in last 0.85 - 0.96 and stay very faint)
       if (orbitalRingsGroup) {
-        orbitalRingsGroup.visible = (reveal > 0.35);
-        orbitalRingsGroup.children.forEach(ring => {
-          if (ring.material && ring.userData.baseOpacity) {
-            ring.material.opacity = ring.userData.baseOpacity * reveal;
-          }
-        });
+        if (p < 0.84) {
+          orbitalRingsGroup.visible = false;
+        } else {
+          orbitalRingsGroup.visible = true;
+          const rAlpha = Math.min(1.0, (p - 0.84) / 0.12);
+          orbitalRingsGroup.children.forEach(ring => {
+            if (ring.material) {
+              ring.material.opacity = 0.18 * rAlpha;
+              ring.material.transparent = true;
+            }
+          });
+        }
       }
+
+      // 4. Asteroid Belt (fades in 0.88 - 0.98)
       if (asteroidBeltGroup) {
-        asteroidBeltGroup.visible = (reveal > 0.45);
-      }
-      if (planetsGroup) {
-        planetsGroup.visible = (reveal > 0.4);
-        planetsGroup.scale.set(reveal, reveal, reveal);
-      }
-      if (planetsGroup) {
-        planetsGroup.visible = (reveal > 0.55);
-        planetsGroup.scale.set(reveal, reveal, reveal);
-        planetMeshes.forEach(pm => {
-          if (pm.group) pm.group.visible = (reveal > 0.55);
-          if (pm.mesh && pm.mesh.material) pm.mesh.material.opacity = reveal;
-        });
+        if (p < 0.88) {
+          asteroidBeltGroup.visible = false;
+        } else {
+          asteroidBeltGroup.visible = true;
+          const aAlpha = Math.min(1.0, (p - 0.88) / 0.10);
+          if (instancedAsteroidMesh && instancedAsteroidMesh.material) {
+            instancedAsteroidMesh.material.opacity = aAlpha;
+            instancedAsteroidMesh.material.transparent = true;
+          }
+        }
       }
 
       if (hudEl) {
@@ -3701,108 +3663,64 @@
       buildCameraFlightSpline();
     }
     const cur = arrivalPoses[0];
-    const P0 = cur ? cur.camPos.clone().add(new THREE.Vector3(-160, 110, 240)) : new THREE.Vector3(-210, 155, 360);
-    const SUN = new THREE.Vector3(0, 0, 0);
+    const P_SOLAR = cur ? cur.camPos.clone().add(new THREE.Vector3(-160, 110, 240)) : new THREE.Vector3(-210, 155, 360);
+    const L_SOLAR = new THREE.Vector3(0, 0, 0);
 
     const clampedP = Math.max(0.0, Math.min(1.0, progress));
 
-    // Deep space origin position at Home (t=0): Camera starts close to the black hole singularity
-    const HOME_CAM = new THREE.Vector3(P0.x - 320.0, P0.y + 45.0, P0.z + 360.0);
+    const quintic = (u) => u * u * u * (u * (u * 6.0 - 15.0) + 10.0);
+    const smooth = (a, b, x) => {
+      const u = Math.max(0.0, Math.min(1.0, (x - a) / Math.max(0.0001, b - a)));
+      return u * u * (3.0 - 2.0 * u);
+    };
 
     // ═══════════════════════════════════════════════════════════════════════
-    // 3-STAGE CINEMATIC GALAXY ODYSSEY — Feels like navigating through space
+    // 3-STAGE CINEMATIC GALAXY ODYSSEY — Identical to Solar -> Sky Map:
+    // Act 1 (0.00 <= p <= 0.25): ZOOM OUT straight back from Black Hole
+    // Act 2 (0.25 < p <= 0.55): TURN CAMERA ANGLE from Black Hole to Sun + Bank
+    // Act 3 (0.55 < p <= 1.00): ZOOM IN / Approach Solar System Overview
     // ═══════════════════════════════════════════════════════════════════════
-    //
-    // Stage 1 (0.00 <= p <= 0.35): ZOOM OUT — Camera pulls straight back along
-    //   its own forward axis, as if the viewer is receding from the singularity.
-    //   The black hole shrinks naturally while surrounding stars become visible.
-    //   NO sideways motion. Pure depth retreat.
-    //
-    // Stage 2 (0.35 < p <= 0.68): ARC PAN — Camera sweeps in a gentle arc
-    //   through the starfield, banking slightly like a spacecraft adjusting course.
-    //   Stars stream past with parallax. A distant bright point (the Sun) begins
-    //   to grow on the far side.
-    //
-    // Stage 3 (0.68 < p <= 1.00): ZOOM IN — Camera accelerates toward the
-    //   glowing Sun, locking on and swooping into the solar system orbital plane.
-    //   Planets and orbital rings emerge from the growing stellar brilliance.
 
-    // Stage 1 Zoom-Out Apex: Pull straight back along camera's forward axis
-    const P_ZOOM_OUT = new THREE.Vector3(
-      HOME_CAM.x,
-      HOME_CAM.y + 140.0,
-      HOME_CAM.z + 380.0
-    );
+    const L_HOME = new THREE.Vector3(0, 20, 0); // Natural gaze center on Home (BH on right, text on left)
+    const P_00 = new THREE.Vector3(-60, 40, 480); // Camera starting vantage facing Home
+    const P_25 = new THREE.Vector3(-240, 80, 920); // Zoom-Out apex (pure depth retreat)
+    const P_55 = new THREE.Vector3(-520, 280, 820); // Deep space orbital turn vantage
+    const P_85 = P_SOLAR.clone().add(new THREE.Vector3(-80, 50, 140)); // High approach corridor
 
-    // Stage 2 Arc Waypoint: Shifted rightward and forward toward the Sun's neighbourhood
-    const P_ARC_MID = new THREE.Vector3(
-      HOME_CAM.x * 0.15 + P0.x * 0.85 + 80.0,
-      HOME_CAM.y * 0.20 + P0.y * 0.80 + 90.0,
-      HOME_CAM.z * 0.25 + P0.z * 0.75 + 60.0
-    );
+    let camPos, lookTarget, roll = 0.0, fov = 44.0;
 
-    let camPos;
-    if (clampedP <= 0.35) {
-      // Stage 1: Pure zoom out (straight back)
-      const t1 = clampedP / 0.35;
-      const ease1 = t1 * t1 * t1 * (t1 * (t1 * 6.0 - 15.0) + 10.0); // Quintic Hermite
-      camPos = new THREE.Vector3().lerpVectors(HOME_CAM, P_ZOOM_OUT, ease1);
-    } else if (clampedP <= 0.68) {
-      // Stage 2: Arc sweep through starfield
-      const t2 = (clampedP - 0.35) / 0.33;
-      const ease2 = t2 * t2 * t2 * (t2 * (t2 * 6.0 - 15.0) + 10.0);
-      // Cubic Bezier arc for natural curvature
-      const ctrl1 = P_ZOOM_OUT.clone().add(new THREE.Vector3(60, -20, -80));
-      const ctrl2 = P_ARC_MID.clone().add(new THREE.Vector3(-40, 30, 50));
-      const oneMinusT = 1.0 - ease2;
-      const b0 = oneMinusT * oneMinusT * oneMinusT;
-      const b1 = 3.0 * oneMinusT * oneMinusT * ease2;
-      const b2 = 3.0 * oneMinusT * ease2 * ease2;
-      const b3 = ease2 * ease2 * ease2;
-      camPos = new THREE.Vector3(
-        b0 * P_ZOOM_OUT.x + b1 * ctrl1.x + b2 * ctrl2.x + b3 * P_ARC_MID.x,
-        b0 * P_ZOOM_OUT.y + b1 * ctrl1.y + b2 * ctrl2.y + b3 * P_ARC_MID.y,
-        b0 * P_ZOOM_OUT.z + b1 * ctrl1.z + b2 * ctrl2.z + b3 * P_ARC_MID.z
-      );
+    if (clampedP <= 0.25) {
+      // Act 1: Pure Zoom Out (camera pulls straight back along depth axis away from Home)
+      const u = quintic(clampedP / 0.25);
+      camPos = P_00.clone().lerp(P_25, u);
+      lookTarget = L_HOME.clone();
+      fov = 44.0 + 4.0 * u;
+      roll = 0.0;
+    } else if (clampedP <= 0.55) {
+      // Act 2: Turn camera angle from Home to Sun + authentic banking roll
+      const raw = (clampedP - 0.25) / 0.30;
+      const u = quintic(raw);
+      camPos = P_25.clone().lerp(P_55, u);
+      lookTarget = L_HOME.clone().lerp(L_SOLAR, u);
+      fov = 48.0 + 4.0 * Math.sin(raw * Math.PI); // peaks at 52° wide lens during the turn
+      roll = -0.048 * Math.sin(raw * Math.PI); // realistic spacecraft banking
+    } else if (clampedP <= 0.85) {
+      // Act 3A: Fast approach glide toward the Solar System
+      const raw = (clampedP - 0.55) / 0.30;
+      const sm = raw * raw * (3.0 - 2.0 * raw);
+      const u = 0.80 * raw + 0.20 * sm;
+      camPos = P_55.clone().lerp(P_85, u);
+      lookTarget = L_SOLAR.clone();
+      fov = 48.0 - 3.0 * u;
+      roll = -0.015 * (1.0 - u);
     } else {
-      // Stage 3: Zoom in toward the solar system arrival point
-      const t3 = (clampedP - 0.68) / 0.32;
-      const ease3 = t3 * t3 * t3 * (t3 * (t3 * 6.0 - 15.0) + 10.0);
-      camPos = new THREE.Vector3().lerpVectors(P_ARC_MID, P0, ease3);
-    }
-
-    // ── Dynamic FOV ──
-    // Starts at 44°, expands to ~52° at zoom-out apex (immersive wide), narrows to 44° on zoom-in
-    const fov = 44.0 + 8.0 * Math.sin(clampedP * Math.PI);
-
-    // ── Dynamic Banking Roll ──
-    // No roll during zoom-out, gentle bank during arc, settle to zero on approach
-    const rollPhase = Math.max(0.0, (clampedP - 0.25) / 0.50);
-    const roll = -0.055 * Math.sin(rollPhase * Math.PI);
-
-    // ── Look Target ──
-    // Stage 1: Gaze stays locked on the singularity (receding)
-    // Stage 2: Gaze sweeps forward along the arc, distant Sun becomes visible
-    // Stage 3: Gaze locks onto the Sun / solar system centre
-    const u = clampedP * clampedP * (3.0 - 2.0 * clampedP);
-
-    let lookTarget;
-    if (clampedP <= 0.30) {
-      // Look back at where we came from (the singularity) while zooming out
-      const singu = HOME_CAM.clone().add(new THREE.Vector3(0, -30, -200));
-      const forwardSpace = P_ZOOM_OUT.clone().add(new THREE.Vector3(50, -10, -300));
-      const w = clampedP / 0.30;
-      const ew = w * w * (3.0 - 2.0 * w);
-      lookTarget = singu.clone().lerp(forwardSpace, ew);
-    } else if (clampedP <= 0.65) {
-      // Sweep gaze through deep space toward the Sun's general direction
-      const forwardSpace = P_ZOOM_OUT.clone().add(new THREE.Vector3(50, -10, -300));
-      const w = (clampedP - 0.30) / 0.35;
-      const ew = w * w * (3.0 - 2.0 * w);
-      lookTarget = forwardSpace.clone().lerp(SUN, ew);
-    } else {
-      // Lock gaze on the Sun / solar system
-      lookTarget = SUN.clone();
+      // Act 3B: Smooth deceleration & arrival into Solar System Overview pose
+      const raw = (clampedP - 0.85) / 0.15;
+      const u = 1.0 - Math.pow(1.0 - raw, 3.0);
+      camPos = P_85.clone().lerp(P_SOLAR, u);
+      lookTarget = L_SOLAR.clone();
+      fov = 45.0 - 1.0 * u;
+      roll = 0.0;
     }
 
     return { camPos, lookTarget, roll, fov, progress: clampedP };
@@ -4841,14 +4759,15 @@
         end: "bottom top",
         scrub: true,
         onUpdate: (self) => {
-          if (!isActive) return;
+          if (!isActive || window.MasterJourneyController) return;
           targetHomeTransitionProgress = Math.max(0.0, Math.min(1.0, self.progress));
         },
         onLeave: () => {
+          if (window.MasterJourneyController) return;
           targetHomeTransitionProgress = 1.0;
         },
         onEnterBack: () => {
-          if (!isActive) return;
+          if (!isActive || window.MasterJourneyController) return;
           targetHomeTransitionProgress = Math.max(0.0, Math.min(1.0, homeScrollTriggerInstance ? homeScrollTriggerInstance.progress : 1.0));
         }
       });
@@ -4864,7 +4783,7 @@
       pinSpacing: true,
       scrub: true,
       onUpdate: (self) => {
-        if (!isActive) return;
+        if (!isActive || window.MasterJourneyController) return;
         targetScrollProgress = Math.max(0.0, Math.min(1.0, self.progress));
         if (self.progress > 0.001 && self.progress < 0.999) {
           if (canvasEl) {
@@ -5445,7 +5364,9 @@
 
     // Master Journey Controller Authority Integration
     if (window.MasterJourneyController) {
-      const masterT = 0.18 + targetProgress * (0.65 - 0.18);
+      const masterT = 0.18 + (targetProgress / 0.835) * (0.572 - 0.18);
+      targetHomeTransitionProgress = 1.0;
+      homeTransitionProgress = 1.0;
       if (instant || isReducedMotion) {
         window.MasterJourneyController.jumpTo(masterT);
         currentScrollProgress = targetProgress;
@@ -6442,7 +6363,9 @@
 
       // 6. Smooth Scroll Progression & Parametric Camera Trajectory (Home Transition or Planetary Journey)
       const homeDiff = targetHomeTransitionProgress - homeTransitionProgress;
-      if (Math.abs(homeDiff) > 0.0001) {
+      if (window.MasterJourneyController) {
+        homeTransitionProgress = targetHomeTransitionProgress;
+      } else if (Math.abs(homeDiff) > 0.0001) {
         homeTransitionProgress += homeDiff * 0.14;
       } else {
         homeTransitionProgress = targetHomeTransitionProgress;
@@ -6793,9 +6716,9 @@
     },
     setHomeTransitionProgress: (p, instant = false) => {
       targetHomeTransitionProgress = Math.max(0, Math.min(1, p));
-      if (instant) {
+      if (instant || window.MasterJourneyController) {
         homeTransitionProgress = targetHomeTransitionProgress;
-        if (camera) {
+        if (camera && instant) {
           const pose = evaluateHomeTransitionCamera(homeTransitionProgress);
           camera.position.copy(pose.camPos);
           camera.lookAt(pose.lookTarget);
@@ -6816,6 +6739,7 @@
     setCameraOverride: setCameraOverride,
     getScene: () => scene,
     getCamera: () => camera,
+    evaluateHomeTransitionCamera: evaluateHomeTransitionCamera,
     getRenderer: () => renderer,
     skyConfig: SKY_MAP_CONFIG,
     getSkyMapMetrics: () => ({
