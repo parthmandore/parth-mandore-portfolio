@@ -1352,19 +1352,19 @@
     camPos: { x: 640, y: 620, z: 3150 },
     forward: { x: 0.35, y: 0.17, z: -0.921 },
     depthRange: [880, 3650],        // Wide depth ratio (~4.15x) along each star's ray so parallax visibly slides stars!
-    decoyStarCount: 310,
-    parallaxStarCount: 1100,        // 3 speed-layered deep-space background stars inside same Points cloud
+    decoyStarCount: 80,             // Balanced count: no sudden star surge
+    parallaxStarCount: 360,         // Gentle deep-space star density consistent with the rest of the site
     maxMouseParallaxPx: 4.5,        // Strictly <= 6 px at rest (transitionProgress = 1)
     yawDeg: 21,
-    // Scattered, organic non-grid 7 constellations in NDC [-0.62, +0.62] x [-0.46, +0.44]
+    // Fully randomized, organic celestial distribution with generous spacing across all quadrants
     SKY_MAP: {
-      languages: { x: -0.49, y:  0.34, scale: 0.140, rotation: -0.22 },
-      backend:   { x:  0.03, y:  0.35, scale: 0.155, rotation:  0.14 },
-      frontend:  { x:  0.50, y:  0.24, scale: 0.135, rotation: -0.18 },
-      databases: { x: -0.52, y: -0.14, scale: 0.132, rotation:  0.26 },
-      ai:        { x:  0.02, y: -0.02, scale: 0.142, rotation: -0.10 },
-      tools:     { x:  0.48, y: -0.25, scale: 0.132, rotation:  0.22 },
-      cs:        { x: -0.14, y: -0.42, scale: 0.122, rotation: -0.20 }
+      languages: { x: -0.70, y:  0.22, scale: 0.135, rotation: -0.42 },
+      backend:   { x: -0.06, y:  0.42, scale: 0.150, rotation:  0.38 },
+      frontend:  { x:  0.62, y:  0.32, scale: 0.140, rotation: -0.65 },
+      ai:        { x: -0.28, y: -0.02, scale: 0.150, rotation: -0.18 },
+      databases: { x: -0.64, y: -0.38, scale: 0.130, rotation:  0.52 },
+      cs:        { x:  0.18, y: -0.26, scale: 0.135, rotation: -0.35 },
+      tools:     { x:  0.72, y: -0.14, scale: 0.130, rotation:  0.44 }
     }
   };
 
@@ -1542,18 +1542,20 @@
     const basis = getSkyMapBasis();
     const aspect = Math.max(0.55, Math.min(2.1, (containerEl?.clientWidth || window.innerWidth) / Math.max(1, containerEl?.clientHeight || window.innerHeight)));
 
-    // 1. Procedural Milky Way Plane (drawn behind sky stars, depthTest: false)
+    // 1. Procedural Milky Way Plane (disabled to ensure deep pure black cosmic sky with zero white fade)
     const mwTex = createMilkyWayCanvasTexture();
     const mwGeo = new THREE.PlaneGeometry(7800, 4200);
     skyMapMilkyWayMat = new THREE.MeshBasicMaterial({
       map: mwTex,
       transparent: true,
       opacity: 0.0,
+      visible: false,
       depthTest: false,
       depthWrite: false,
       blending: THREE.AdditiveBlending
     });
     skyMapMilkyWayMesh = new THREE.Mesh(mwGeo, skyMapMilkyWayMat);
+    skyMapMilkyWayMesh.visible = false;
     const mwCenter = basis.cam.clone().addScaledVector(basis.fwd, 4400);
     skyMapMilkyWayMesh.position.copy(mwCenter);
     skyMapMilkyWayMesh.lookAt(basis.cam);
@@ -1600,24 +1602,26 @@
     }
     skyMapLabelsOverlay.innerHTML = '';
 
-    // Dismissible subtle exploration hint (remembered in sessionStorage)
-    const hintDismissed = (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('agy_skymap_hint_dismissed') === '1');
-    if (!hintDismissed) {
-      skyMapHintEl = document.createElement('div');
-      skyMapHintEl.id = 'skyMapHint';
-      skyMapHintEl.className = 'sky-map-hint';
-      skyMapHintEl.innerHTML = `<span>Click any constellation to inspect its stack</span><button type="button" class="sky-map-hint-close" aria-label="Dismiss hint">&times;</button>`;
-      const closeBtn = skyMapHintEl.querySelector('.sky-map-hint-close');
-      if (closeBtn) {
-        closeBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          dismissSkyMapHint();
-        });
-      }
-      skyMapLabelsOverlay.appendChild(skyMapHintEl);
-    } else {
-      skyMapHintEl = null;
+    // Exploration directive hint
+    skyMapHintEl = document.createElement('div');
+    skyMapHintEl.id = 'skyMapHint';
+    skyMapHintEl.className = 'sky-map-hint';
+    skyMapHintEl.innerHTML = `
+      <div class="sky-map-hint-content">
+        <span class="sky-map-hint-pulse">✦</span>
+        <span class="sky-map-hint-text">CLICK ANY CONSTELLATION TO OPEN TECH STACK</span>
+        <span class="sky-map-hint-arrow">&rsaquo;</span>
+      </div>
+      <button type="button" class="sky-map-hint-close" aria-label="Dismiss hint">&times;</button>
+    `;
+    const closeBtn = skyMapHintEl.querySelector('.sky-map-hint-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dismissSkyMapHint();
+      });
     }
+    skyMapLabelsOverlay.appendChild(skyMapHintEl);
 
     // 2A. Constellation Stars (placed along SKY_CAM_POS -> SKY_MAP rays at varied depths)
     sectors.forEach((sec, secIdx) => {
@@ -1632,6 +1636,20 @@
       let sumStarNdcX = 0;
       const secStarMetas = [];
 
+      const itemContainer = document.createElement('div');
+      itemContainer.className = 'sky-map-item';
+      itemContainer.setAttribute('data-sector-key', sec.key);
+      itemContainer.setAttribute('data-sector-idx', String(secIdx));
+      itemContainer.style.background = 'transparent';
+      itemContainer.style.backgroundColor = 'transparent';
+      itemContainer.style.border = 'none';
+      itemContainer.style.outline = 'none';
+      itemContainer.style.boxShadow = 'none';
+      itemContainer.style.padding = '0';
+      itemContainer.style.margin = '0';
+      itemContainer.style.color = 'inherit';
+      itemContainer.style.pointerEvents = 'none';
+
       sec.stars.forEach((st, localIdx) => {
         const rx = st.x * cosR - st.y * sinR;
         const ry = st.x * sinR + st.y * cosR;
@@ -1644,7 +1662,17 @@
         const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
         const rgb = tempToRgbArray(st.temp);
         // Match TechnologyConstellation.drawRealPointStar halo diameter (~2 * glowR) for 3D->2D handoff
-        const glowR2d = st.isHelper ? 9.0 : (13.0 + Math.max(0.42, st.brightness) * 17.0);
+        const glowR2d = st.isHelper ? 8.0 : (10.0 + Math.max(0.38, st.brightness || 0.72) * 12.0);
+
+        // Technology tag directly on this constellation star
+        let tagEl = null;
+        if (!st.isHelper && st.tech) {
+          tagEl = document.createElement('span');
+          tagEl.className = 'sky-star-tech-tag';
+          tagEl.setAttribute('data-sec-idx', String(secIdx));
+          tagEl.textContent = st.tech;
+          itemContainer.appendChild(tagEl);
+        }
 
         const rec = {
           kind: 0, // 0 = constellation star
@@ -1652,6 +1680,8 @@
           secIdx,
           localIdx,
           isHelper: !!st.isHelper,
+          tech: st.tech || '',
+          tagEl,
           ndcX,
           ndcY,
           depth,
@@ -1659,10 +1689,10 @@
           detailWorldPos: worldPos.clone(),
           worldPos,
           rgb,
-          size: st.isHelper ? 14.0 : (18.0 + st.brightness * 22.0),
-          detailSize: glowR2d * 2.15,
-          brightness: st.isHelper ? (st.faint || 0.30) : Math.max(0.42, st.brightness),
-          hasSpikes: (st.hasSpikes && !st.isHelper) ? 1.0 : 0.0,
+          size: st.isHelper ? 4.5 : (6.5 + (st.brightness || 0.6) * 5.0),
+          detailSize: glowR2d * 1.45,
+          brightness: st.isHelper ? (st.faint || 0.26) : Math.max(0.38, st.brightness || 0.72),
+          hasSpikes: 0.0,
           phase: rand() * Math.PI * 2,
           revealOrder: secIdx * 0.03 + localIdx * 0.025
         };
@@ -1671,34 +1701,49 @@
         secStarMetas.push(rec);
       });
 
-      // Exact bounding-box bottom placement (~24px below lowest star of this constellation)
+      // Exact bounding-box bottom placement (~32px below lowest star of this constellation for clean separation)
       const labelNdcX = sec.stars.length > 0 ? (sumStarNdcX / sec.stars.length) : slot.x;
-      const labelNdcY = (Number.isFinite(minStarNdcY) ? minStarNdcY : (slot.y - slot.scale)) - 0.052;
+      const labelNdcY = (Number.isFinite(minStarNdcY) ? minStarNdcY : (slot.y - slot.scale)) - 0.076;
       const centerWorld = ndcToSkyWorld(labelNdcX, labelNdcY, 2200, basis, aspect);
 
-      const itemBtn = document.createElement('button');
-      itemBtn.type = 'button';
-      itemBtn.className = 'sky-map-item';
-      itemBtn.setAttribute('data-sector-key', sec.key);
-      itemBtn.setAttribute('data-sector-idx', String(secIdx));
-      itemBtn.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
-      itemBtn.innerHTML = `<span class="sky-map-label-pill">${sec.title} &middot; ${sec.techCount}</span>`;
+      const pillBtn = document.createElement('button');
+      pillBtn.type = 'button';
+      pillBtn.className = 'sky-map-label-pill';
+      pillBtn.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
+      pillBtn.style.setProperty('--sector-color', sec.color || '#F59E0B');
+      pillBtn.style.setProperty('--sector-rgb', sec.rgb || '245, 158, 11');
+      pillBtn.innerHTML = `
+        <span class="sky-map-pill-dot" style="background:${sec.color || '#F59E0B'}"></span>
+        <span class="sky-map-pill-title">${sec.title} &middot; ${sec.techCount}</span>
+        <span class="sky-map-arrow" aria-hidden="true">&rsaquo;</span>
+      `;
 
-      itemBtn.addEventListener('pointerenter', () => setHoveredSkySector(secIdx));
-      itemBtn.addEventListener('pointerleave', () => {
+      const cueSpan = document.createElement('span');
+      cueSpan.className = 'sky-map-click-cue';
+      cueSpan.textContent = 'CLICK TO OPEN \u203a';
+
+      const pillWrapper = document.createElement('div');
+      pillWrapper.className = 'sky-map-pill-wrapper';
+      pillWrapper.appendChild(pillBtn);
+      pillWrapper.appendChild(cueSpan);
+
+      itemContainer.appendChild(pillWrapper);
+
+      pillBtn.addEventListener('pointerenter', () => setHoveredSkySector(secIdx));
+      pillBtn.addEventListener('pointerleave', () => {
         if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
       });
-      itemBtn.addEventListener('focus', () => setHoveredSkySector(secIdx));
-      itemBtn.addEventListener('blur', () => {
+      pillBtn.addEventListener('focus', () => setHoveredSkySector(secIdx));
+      pillBtn.addEventListener('blur', () => {
         if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
       });
-      itemBtn.addEventListener('click', (e) => {
+      pillBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         openConstellation(secIdx);
       });
 
-      skyMapLabelsOverlay.appendChild(itemBtn);
+      skyMapLabelsOverlay.appendChild(itemContainer);
 
       skyMapSectorCenters.push({
         secIdx,
@@ -1708,7 +1753,8 @@
         slot,
         worldCenter: centerWorld,
         stars: secStarMetas,
-        labelEl: itemBtn
+        labelEl: itemContainer,
+        pillEl: pillBtn
       });
 
       sec.edges.forEach(([aLocal, bLocal]) => {
@@ -1720,43 +1766,91 @@
       });
     });
 
-    // 2B. Faint Decoy Stars inside SAME depth shell so before alignment constellations blend cleanly
-    const temps = ['blue-white', 'white', 'yellow', 'orange'];
-    for (let i = 0; i < SKY_MAP_CONFIG.decoyStarCount; i++) {
-      const ndcX = (rand() * 2 - 1) * 1.15;
-      const ndcY = (rand() * 2 - 1) * 1.05;
-      const depth = (minD - 150) + rand() * (maxD - minD + 450);
+    // 2B. 3 Spatial Depth Layers for Genuine 3D Cosmic Depth
+    // Spectral colors: authentic B-V temperatures (O/B blue-white, A/F pure white, G yellow-white, K warm amber)
+    const temps = ['blue-white', 'white', 'white', 'yellow', 'orange'];
+
+    // Layer 0: Immense Distance Field (480 tiny faint stars with near-zero parallax)
+    // Includes 2 faint distant open star clusters (Messier-style natural celestial grouping)
+    const cluster1Center = { x: 0.82, y: 0.55 };
+    const cluster2Center = { x: -0.92, y: -0.68 };
+
+    for (let i = 0; i < 480; i++) {
+      let ndcX, ndcY;
+      // 18% of distant stars form natural stellar clusters
+      if (i < 45) {
+        // Cluster 1 (Pleiades-like open cluster)
+        ndcX = cluster1Center.x + (rand() - 0.5) * 0.28;
+        ndcY = cluster1Center.y + (rand() - 0.5) * 0.22;
+      } else if (i < 85) {
+        // Cluster 2 (Hyades-like open cluster)
+        ndcX = cluster2Center.x + (rand() - 0.5) * 0.32;
+        ndcY = cluster2Center.y + (rand() - 0.5) * 0.26;
+      } else {
+        // Broad cosmic field
+        ndcX = (rand() * 2 - 1) * 2.35;
+        ndcY = (rand() * 2 - 1) * 1.95;
+      }
+
+      // Immense distance: 3600 to 5200 AU
+      const depth = 3600 + rand() * 1600;
       const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
       const rgb = tempToRgbArray(temps[Math.floor(rand() * temps.length)]);
-      const lum = Math.pow(rand(), 3.2);
+      const lum = Math.pow(rand(), 4.2);
+
       starRecords.push({
-        kind: 1, // decoy
+        kind: 2,
+        layer: 0,
         worldPos,
         rgb,
-        size: 8.0 + lum * 12.0,
-        brightness: 0.16 + lum * 0.42,
+        size: 3.2 + lum * 2.8,
+        brightness: 0.15 + lum * 0.28,
         hasSpikes: 0.0,
         phase: rand() * Math.PI * 2,
         revealOrder: 0
       });
     }
 
-    // 2C. 3 Parallax Deep-Sky Starfield Layers (same single Points draw call!)
-    for (let i = 0; i < SKY_MAP_CONFIG.parallaxStarCount; i++) {
-      const layer = i % 3;
-      const ndcX = (rand() * 2 - 1) * 1.9;
-      const ndcY = (rand() * 2 - 1) * 1.6;
-      const depth = 900 + layer * 1050 + rand() * 850;
+    // Layer 1: Intermediate Field (240 medium stars with gentle parallax)
+    for (let i = 0; i < 240; i++) {
+      const ndcX = (rand() * 2 - 1) * 1.85;
+      const ndcY = (rand() * 2 - 1) * 1.55;
+      // Mid distance: 1900 to 3400 AU
+      const depth = 1900 + rand() * 1500;
       const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
       const rgb = tempToRgbArray(temps[Math.floor(rand() * temps.length)]);
-      const lum = Math.pow(rand(), 3.8);
+      const lum = Math.pow(rand(), 3.2);
+
       starRecords.push({
-        kind: 2, // sky background layer
-        layer,
+        kind: 2,
+        layer: 1,
         worldPos,
         rgb,
-        size: 5.0 + lum * 11.0,
-        brightness: 0.14 + lum * 0.55,
+        size: 5.5 + lum * 4.5,
+        brightness: 0.32 + lum * 0.45,
+        hasSpikes: 0.0,
+        phase: rand() * Math.PI * 2,
+        revealOrder: 0
+      });
+    }
+
+    // Layer 2: Foreground Stardust & Near Stars (65 stars with noticeable parallax)
+    for (let i = 0; i < 65; i++) {
+      const ndcX = (rand() * 2 - 1) * 1.45;
+      const ndcY = (rand() * 2 - 1) * 1.25;
+      // Near distance: 850 to 1750 AU (close to camera)
+      const depth = 850 + rand() * 900;
+      const worldPos = ndcToSkyWorld(ndcX, ndcY, depth, basis, aspect);
+      const rgb = tempToRgbArray(temps[Math.floor(rand() * temps.length)]);
+      const lum = Math.pow(rand(), 2.8);
+
+      starRecords.push({
+        kind: 2,
+        layer: 2,
+        worldPos,
+        rgb,
+        size: 7.5 + lum * 3.5,
+        brightness: 0.62 + lum * 0.35,
         hasSpikes: 0.0,
         phase: rand() * Math.PI * 2,
         revealOrder: 0
@@ -1857,7 +1951,8 @@
           if (aSecIdx >= 0.0) {
             if (uHoveredSector >= -0.5 && uDetailZoom <= 0.01) {
               float isHov = 1.0 - step(0.25, abs(aSecIdx - uHoveredSector));
-              hoverBoost = mix(0.62, 1.28, isHov);
+              // Balanced contrast: hovered constellation is crisp and distinct (1.35x), other constellations gently dimmed (0.32x)
+              hoverBoost = mix(0.32, 1.35, isHov);
             }
             if (uActiveDetailSec >= -0.5) {
               activeMatch = 1.0 - step(0.25, abs(aSecIdx - uActiveDetailSec));
@@ -1866,14 +1961,19 @@
             }
           }
 
-          float spikeReveal = smoothstepLocal(0.54, 0.82, uTransitionP);
-          vSpikes = aMeta.z * spikeReveal;
+          vSpikes = 0.0; // Strictly realistic round point stars with zero artificial cross spikes
 
-          float breathe = uReducedMotion > 0.5 ? 1.0 : (1.0 + 0.03 * sin(uTime * 1.7 + phase));
-          vAlpha = baseBright * vis * breathe * hoverBoost * detailVis;
+          // Scintillation / atmospheric twinkling with asynchronous frequencies per star:
+          float freq = 1.1 + fract(phase * 4.3) * 2.5;
+          float twinkle = uReducedMotion > 0.5 ? 1.0 : (1.0 + 0.07 * sin(uTime * freq + phase) + 0.03 * cos(uTime * (freq * 1.6) + phase * 2.1));
+          vAlpha = baseBright * vis * twinkle * hoverBoost * detailVis;
 
-          float ptSize = mix(aSize * (0.88 + 0.24 * vis), aDetailSize, activeMatch * uDetailZoom);
-          if (hoverBoost > 1.05) ptSize *= 1.12;
+          float ptSize = mix(aSize * (0.90 + 0.15 * vis), aDetailSize, activeMatch * uDetailZoom);
+          if (hoverBoost > 1.15) {
+            ptSize *= 1.12; // Subtle, elegant expansion - never an explosive blob
+          } else if (hoverBoost < 0.45) {
+            ptSize *= 0.88; // Subtle dim
+          }
 
           vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
           gl_PointSize = ptSize * uPixelRatio;
@@ -1891,18 +1991,11 @@
           float d = length(uv) * 2.0;
           if (d > 1.0) discard;
 
-          // Pinpoint astronomical PSF: hot core + smooth exponential falloff
-          float core = exp(-d * d * 26.0);
-          float halo = exp(-d * 4.2) * 0.42;
-          float spikes = 0.0;
-          if (vSpikes > 0.02) {
-            float sx = exp(-abs(uv.y) * 34.0) * exp(-abs(uv.x) * 4.5);
-            float sy = exp(-abs(uv.x) * 34.0) * exp(-abs(uv.y) * 4.5);
-            spikes = (sx + sy) * 0.52 * vSpikes;
-          }
-
-          float intensity = clamp(core + halo + spikes, 0.0, 1.0);
-          vec3 col = mix(vColor, vec3(1.0), core * 0.85);
+          // High-fidelity astronomical point-source PSF (Airy disk pinpoint core + Moffat atmospheric halo):
+          float core = exp(-d * d * 56.0);
+          float halo = pow(1.0 + d * d * 18.0, -2.4) * 0.42;
+          float intensity = clamp(core + halo, 0.0, 1.0);
+          vec3 col = mix(vColor, vec3(1.0), core * 0.88);
           gl_FragColor = vec4(col, intensity * vAlpha * uOpacity);
         }
       `,
@@ -2144,9 +2237,10 @@
     const handoffAlpha = smooth(DETAIL_ZOOM_FRAC, 1.0, detailProgress);
     const activeSecForShader = detailProgress > 0.001 ? detailSectorIdx : -1.0;
 
-    // 1. Subtle Milky Way Fade In (0.22 -> 0.58) — stays continuous behind Detail View!
+    // 1. Milky Way (kept completely dark to avoid white/gray sky haze)
     if (skyMapMilkyWayMat) {
-      skyMapMilkyWayMat.opacity = 0.55 * smooth(0.22, 0.58, p) * contactFade;
+      skyMapMilkyWayMat.opacity = 0.0;
+      if (skyMapMilkyWayMesh) skyMapMilkyWayMesh.visible = false;
     }
 
     // 2. Interpolate selected constellation star 3D positions smoothly from Sky Map rays to exact 2D layout targets
@@ -2182,12 +2276,12 @@
       skyMapPointsMat.uniforms.uDetailFadeOut.value = 1.0 - handoffAlpha;
     }
 
-    // 4. Thin Constellation Lines Drawing (0.68 -> 0.88), hover highlight, and gold->silver-blue 3D/2D handoff
+    // 4. Delicate Constellation Lines Drawing (0.68 -> 0.88), hover highlight, and gold->silver-blue 3D/2D handoff
     const lineDraw = smooth(0.68, 0.88, p);
     if (skyMapLines && skyMapLinesMat) {
       const otherLinesFade = detailProgress > 0.001 ? (1.0 - smooth(0.0, 0.42, zoomU)) : 1.0;
       const activeLineFade = 1.0 - handoffAlpha;
-      const baseLineAlpha = 0.46 * Math.pow(Math.max(0.0, lineDraw), 0.72) * contactFade;
+      const baseLineAlpha = 0.28 * Math.pow(Math.max(0.0, lineDraw), 0.72) * contactFade;
       skyMapLines.visible = lineDraw > 0.005 && contactFade > 0.005 && activeLineFade > 0.005;
       skyMapLinesMat.opacity = baseLineAlpha;
 
@@ -2203,9 +2297,9 @@
           const len = Math.max(0.001, dir.length());
           dir.divideScalar(len);
 
-          // Gap smoothly converges to exact 11px-equivalent of 2D Detail View during zoom
+          // Gap smoothly converges to exact 12px-equivalent of 2D Detail View during zoom
           const isTargetSec = detailProgress > 0.001 && e.secIdx === detailSectorIdx;
-          const gapFrac = isTargetSec ? (0.011 + (0.0052 - 0.011) * coolingBlend) : 0.011;
+          const gapFrac = isTargetSec ? (0.012 + (0.0058 - 0.012) * coolingBlend) : 0.012;
           const gapA = a.distanceTo(camera.position) * gapFrac;
           const gapB = b.distanceTo(camera.position) * gapFrac;
           const usableLen = Math.max(1.0, len - gapA - gapB);
@@ -2216,18 +2310,23 @@
           posAttr.setXYZ(i * 2 + 1, pB.x, pB.y, pB.z);
 
           let lum = 1.0;
-          let rCol = 0.902, gCol = 0.745, bCol = 0.416; // #e6be6a gold
+          let rCol = 0.86, gCol = 0.80, bCol = 0.70; // Restrained celestial silver-gold
           if (detailProgress > 0.001) {
             if (isTargetSec) {
-              rCol = 0.902 + (0.855 - 0.902) * coolingBlend;
-              gCol = 0.745 + (0.894 - 0.745) * coolingBlend;
-              bCol = 0.416 + (0.973 - 0.416) * coolingBlend;
+              rCol = 0.86 + (0.855 - 0.86) * coolingBlend;
+              gCol = 0.80 + (0.894 - 0.80) * coolingBlend;
+              bCol = 0.70 + (0.973 - 0.70) * coolingBlend;
               lum = (1.0 - 0.48 * coolingBlend) * activeLineFade;
             } else {
               lum = otherLinesFade;
             }
           } else if (hoveredSkySectorIdx >= 0) {
-            lum = (e.secIdx === hoveredSkySectorIdx) ? 1.55 : 0.45;
+            if (e.secIdx === hoveredSkySectorIdx) {
+              rCol = 0.96; gCol = 0.76; bCol = 0.36; // Warm luminous gold highlight on hover
+              lum = 1.50;
+            } else {
+              lum = 0.20; // Soft dim on unhovered constellations
+            }
           }
           const cIdx = i * 6;
           colAttr.array[cIdx + 0] = rCol * lum;
@@ -2279,18 +2378,47 @@
           const boxH = Math.max(88, (Math.max(maxY, lblY) + lblPadBottom) - (minY - 22));
           const cxBox = Math.max(boxW * 0.5 + 6, Math.min(w - boxW * 0.5 - 6, lblX));
           const topBox = Math.max(58, Math.min(h - 64 - boxH, minY - 22));
+          const originLeft = cxBox - boxW * 0.5;
 
+          item.labelEl.style.background = 'transparent';
+          item.labelEl.style.backgroundColor = 'transparent';
+          item.labelEl.style.border = 'none';
+          item.labelEl.style.outline = 'none';
+          item.labelEl.style.boxShadow = 'none';
           item.labelEl.style.width = boxW.toFixed(0) + 'px';
           item.labelEl.style.height = boxH.toFixed(0) + 'px';
-          item.labelEl.style.pointerEvents = canClickSky ? 'auto' : 'none';
-          item.labelEl.tabIndex = canClickSky ? 0 : -1;
-          item.labelEl.style.transform = `translate3d(${(cxBox - boxW * 0.5).toFixed(1)}px, ${topBox.toFixed(1)}px, 0)`;
+          item.labelEl.style.pointerEvents = 'none';
+          item.labelEl.style.transform = `translate3d(${originLeft.toFixed(1)}px, ${topBox.toFixed(1)}px, 0)`;
+
+          if (item.pillEl) {
+            item.pillEl.style.pointerEvents = canClickSky ? 'auto' : 'none';
+            item.pillEl.tabIndex = canClickSky ? 0 : -1;
+          }
+
+          // Position individual technology star tags within this constellation
+          if (item.stars && item.stars.length) {
+            item.stars.forEach(st => {
+              if (st.tagEl) {
+                const spr = st.worldPos.clone().project(camera);
+                const spx = (spr.x * 0.5 + 0.5) * w;
+                const spy = (-spr.y * 0.5 + 0.5) * h;
+                const relX = spx - originLeft;
+                const relY = spy - topBox;
+                st.tagEl.style.left = relX.toFixed(1) + 'px';
+                st.tagEl.style.top = relY.toFixed(1) + 'px';
+                const isThisHovered = (hoveredSkySectorIdx === item.secIdx);
+                const showTag = (hoveredSkySectorIdx >= 0) ? isThisHovered : (p >= 0.88);
+                st.tagEl.style.opacity = showTag ? (isThisHovered ? '0.96' : '0.40') : '0.0';
+              }
+            });
+          }
         });
       } else {
         skyMapLabelsOverlay.style.opacity = '0';
         skyMapLabelsOverlay.style.visibility = 'hidden';
         skyMapSectorCenters.forEach(item => {
           item.labelEl.style.pointerEvents = 'none';
+          if (item.pillEl) item.pillEl.style.pointerEvents = 'none';
         });
       }
     }
@@ -6160,7 +6288,38 @@
   }
 
   // ── 13. 60/120FPS RAF RENDER LOOP & PLANETARY DYNAMICS ──
+  // ── CONTINUOUS CAMERA PAN & YAW TELEMETRY FOR SYNCHRONIZED BACKGROUND STARS ──
+  let telemetryCamEuler = new THREE.Euler(0, 0, 0, 'YXZ');
+  let baseCamEuler = null;
+  let continuousYaw = 0.0;
+  let continuousPitch = 0.0;
+  let prevRawYaw = 0.0;
+  let prevRawPitch = 0.0;
+
+  function updateCameraTelemetry() {
+    if (!camera) return;
+    telemetryCamEuler.setFromQuaternion(camera.quaternion, 'YXZ');
+    if (baseCamEuler === null) {
+      baseCamEuler = telemetryCamEuler.clone();
+      prevRawYaw = telemetryCamEuler.y;
+      prevRawPitch = telemetryCamEuler.x;
+      return;
+    }
+    let dYaw = telemetryCamEuler.y - prevRawYaw;
+    while (dYaw > Math.PI) dYaw -= Math.PI * 2;
+    while (dYaw < -Math.PI) dYaw += Math.PI * 2;
+    continuousYaw += dYaw;
+    prevRawYaw = telemetryCamEuler.y;
+
+    let dPitch = telemetryCamEuler.x - prevRawPitch;
+    while (dPitch > Math.PI) dPitch -= Math.PI * 2;
+    while (dPitch < -Math.PI) dPitch += Math.PI * 2;
+    continuousPitch += dPitch;
+    prevRawPitch = telemetryCamEuler.x;
+  }
+
   function renderLoop() {
+    updateCameraTelemetry();
     if (!isInitialized) return;
     if (document.hidden) {
       requestAnimationFrame(renderLoop);
@@ -6283,15 +6442,14 @@
         deepSpaceStarsGroup.position.x = camera.position.x * 0.94;
         deepSpaceStarsGroup.position.y = camera.position.y * 0.94;
         deepSpaceStarsGroup.position.z = camera.position.z * 0.94;
-        deepSpaceStarsGroup.rotation.y = elapsedTime * 0.008;
+        deepSpaceStarsGroup.rotation.y = 0.0; // Strictly stationary when camera is still
       }
       if (foregroundStardustGroup && camera) {
         // Foreground stardust moves with high parallax (60% tracking camera -> 40% apparent dynamic shift)
         foregroundStardustGroup.position.x = camera.position.x * 0.60;
         foregroundStardustGroup.position.y = camera.position.y * 0.60;
         foregroundStardustGroup.position.z = camera.position.z * 0.60;
-        const dustSpeed = inTransitFlight ? (0.012 + 0.055 * flightCruiseWeight) : 0.004;
-        foregroundStardustGroup.rotation.y = elapsedTime * dustSpeed;
+        foregroundStardustGroup.rotation.y = inTransitFlight ? (elapsedTime * 0.018 * flightCruiseWeight) : 0.0;
       }
 
       // 4. Instanced Asteroids 3D Tumbling
@@ -6739,6 +6897,14 @@
     setCameraOverride: setCameraOverride,
     getScene: () => scene,
     getCamera: () => camera,
+    getCameraPanTelemetry: function () {
+      return {
+        yaw: continuousYaw,
+        pitch: continuousPitch,
+        fov: camera ? camera.fov : 45.0,
+        camPos: camera ? camera.position : null
+      };
+    },
     evaluateHomeTransitionCamera: evaluateHomeTransitionCamera,
     getRenderer: () => renderer,
     skyConfig: SKY_MAP_CONFIG,

@@ -245,7 +245,7 @@ html[data-theme="space"] body::before {
 /* Top Border with Tick Scale */
 .cockpit-border-ticks-top {
   position: absolute;
-  top: 4px;
+  top: 54px;
   left: 24%;
   right: 24%;
   height: 16px;
@@ -532,7 +532,8 @@ html[data-theme="space"] .space-footer {
 
 .brand-monogram {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   text-decoration: none;
   color: inherit;
   flex-shrink: 0;
@@ -541,11 +542,12 @@ html[data-theme="space"] .space-footer {
 .brand-title {
   font-family: var(--font-display);
   font-size: 0.95rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--text-primary);
   white-space: nowrap;
-  line-height: 1.25;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .brand-sub {
@@ -2570,14 +2572,33 @@ body.blackhole-dragging #reticle-dot {
   align-items: center;
 }
 
-/* Background Keplerian Orbital SVG Geometry */
-.orbital-tracks-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
+/* Background Keplerian Orbital SVG Geometry - Locked Exactly to Black Hole Center */
+.space-orbital-constellation,
+#blackHoleContainer .space-orbital-constellation {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  width: 600px !important;
+  height: 600px !important;
+  max-width: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+
+.orbital-tracks-svg,
+#blackHoleContainer .orbital-tracks-svg {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  width: 580px !important;
+  height: 580px !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
   filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.15));
 }
 

@@ -193,6 +193,7 @@
     let animId = null;
     let clock;
     let diskMaterial, haloMaterial, coronalBeamMesh, coronalBeamMaterial;
+    let homeFlightProgress = 0.0;
 
     // Single Source of Truth: Position strictly relative to the #hero container
     let heroRelX = 0;
@@ -347,9 +348,14 @@
       const h = window.innerHeight || heroHeight;
       const defaultX = Math.round(heroWidth * 0.50);
       
-      // On desktop: balanced cinematic focal placement with generous negative space
+      // On desktop: balanced cinematic focal placement with generous negative space, moved towards the right edge
+      if (w >= 1440) {
+        const rightX = Math.round(heroWidth * 0.75);
+        const rightY = h <= 768 ? Math.round(heroHeight * 0.44) : Math.round(heroHeight * 0.46);
+        return { x: rightX, y: rightY };
+      }
       if (w >= 1025) {
-        const rightX = Math.round(heroWidth * 0.65);
+        const rightX = Math.round(heroWidth * 0.72);
         const rightY = h <= 768 ? Math.round(heroHeight * 0.44) : Math.round(heroHeight * 0.46);
         return { x: rightX, y: rightY };
       }
@@ -400,7 +406,11 @@
         const heroRect = heroEl.getBoundingClientRect();
         currentScreenX = heroRect.left + heroRelX;
         currentScreenY = heroRect.top + heroRelY;
+        heroEl.style.setProperty('--bh-x', `${Math.round(heroRelX)}px`);
+        heroEl.style.setProperty('--bh-y', `${Math.round(heroRelY)}px`);
       }
+      document.documentElement.style.setProperty('--bh-x', `${Math.round(heroRelX)}px`);
+      document.documentElement.style.setProperty('--bh-y', `${Math.round(heroRelY)}px`);
       const container = document.getElementById('blackHoleContainer');
       if (container) {
         container.style.setProperty('--bh-x', `${Math.round(heroRelX)}px`);
@@ -1660,11 +1670,12 @@
       const elapsed = clock.getElapsedTime();
 
       // Check hero confinement on each animation tick
-      const inHero = checkHeroConfinement();
+      const isSpace = document.documentElement.getAttribute('data-theme') === 'space';
+      const inHero = isSpace ? true : checkHeroConfinement();
       updateHeroConfinementState(inHero);
 
       if (!inHero) {
-        // Black hole is outside hero section - skip Three.js rendering and clear buffer
+        // Outside hero in non-space themes: skip Three.js rendering and clear buffer
         if (renderer) renderer.clear();
         return;
       }
@@ -1675,13 +1686,15 @@
       if (!heroEl) return;
       const heroRect = heroEl.getBoundingClientRect();
 
-      let heroExitAlpha = 1.0;
-      if (heroRect.bottom < 180) {
-        heroExitAlpha = Math.max(0, Math.min(1, heroRect.bottom / 180));
+      if (!isSpace) {
+        let heroExitAlpha = 1.0;
+        if (heroRect.bottom < 180) {
+          heroExitAlpha = Math.max(0, Math.min(1, heroRect.bottom / 180));
+        }
+        if (canvas) canvas.style.opacity = heroExitAlpha.toFixed(3);
       }
-      if (canvas) canvas.style.opacity = heroExitAlpha.toFixed(3);
       const bhContEl = document.getElementById('blackHoleContainer');
-      if (bhContEl) bhContEl.style.opacity = '1';
+      if (bhContEl && !isSpace) bhContEl.style.opacity = '1';
 
       if (heroRelX <= 10 || heroRelY <= 10) {
         const defPos = computeDefaultHeroPosition();
@@ -1771,20 +1784,48 @@
       const compositeScale = currentScale * pulseScale;
 
       if (blackHoleRoot) {
-        // Phase 2 Continuous Journey Recession
-        // As spacecraft accelerates forward into deep space, black hole recedes along -Z and scales smoothly
-        let journeyRecession = 0.0;
-        if (window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function') {
+        // Continuous Cinematic Journey Recession (Home -> Deep Space -> Solar System)
+        // As camera pulls back and yaws toward the Sun, the black hole recedes into the background
+        // and scales down smoothly to a tiny glowing orange speck (~4-5px) without ever popping or blinking out
+        let journeyRecession = homeFlightProgress;
+        if (!journeyRecession && window.MasterJourneyController && typeof window.MasterJourneyController.getHomeProgress === 'function') {
+          journeyRecession = window.MasterJourneyController.getHomeProgress();
+        } else if (!journeyRecession && window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function') {
           const jt = window.MasterJourneyController.getProgress();
-          if (jt > 0.0001) {
-            const rawU = Math.min(1.0, jt / 0.16);
-            journeyRecession = rawU * rawU * (3.0 - 2.0 * rawU);
+          if (jt > 0.0001 && jt <= 0.18) {
+            journeyRecession = jt / 0.18;
           }
         }
-        const recedeScale = 1.0 - 0.75 * journeyRecession;
-        blackHoleRoot.position.x = (ndcX * vHalfWidth) - (3.5 * journeyRecession);
-        blackHoleRoot.position.y = (ndcY * vHalfHeight) + (0.8 * journeyRecession);
-        blackHoleRoot.position.z = -2.0 - (16.0 * journeyRecession);
+        const rawRecess = Math.max(0.0, Math.min(1.0, journeyRecession));
+        let recedeScale = 1.0;
+
+        // 3-Stage Cinematic Physical Motion (Pure Zoom Out -> Angle Turn -> Zoom In / Solar Arrival)
+        if (rawRecess <= 0.25) {
+          // Act 1 (0.00 <= p <= 0.25): Pure Zoom Out — Camera retreats straight back along depth axis
+          // NO artificial sideways drift; the black hole stays anchored at hero X/Y while shrinking with distance
+          const uZoom = rawRecess / 0.25;
+          const easeZoom = uZoom * uZoom * (3.0 - 2.0 * uZoom);
+          blackHoleRoot.position.x = ndcX * vHalfWidth;
+          blackHoleRoot.position.y = ndcY * vHalfHeight;
+          blackHoleRoot.position.z = -2.0 - (18.0 * easeZoom);
+          recedeScale = 1.0 - 0.55 * easeZoom;
+        } else if (rawRecess <= 0.55) {
+          // Act 2 (0.25 < p <= 0.55): Camera Angle Turn — Camera yaws right toward the Sun
+          // Black hole naturally sweeps left across field of view and recedes into deep space
+          const uTurn = (rawRecess - 0.25) / 0.30;
+          const easeTurn = uTurn * uTurn * (3.0 - 2.0 * uTurn);
+          blackHoleRoot.position.x = (ndcX * vHalfWidth) - (28.0 * easeTurn);
+          blackHoleRoot.position.y = (ndcY * vHalfHeight) + (8.0 * easeTurn);
+          blackHoleRoot.position.z = -20.0 - (18.0 * easeTurn);
+          recedeScale = 0.45 * (1.0 - 0.96 * easeTurn);
+        } else {
+          // Act 3 (0.55 < p <= 1.00): Camera zooms forward into Solar System; BH rests as distant 4px orange speck
+          const uApp = Math.min(1.0, (rawRecess - 0.55) / 0.45);
+          blackHoleRoot.position.x = (ndcX * vHalfWidth) - 28.0 - (8.0 * uApp);
+          blackHoleRoot.position.y = (ndcY * vHalfHeight) + 8.0 + (3.0 * uApp);
+          blackHoleRoot.position.z = -38.0;
+          recedeScale = 0.018;
+        }
 
         // Constrained Orientation Model:
         // Maintains natural, stable viewing angle and counteracts perspective camera parallax
@@ -2430,9 +2471,38 @@
         if (bhCont) bhCont.classList.add('is-webgl-active');
       }
 
+      // True Projected Screen Coordinates of 3D Black Hole Core
+      let actualScreenX = currentScreenX;
+      let actualScreenY = currentScreenY;
+      let effectiveScale = currentScale;
+      if (blackHoleRoot && camera) {
+        const tempV = new THREE.Vector3();
+        blackHoleRoot.getWorldPosition(tempV);
+        tempV.project(camera);
+        actualScreenX = (tempV.x * 0.5 + 0.5) * width;
+        actualScreenY = (-tempV.y * 0.5 + 0.5) * height;
+        let journeyRecession = 0.0;
+        if (window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function') {
+          const jt = window.MasterJourneyController.getProgress();
+          if (jt > 0.0001) {
+            const rawU = Math.min(1.0, jt / 0.16);
+            journeyRecession = rawU * rawU * (3.0 - 2.0 * rawU);
+          }
+        }
+        effectiveScale = currentScale * (1.0 - 0.75 * journeyRecession);
+      }
+
+      // Synchronously lock DOM container hit area and SVG orbital tracks to true 3D black hole screen position
+      if (bhContainerEl) {
+        bhContainerEl.style.setProperty('--bh-x', `${Math.round(actualScreenX)}px`);
+        bhContainerEl.style.setProperty('--bh-y', `${Math.round(actualScreenY)}px`);
+        const hitSize = Math.max(90, Math.round(150 * (effectiveScale / 0.26)));
+        bhContainerEl.style.setProperty('--bh-hit-size', `${hitSize}px`);
+      }
+
       // Pass visual screen coordinates and current scale to GravitationalEngine
       if (typeof GravitationalEngine !== 'undefined' && GravitationalEngine.update && !GravitationalEngine.hasIndependentLoop) {
-        GravitationalEngine.update(currentScreenX, currentScreenY, currentScale);
+        GravitationalEngine.update(actualScreenX, actualScreenY, effectiveScale);
       }
       } catch (err) {
         console.error('[CRITICAL] SpaceBlackHoleHero3D.animate() error:', err);
@@ -2845,14 +2915,50 @@
           jetProgress: jetSpineMaterial && jetSpineMaterial.uniforms && jetSpineMaterial.uniforms.uProgress ? jetSpineMaterial.uniforms.uProgress.value : 0.0
         };
       },
+      setHomeTransitionProgress: function (p) {
+        homeFlightProgress = Math.max(0.0, Math.min(1.0, p));
+      },
       getBlackHoleState: function () {
+        let sx = currentScreenX;
+        let sy = currentScreenY;
+        let effScale = currentScale;
+        if (blackHoleRoot && camera) {
+          const tempV = new THREE.Vector3();
+          blackHoleRoot.getWorldPosition(tempV);
+          tempV.project(camera);
+          sx = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+          sy = (-tempV.y * 0.5 + 0.5) * window.innerHeight;
+          let journeyRecession = homeFlightProgress;
+          if (!journeyRecession && window.MasterJourneyController && typeof window.MasterJourneyController.getHomeProgress === 'function') {
+            journeyRecession = window.MasterJourneyController.getHomeProgress();
+          } else if (!journeyRecession && window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function') {
+            const jt = window.MasterJourneyController.getProgress();
+            if (jt > 0.0001 && jt <= 0.18) {
+              journeyRecession = jt / 0.18;
+            }
+          }
+          const rawRecess = Math.max(0.0, Math.min(1.0, journeyRecession));
+          let recedeScale = 1.0;
+          if (rawRecess <= 0.25) {
+            const uZoom = rawRecess / 0.25;
+            const easeZoom = uZoom * uZoom * (3.0 - 2.0 * uZoom);
+            recedeScale = 1.0 - 0.55 * easeZoom;
+          } else if (rawRecess <= 0.55) {
+            const uTurn = (rawRecess - 0.25) / 0.30;
+            const easeTurn = uTurn * uTurn * (3.0 - 2.0 * uTurn);
+            recedeScale = 0.45 * (1.0 - 0.96 * easeTurn);
+          } else {
+            recedeScale = 0.018;
+          }
+          effScale = currentScale * recedeScale;
+        }
         return {
-          x: currentScreenX,
-          y: currentScreenY,
+          x: sx,
+          y: sy,
           heroRelX: heroRelX,
           heroRelY: heroRelY,
-          scale: currentScale,
-          radius: 95 * currentScale,
+          scale: effScale,
+          radius: 95 * effScale,
           isHeroActive: isHeroActive,
           isSettled: (introState === 'SETTLED'),
           destructionTimer: destructionTimer,
@@ -4065,7 +4171,7 @@
         return true;
       }
 
-      // 3. Never consume black hole interaction containers, HUD controls, overlays, or canvases
+      // 3. Never consume black hole interaction containers, HUD controls, overlays, canvases, tracer HUD, or lower cockpit footer
       if (el.id === 'cosmicRebirthPrompt' || el.closest('#cosmicRebirthPrompt') ||
           el.id === 'cosmicEnergyFlash' || el.closest('#cosmicEnergyFlash') ||
           el.id === 'gravityTelemetryBadge' || el.closest('#gravityTelemetryBadge') ||
@@ -4073,7 +4179,10 @@
           el.id === 'gravityFieldToggleBtn' ||
           el.id === 'cosmicRebirthPromptBtn' ||
           el.id === 'blackHoleIntroHud' || el.closest('#blackHoleIntroHud') || el.id === 'introHudCloseBtn' ||
+          el.id === 'journeyTelemetryHud' || el.closest('#journeyTelemetryHud') || el.closest('.journey-telemetry-hud') ||
+          el.id === 'spaceCockpitBottomBar' || el.closest('#spaceCockpitBottomBar') || el.closest('.space-cockpit-bottom-bar') ||
           el.id === 'galaxyHudBottombar' || el.closest('.galaxy-hud-bottombar') ||
+          el.id === 'spaceCockpitHud' || el.closest('.cockpit-viewport-frame') ||
           el.id === 'galaxy3DCanvas' || el.id === 'hero3DCanvas' || el.id === 'spaceStarfield' || el.id === 'portraitFragmentCanvas' ||
           el.id === 'gravitationalFocalLens' || el.closest('#gravitationalFocalLens') ||
           el.id === 'gravityAnimationLayerBack' || el.closest('#gravityAnimationLayerBack') ||
@@ -4317,10 +4426,6 @@
     }
 
     function initTelemetryBadge() {
-      if (document.documentElement.getAttribute('data-theme') === 'space') {
-        // Space cockpit console handles telemetry at bottom bar
-        return;
-      }
       let badge = document.getElementById('gravityTelemetryBadge');
       if (!badge) {
         badge = document.createElement('div');
@@ -4330,7 +4435,7 @@
         badge.setAttribute('aria-live', 'polite');
         badge.innerHTML = `
           <span class="telemetry-pip" aria-hidden="true"></span>
-          <span class="telemetry-label" id="gravityTelemetryLabel">ACCRETION: <strong id="gravityConsumedCount">0</strong> CONSUMED</span>
+          <span class="telemetry-label" id="gravityTelemetryLabel">ACCRETION : 0% CONSUMED</span>
           <button type="button" class="telemetry-btn" id="gravityRestoreBtn" title="Restore letters to native layout (U or R)">✦ RESTORE (U)</button>
           <button type="button" class="telemetry-btn telemetry-btn-danger" id="gravityDestroyBtn" title="Trigger black hole destruction sequence (D)">💥 DESTROY (D)</button>
         `;
@@ -4453,10 +4558,12 @@
         }
       }
       if (labelEl) {
-        labelEl.innerHTML = `ACCRETION: <strong id="gravityConsumedCount">${count}</strong> CONSUMED`;
+        const pct = targets.length > 0 ? Math.round((count / targets.length) * 100) : 0;
+        labelEl.innerHTML = `ACCRETION : <strong id="gravityConsumedCount">${pct}%</strong> CONSUMED`;
         telemetryCountEl = document.getElementById('gravityConsumedCount');
       } else if (telemetryCountEl) {
-        telemetryCountEl.textContent = count;
+        const pct = targets.length > 0 ? Math.round((count / targets.length) * 100) : 0;
+        telemetryCountEl.textContent = `${pct}%`;
       }
     }
 
@@ -4474,9 +4581,9 @@
         addTarget(el, 'char');
       });
 
-      // 2. Register eligible rectangular boxes, cards, and buttons in active hero section (Entire front page eatable except navbar)
+      // 2. Register eligible rectangular boxes, cards, and buttons in active hero section (Entire front page eatable except navbar, tracer, and cockpit bottom bar)
       const boxElements = document.querySelectorAll(
-        '#hero .orbital-tech-badge, #hero .atelier-btn, #hero .ar-bracket, #hero .spatial-scroll-indicator, #hero #arFrame, #hero #arPortraitTerminal, #hero .space-commander-terminal, #hero .orbital-tracks-svg, #hero .ar-hud-telemetry, #hero .ar-identity-badge, #hero .space-meta-tag, #hero .meta-tag, #hero .space-hero-role-title, #hero .hero-footer-meta .meta-group, #hero .hero-footer-meta .meta-separator'
+        '#hero .orbital-tech-badge, #hero .atelier-btn, #hero .ar-bracket, #hero .spatial-scroll-indicator, #hero #arFrame, #hero #arPortraitTerminal, #hero .space-commander-terminal, #hero .orbital-tracks-svg, #hero .ar-hud-telemetry, #hero .ar-identity-badge, #hero .space-meta-tag, #hero .meta-tag, #hero .space-hero-role-title, #hero .hero-footer-meta .meta-group, #hero .hero-footer-meta .meta-separator, #hero .cockpit-instrument-card, #hero .space-cockpit-instruments-deck, #hero .scroll-indicator-wrap, #hero .space-meta-badge, #hero .hero-actions'
       );
       boxElements.forEach(el => {
         if (isProtectedElement(el)) return;
@@ -4762,16 +4869,18 @@
           }
 
           // Elliptical perspective orbit matching 3D inclination angle of black hole accretion disk
-          // Synchronously tracks live bhX, bhY and moves smoothly up behind the navbar on scroll
+          // Synchronously tracks live (bhX, bhY) and scales naturally with black hole distance
           const kMinor = p.kMinor || 0.62;
-          const x = bhX + Math.cos(p.currentAngle) * p.currentRadius;
-          const y = bhY + Math.sin(p.currentAngle) * (p.currentRadius * kMinor);
+          const scaleRatio = Math.max(0.25, Math.min(1.8, (scale / 0.34)));
+          const effRadius = p.currentRadius * scaleRatio;
+          const x = bhX + Math.cos(p.currentAngle) * effRadius;
+          const y = bhY + Math.sin(p.currentAngle) * (effRadius * kMinor);
 
-          // Natural elliptical Keplerian positioning relative to live (bhX, bhY) without navbar trapping
+          // Exact Keplerian center positioning relative to live (bhX, bhY) without artificial boundary detachment
           const charHalfW = p.charWidth ? p.charWidth * 0.5 : 9;
           const charHalfH = p.charHeight ? p.charHeight * 0.5 : 11;
-          const renderX = Math.max(boundLeft, Math.min(boundRight - charHalfW * 2, x - charHalfW));
-          const renderY = Math.max(boundTop, Math.min(boundBottom - charHalfH * 2, y - charHalfH));
+          const renderX = x - charHalfW;
+          const renderY = y - charHalfH;
 
           p.currentX = x;
           p.currentY = y;
@@ -5347,6 +5456,15 @@
         }
       });
 
+      const constellationEl = document.querySelector('.space-orbital-constellation');
+      if (constellationEl) {
+        delete constellationEl.dataset.consumed;
+        constellationEl.style.display = '';
+        constellationEl.style.transform = 'translate(-50%, -50%) scale(1.0) rotate(0deg)';
+        constellationEl.style.opacity = '1';
+        constellationEl.style.transition = '';
+      }
+
       activeMatterDots.forEach(m => { if (m.el && m.el.parentNode) m.el.parentNode.removeChild(m.el); });
       activeMatterDots = [];
 
@@ -5477,7 +5595,24 @@
         }
       }
 
-      // 6. Restore original boxes, plinths, and items currently in flight
+      // 6. Restore original wrappers, boxes, plinths, and items currently in flight
+      const heroWrappers = document.querySelectorAll('#hero .space-hero-monograph, #hero .space-cockpit-instruments-deck, #hero .spatial-scroll-indicator');
+      heroWrappers.forEach((el) => {
+        el.style.visibility = 'visible';
+        el.style.transition = 'opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1)';
+        el.style.opacity = '1';
+      });
+
+      // Restore concentric orbital radar constellation circle around black hole
+      const constellationEl = document.querySelector('.space-orbital-constellation');
+      if (constellationEl) {
+        delete constellationEl.dataset.consumed;
+        constellationEl.style.display = '';
+        constellationEl.style.transition = 'transform 1.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1)';
+        constellationEl.style.transform = 'translate(-50%, -50%) scale(1.0) rotate(0deg)';
+        constellationEl.style.opacity = '1';
+      }
+
       targets.forEach((item, index) => {
         if (!item.element || !item.element.isConnected) return;
         if (item.state === 'CONSUMED' || item.state === 'ATTRACTING' || item.state === 'ORBITING') {
@@ -5738,18 +5873,28 @@
 
       const now = performance.now();
 
-      // Only accelerate letters that were ALREADY captured or in flight!
-      // Do NOT scatter or clone distant uncaptured hero text across the screen.
-      targets.forEach((item) => {
+      // Cleanly consume and collapse EVERY hero element inward into the singularity
+      targets.forEach((item, index) => {
         if (!item.element || !item.element.isConnected) return;
         if (item.state === 'CONSUMED') return;
 
+        const r = item.element.getBoundingClientRect();
+        const itemX = item.baseX || (r.left + r.width * 0.5);
+        const itemY = item.baseY || (r.top + r.height * 0.5);
+        const dx = bhState.x - itemX;
+        const dy = bhState.y - itemY;
+
         if (item.type === 'box') {
-          item.element.style.transition = 'opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1)';
-          item.element.style.transform = `translate3d(${(bhState.x - (item.startX || 0)) * 0.45}px, ${(bhState.y - (item.startY || 0)) * 0.45}px, 0) scale(0.04)`;
+          const stagger = (index % 5) * 35;
+          item.element.style.transition = `opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) ${stagger}ms, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) ${stagger}ms`;
+          item.element.style.transform = `translate3d(${(dx * 0.90).toFixed(1)}px, ${(dy * 0.90).toFixed(1)}px, 0) scale(0.02) rotate(${dx > 0 ? 30 : -30}deg)`;
           item.element.style.opacity = '0';
-          item.element.style.visibility = 'hidden';
           item.element.style.pointerEvents = 'none';
+          setTimeout(() => {
+            if (item.element && item.state === 'CONSUMED') {
+              item.element.style.visibility = 'hidden';
+            }
+          }, 850 + stagger);
           item.state = 'CONSUMED';
           consumedRegistry.push({
             id: item.id,
@@ -5761,14 +5906,69 @@
           return;
         }
 
-        // If letter is already attracted or orbiting, rapidly accelerate inward to horizon
-        if (item.state === 'ATTRACTING' || item.state === 'ORBITING') {
-          item.state = 'ORBITING';
-          item.orbitStartTime = now;
-          item.orbitDuration = 1.2 + ((item.targetId * 7) % 4) * 0.10;
-          item.orbitTotalRounds = 2.8 + ((item.targetId * 11) % 3) * 0.3;
+        // For character tokens: organic streaming spiral into singularity
+        const charStagger = (index % 25) * 12; // gentle waterfall ripple
+        const rot = (dx > 0 ? 35 : -35) + ((item.targetId || 0) % 30) - 15;
+
+        if (item.cloneEl) {
+          item.cloneEl.style.transition = `opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)`;
+          item.cloneEl.style.transform = `translate3d(${bhState.x.toFixed(1)}px, ${bhState.y.toFixed(1)}px, 0) scale(0.01) rotate(${rot}deg)`;
+          item.cloneEl.style.opacity = '0';
+          setTimeout(() => {
+            if (item.cloneEl) {
+              item.cloneEl.remove();
+              item.cloneEl = null;
+            }
+          }, 800);
         }
+
+        item.element.style.display = 'inline-block';
+        item.element.style.transition = `opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1) ${charStagger}ms, transform 0.75s cubic-bezier(0.16, 1, 0.3, 1) ${charStagger}ms`;
+        item.element.style.transform = `translate3d(${(dx * 0.95).toFixed(1)}px, ${(dy * 0.95).toFixed(1)}px, 0) scale(0.02) rotate(${rot}deg)`;
+        item.element.style.opacity = '0';
+        item.element.style.pointerEvents = 'none';
+        setTimeout(() => {
+          if (item.element && item.state === 'CONSUMED') {
+            item.element.style.visibility = 'hidden';
+          }
+        }, 750 + charStagger);
+
+        item.state = 'CONSUMED';
+        consumedRegistry.push({
+          id: item.id,
+          targetItem: item,
+          char: (item.element.textContent || '').trim() || '•',
+          consumedAt: Date.now(),
+          type: 'char',
+          isBox: false
+        });
       });
+
+      // Also ensure parent wrappers in #hero fade cleanly into event horizon
+      const heroWrappers = document.querySelectorAll('#hero .space-hero-monograph, #hero .space-cockpit-instruments-deck, #hero .spatial-scroll-indicator');
+      heroWrappers.forEach((el) => {
+        el.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1) 150ms';
+        el.style.opacity = '0';
+        setTimeout(() => {
+          if (BlackHoleLifecycle.isDestroying() || BlackHoleLifecycle.isReadyToDestroy()) {
+            el.style.visibility = 'hidden';
+          }
+        }, 1000);
+      });
+
+      // Symmetrically consume and collapse the orbital radar constellation circle into singularity
+      const constellationEl = document.querySelector('.space-orbital-constellation');
+      if (constellationEl) {
+        constellationEl.dataset.consumed = '1';
+        constellationEl.style.transition = 'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease-out';
+        constellationEl.style.transform = 'translate(-50%, -50%) scale(0.001) rotate(180deg)';
+        constellationEl.style.opacity = '0';
+        setTimeout(() => {
+          if (constellationEl && constellationEl.dataset.consumed === '1') {
+            constellationEl.style.display = 'none';
+          }
+        }, 650);
+      }
 
       updateTelemetryBadge();
     }
@@ -7511,6 +7711,9 @@
 
       // 5. Tactical Commander Station / Profile identity tokens and telemetry markers
       document.querySelectorAll('#hero .ar-identity-badge .ar-id-name, #hero .ar-identity-badge .ar-id-field, #hero .ar-identity-badge .ar-id-loc, #hero .ar-hud-telemetry .hud-marker').forEach(tokenizeElementText);
+
+      // 6. Cockpit Instruments Deck (SYS.CORE, SOL-7, UPLINK, metrics, tags)
+      document.querySelectorAll('#hero .cockpit-instrument-card .instrument-sys-tag, #hero .cockpit-instrument-card .instrument-label, #hero .cockpit-instrument-card .metric-main, #hero .cockpit-instrument-card .metric-desc, #hero .cockpit-instrument-card .instrument-idx').forEach(tokenizeElementText);
     }
 
     function initSectionRubrics() {
@@ -7946,9 +8149,13 @@
       // Layer 0: Distant micro-stars (count: ~140)
       for (let i = 0; i < 140; i++) {
         const baseAlpha = Math.random() * 0.4 + 0.2;
+        const sx = Math.random() * width;
+        const sy = Math.random() * height;
         stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+          x: sx,
+          y: sy,
+          x0: sx,
+          y0: sy,
           radius: Math.random() * 0.65 + 0.35,
           baseAlpha: baseAlpha,
           currentAlpha: baseAlpha,
@@ -7966,9 +8173,13 @@
       for (let i = 0; i < 65; i++) {
         const isAmber = Math.random() > 0.55;
         const baseAlpha = Math.random() * 0.5 + 0.35;
+        const sx = Math.random() * width;
+        const sy = Math.random() * height;
         stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+          x: sx,
+          y: sy,
+          x0: sx,
+          y0: sy,
           radius: Math.random() * 0.85 + 0.7,
           baseAlpha: baseAlpha,
           currentAlpha: baseAlpha,
@@ -7985,9 +8196,13 @@
       // Layer 2: Cosmic dust motes drifting gently (count: ~24)
       for (let i = 0; i < 24; i++) {
         const baseAlpha = Math.random() * 0.35 + 0.25;
+        const sx = Math.random() * width;
+        const sy = Math.random() * height;
         stars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
+          x: sx,
+          y: sy,
+          x0: sx,
+          y0: sy,
           radius: Math.random() * 1.3 + 1.1,
           baseAlpha: baseAlpha,
           currentAlpha: baseAlpha,
@@ -7996,10 +8211,42 @@
           respawnProgress: 1.0,
           twinkleSpeed: Math.random() * 0.015 + 0.005,
           twinklePhase: Math.random() * Math.PI * 2,
-          vx: (Math.random() - 0.5) * 0.12,
-          vy: (Math.random() - 0.5) * 0.1,
           layer: 2,
           color: Math.random() > 0.4 ? 'rgba(245, 158, 11, ' : 'rgba(226, 222, 216, '
+        });
+      }
+
+      // Layer 3: Luminous Celestial Anchor Stars (matching Sky Map PSF & diffraction spikes)
+      const celestialColors = [
+        { core: '#ffffff', halo: 'rgba(219, 234, 254, ' }, // O/B blue-white
+        { core: '#ffffff', halo: 'rgba(254, 249, 195, ' }, // G yellow-white
+        { core: '#fffdf5', halo: 'rgba(251, 191, 36, ' },  // K warm amber
+        { core: '#ffffff', halo: 'rgba(196, 181, 253, ' }   // Ethereal violet-white
+      ];
+      for (let i = 0; i < 22; i++) {
+        const pal = celestialColors[i % celestialColors.length];
+        const baseAlpha = Math.random() * 0.35 + 0.55;
+        const sx = Math.random() * width;
+        const sy = Math.random() * height;
+        stars.push({
+          x: sx,
+          y: sy,
+          x0: sx,
+          y0: sy,
+          radius: Math.random() * 1.5 + 2.0,
+          baseAlpha: baseAlpha,
+          currentAlpha: baseAlpha,
+          twinkleSpeed: Math.random() * 0.02 + 0.008,
+          twinklePhase: Math.random() * Math.PI * 2,
+          orbitSense: Math.random() > 0.5 ? 1 : -1,
+          isRespawning: false,
+          respawnProgress: 1.0,
+          layer: 3,
+          isLuminous: true,
+          hasSpikes: false, // Strictly realistic astronomical point stars with zero artificial cross spikes
+          spikeLen: 0,
+          color: pal.core,
+          haloColor: pal.halo
         });
       }
     }
@@ -8119,8 +8366,8 @@
 
           let alpha = Math.max(0, s.currentAlpha + Math.sin(s.twinklePhase) * (s.currentAlpha * 0.35));
 
-          // Gravitational attraction & orbital spiral around moving black hole (when hero active & settled)
-          if (bh && bh.isHeroActive && bh.isSettled) {
+          // Gravitational attraction & orbital spiral around moving black hole (when hero active & settled on Home)
+          if (bh && bh.isHeroActive && bh.isSettled && journeyProgress < 0.02) {
             const dx = bhX - s.x;
             const dy = bhY - s.y;
             const dist = Math.hypot(dx, dy);
@@ -8169,20 +8416,89 @@
             }
           }
 
-          // Parallax depth multiplier and camera journey flight participation
-          const depthMultiplier = s.layer === 0 ? 8 : (s.layer === 1 ? 18 : 30);
-          const journeySpeed = s.layer === 0 ? 70 : (s.layer === 1 ? 190 : 380);
-          let px = s.x - currentParallaxX * depthMultiplier;
-          let py = s.y - currentParallaxY * depthMultiplier - (smoothedVelocity * journeySpeed);
+          // ── UNIFIED SPATIAL MOTION: STARS FOLLOW ACTIVE SCENE & MAIN OBJECT ──
+          const depthMultiplier = s.layer === 0 ? 8 : (s.layer === 1 ? 18 : (s.layer === 3 ? 24 : 32));
+          let px, py;
 
-          // Wrap around edges before gravitational deflection
-          if (px < -15) px += width + 30;
-          if (px > width + 15) px -= width + 30;
-          if (py < -15) py += height + 30;
-          if (py > height + 15) py -= height + 30;
+          // Ensure base reference coordinates exist
+          if (s.x0 === undefined) s.x0 = s.x;
+          if (s.y0 === undefined) s.y0 = s.y;
 
-          // Relativistic Gravitational Lensing (curved light deflection around the event horizon)
-          if (bh && bh.isHeroActive) {
+          const master = window.MasterJourneyController;
+          const t = master ? master.getProgress() : journeyProgress;
+          const homeP = (master && typeof master.getHomeProgress === 'function')
+            ? master.getHomeProgress(t)
+            : Math.max(0.0, Math.min(1.0, t / 0.18));
+
+          if (t <= 0.18) {
+            // ── 1. SECTOR 01: HOME / BLACK HOLE ZOOM-OUT & CINEMATIC CAMERA SWEEP ──
+            const dX = s.x0 - bhX;
+            const dY = s.y0 - bhY;
+            const wrapW = width + 120;
+            const wrapH = height + 120;
+
+            if (homeP <= 0.25) {
+              // Act 1 (0.00 <= p <= 0.25): Pure Zoom Out
+              const uZoom = homeP / 0.25;
+              const easeZoom = uZoom * uZoom * (3.0 - 2.0 * uZoom);
+              const layerDepth = 0.18 + (s.layer === 0 ? 0.08 : (s.layer === 1 ? 0.18 : (s.layer === 3 ? 0.28 : 0.38)));
+              const zoomScale = 1.0 - layerDepth * 0.52 * easeZoom;
+
+              px = bhX + dX * zoomScale - currentParallaxX * depthMultiplier;
+              py = bhY + dY * zoomScale - currentParallaxY * depthMultiplier;
+            } else if (homeP <= 0.55) {
+              // Act 2 (0.25 < p <= 0.55): Camera Yaw & Banking Turn
+              // Seamless modulo wrapping ensures starfield remains continuous and dense
+              const uTurn = (homeP - 0.25) / 0.30;
+              const easeTurn = uTurn * uTurn * (3.0 - 2.0 * uTurn);
+              const sweepX = -width * 1.30 * easeTurn;
+              const sweepY = height * 0.16 * easeTurn;
+              const layerSweep = 0.85 + (s.layer === 0 ? 0.0 : (s.layer === 1 ? 0.12 : (s.layer === 3 ? 0.22 : 0.32)));
+
+              const rawX = bhX + dX * 0.62 + sweepX * layerSweep - currentParallaxX * depthMultiplier;
+              const rawY = bhY + dY * 0.62 + sweepY * layerSweep - currentParallaxY * depthMultiplier;
+              px = ((rawX % wrapW) + wrapW) % wrapW - 60;
+              py = ((rawY % wrapH) + wrapH) % wrapH - 60;
+            } else {
+              // Act 3 (0.55 < p <= 1.00): Fast Approach toward Solar System Overview
+              const uApp = (homeP - 0.55) / 0.45;
+              const easeApp = uApp * uApp * (3.0 - 2.0 * uApp);
+              const forwardCruise = easeApp * height * 0.95;
+              const layerCruise = (s.layer === 0 ? 0.50 : (s.layer === 1 ? 0.85 : 1.25));
+
+              const rx = s.x0 - currentParallaxX * depthMultiplier - (width * 0.45 * easeApp * layerCruise);
+              const ry = s.y0 - currentParallaxY * depthMultiplier - (forwardCruise * layerCruise);
+              px = ((rx % wrapW) + wrapW) % wrapW - 60;
+              py = ((ry % wrapH) + wrapH) % wrapH - 60;
+            }
+          } else {
+            // ── 2. SECTORS 02 - 04: PLANETARY SURVEY, INTERPLANETARY FLIGHT & SKY MAP ──
+            const gj = window.GalaxyJourney;
+            const tel = (gj && typeof gj.getCameraPanTelemetry === 'function')
+              ? gj.getCameraPanTelemetry()
+              : null;
+
+            if (tel) {
+              const focal = (height * 0.5) / Math.tan((tel.fov * Math.PI / 180) * 0.5);
+              const camShiftX = -tel.yaw * focal;
+              const camShiftY = tel.pitch * focal;
+
+              const layerParallax = (s.layer === 0 ? 0.65 : (s.layer === 1 ? 0.88 : (s.layer === 3 ? 1.05 : 1.25)));
+              const wrapW = width + 120;
+              const wrapH = height + 120;
+              const rx = s.x0 + camShiftX * layerParallax - currentParallaxX * depthMultiplier;
+              const ry = s.y0 + camShiftY * layerParallax - currentParallaxY * depthMultiplier;
+
+              px = ((rx % wrapW) + wrapW) % wrapW - 60;
+              py = ((ry % wrapH) + wrapH) % wrapH - 60;
+            } else {
+              px = s.x0 - currentParallaxX * depthMultiplier;
+              py = s.y0 - currentParallaxY * depthMultiplier;
+            }
+          }
+
+          // Relativistic Gravitational Lensing (curved light deflection around the event horizon, Home idle only)
+          if (bh && bh.isHeroActive && homeP < 0.28) {
             const dx = px - bhX;
             const dy = py - bhY;
             const dist = Math.hypot(dx, dy);
@@ -8192,19 +8508,15 @@
             if (dist < lensingBound && dist > 1.0) {
               const nx = dx / dist;
               const ny = dy / dist;
-              // Einstein deflection angle creates curved apparent path
               const deflection = (einsteinR * einsteinR) / (dist + 14.0);
-              // Asymmetric Kerr shear frame dragging matching disk inclination
               const kerrShear = Math.sin(Math.atan2(dy, dx) - 0.52) * (einsteinR * 0.16) * Math.exp(-dist / einsteinR);
               px += nx * deflection - ny * kerrShear;
               py += ny * deflection + nx * kerrShear;
 
-              // Flux magnification near the Einstein ring
               const uDist = Math.max(0.15, dist / einsteinR);
               const mag = Math.min(2.2, (uDist * uDist + 2.0) / (2.0 * uDist * Math.sqrt(uDist * uDist + 4.0)));
               alpha *= mag;
 
-              // Central black silhouette preservation: stars behind horizon are eclipsed by the void
               if (dist < starHorizonRadius * 1.05) {
                 const eclipse = Math.max(0.0, (dist - starHorizonRadius * 0.70) / (starHorizonRadius * 0.35));
                 alpha *= eclipse;
@@ -8212,14 +8524,7 @@
             }
           }
 
-          if (s.layer === 2) {
-            s.x += s.vx;
-            s.y += s.vy;
-            if (s.x < 0) s.x += width;
-            if (s.x > width) s.x -= width;
-            if (s.y < 0) s.y += height;
-            if (s.y > height) s.y -= height;
-          }
+// Layer 2 stars maintain fixed coordinates at rest
 
           // Directional velocity motion streak (Phase 2.6 Requirement 4)
           const streakLen = (!isReducedMotion && Math.abs(smoothedVelocity) > 0.00015)
@@ -8236,6 +8541,27 @@
             ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
             ctx.stroke();
             ctx.globalAlpha = 1;
+          } else if (s.isLuminous) {
+            // Astronomical PSF: soft atmospheric halo + hot core + diffraction cross
+            const pulse = 1.0 + 0.08 * Math.sin(s.twinklePhase);
+            const haloR = s.radius * 3.6 * pulse;
+            const effAlpha = Math.max(0, Math.min(1, alpha));
+
+            // Soft radial atmospheric halo
+            const g = ctx.createRadialGradient(px, py, 0, px, py, haloR);
+            g.addColorStop(0, s.haloColor + (effAlpha * 0.45).toFixed(3) + ')');
+            g.addColorStop(0.35, s.haloColor + (effAlpha * 0.16).toFixed(3) + ')');
+            g.addColorStop(1, s.haloColor + '0)');
+            ctx.fillStyle = g;
+            ctx.beginPath();
+            ctx.arc(px, py, haloR, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pinpoint hot incandescent core (pure astronomical point source)
+            ctx.beginPath();
+            ctx.arc(px, py, Math.max(1.1, s.radius * 0.45), 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
           } else {
             ctx.beginPath();
             ctx.arc(px, py, s.radius, 0, Math.PI * 2);
@@ -8907,8 +9233,8 @@
       const overlay = document.getElementById('spaceIntroOverlay');
       if (!overlay) return;
 
-      // Never display intro if current theme is not space
-      if (document.documentElement.getAttribute('data-theme') !== 'space') {
+      // Never display intro if current theme is not space or if skipIntro requested
+      if (document.documentElement.getAttribute('data-theme') !== 'space' || (typeof window !== 'undefined' && window.location.search.includes('skipIntro=1'))) {
         abort();
         return;
       }

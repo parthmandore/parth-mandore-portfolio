@@ -6,9 +6,96 @@
 /* ── 01. THEME IMPORTS ── */
 @import url('themes/github-classic.css?v=20261107_v20');
 @import url('themes/space-cinematic.css?v=20261107_v47');
-@import url('galaxy-journey/galaxy-journey.css?v=20261107_v47');
+@import url('galaxy-journey/galaxy-journey.css?v=20261113_v53');
 @import url('galaxy-journey/project-experience.css?v=20261107_v47');
-@import url('galaxy-journey/master-journey.css?v=20261107_v47');
+@import url('galaxy-journey/master-journey.css?v=20261113_v53');
+@import url('galaxy-journey/technology-constellation.css?v=20261113_v53');
+
+/* Universal safety reset: guarantee sky map constellation elements never render default native button boxes */
+button.sky-map-item,
+div.sky-map-item,
+.sky-map-item {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sky-map-pill-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.sky-map-label-pill {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(241, 232, 208, 0.94) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.98);
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(var(--sector-rgb, 245, 158, 11), 0.45) !important;
+  background: rgba(6, 10, 20, 0.85) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(var(--sector-rgb, 245, 158, 11), 0.15);
+}
+
+.sky-map-label-pill:hover,
+.sky-map-label-pill:focus-visible,
+.sky-map-pill-wrapper:hover .sky-map-label-pill {
+  color: #ffffff !important;
+  border-color: rgba(var(--sector-rgb, 245, 158, 11), 0.90) !important;
+  background: rgba(12, 18, 36, 0.92) !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.95), 0 0 20px rgba(var(--sector-rgb, 245, 158, 11), 0.40);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.sky-map-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.sky-map-arrow {
+  font-size: 14px;
+  line-height: 1;
+  color: rgba(var(--sector-rgb, 245, 158, 11), 0.90);
+  transition: transform 0.25s ease;
+}
+
+.sky-map-label-pill:hover .sky-map-arrow,
+.sky-map-pill-wrapper:hover .sky-map-arrow {
+  transform: translateX(3px);
+}
+
+.sky-map-click-cue {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: rgba(245, 185, 80, 0.70);
+  margin-top: 3px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
 
 /* ── 02. VIEW CONTAINER SYSTEM ── */
 .portfolio-view {
