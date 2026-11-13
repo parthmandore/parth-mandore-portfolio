@@ -70,7 +70,7 @@
       id: 4, 
       name: '04 // ASTROMETRIC INVENTORY SCAN', 
       hudMode: 'ASTROMETRIC INVENTORY SCAN',
-      range: [0.75, 0.90], 
+      range: [0.75, 0.93], 
       checkpoint: 0.85,
       navModeKey: 'skills',
       sysMode: 'SYS.DIAG // ASTROMETRIC INVENTORY SCAN',
@@ -84,22 +84,50 @@
       id: 5, 
       name: '05 // BEACON NEXUS TRANSMISSION', 
       hudMode: 'BEACON NEXUS TRANSMISSION',
-      range: [0.90, 1.00], 
+      range: [0.93, 1.00], 
       checkpoint: 0.96,
       navModeKey: 'contact',
       sysMode: 'SYS.COMM // BEACON NEXUS TRANSMISSION',
       coords: 'CARRIER: 1420.405 MHz // GAIN: +18dB',
-      status: 'STATUS: UPLINK READY • SECURE CHANNEL OPEN',
+      status: 'STATUS: UPLINK READY \u2022 SECURE CHANNEL OPEN',
       directorLabel: 'COMM // BEACON LOCK',
       showDirector: true,
       desc: 'Deep Space Dispatch Beacon' 
     }
   ];
 
-  // Motion Tuning Constants
+  // Motion Tuning Constants & Solar-System-to-Sky-Map Transition Parameters
   const DEAD_BAND_EPSILON = 0.00008; // Strictly halts camera when delta is sub-pixel
   const DAMPING_FACTOR = 0.085;       // Critical damping rate per frame (~60fps)
+  const ARRIVAL_DAMPING = 0.058;      // Long calm ease-out in 0.85-1.00 arrival window
   const TOUCH_SENSITIVITY = 0.00032;  // Normalized progress change per touch pixel
+
+  // Leg 1: Home (Black Hole) -> Sector 02 Solar System Overview Transition [0.000, 0.180]
+  const HOME_T_START = 0.000;
+  const HOME_T_END = 0.180;
+  const HOME_SPAN = HOME_T_END - HOME_T_START;
+  const HOME_STEPS = 4;
+  const HOME_AUTOPLAY_MS = 4000;
+
+  // Leg 2: Planet 07 -> Sector 04 7-Constellation Sky Map Transition [0.572, 0.850]
+  const TRANSITION_T_START = 0.572;   // Planet 07 orbital position
+  const TRANSITION_T_END = 0.850;     // Wide 7-Constellation Sky Map arrival
+  const TRANSITION_SPAN = TRANSITION_T_END - TRANSITION_T_START;
+  const TRANSITION_STEPS = 4;
+  const AUTOPLAY_DURATION_MS = 3500;
+  const SKIP_DURATION_MS = 600;
+  const AU_PER_LIGHT_YEAR = 63241;
+
+  // Transition Playback & Step Gesture State
+  let autoPlayState = null;           // { startP, endP, startMs, durationMs, isSkip }
+  let wheelStepLockUntil = 0;
+  let lastWheelMagnitude = 0;
+  let lastWheelTimeMs = 0;
+  let skipBtnEl = null;
+  let debugBarEl = null;
+  let debugSliderEl = null;
+  let homeSliderEl = null;
+  let debugValEl = null;
 
   // State
   let targetProgress = 0.0;
@@ -294,18 +322,173 @@
   /**
    * Synchronize Persistent Cockpit HUD Avionics across all 5 sectors
    */
+  /**
+   * Pure normalized homeProgress ∈ [0, 1] from Black Hole (0.000) -> Solar System Overview (0.180)
+   */
+  function getHomeProgress(t = currentProgress) {
+    return Math.max(0.0, Math.min(1.0, (t - HOME_T_START) / HOME_SPAN));
+  }
+
+  function setHomeProgress(p, instant = false) {
+    const clampedP = Math.max(0.0, Math.min(1.0, p));
+    const mappedT = HOME_T_START + clampedP * HOME_SPAN;
+    if (instant) {
+      autoPlayState = null;
+      hideSkipButton();
+      jumpToProgress(mappedT);
+    } else {
+      setTargetProgress(mappedT, true);
+    }
+  }
+
+  function isInHomeCorridor(t) {
+    return t >= (HOME_T_START - 0.002) && t <= (HOME_T_END + 0.002);
+  }
+
+  function stepHome(direction) {
+    const curTargetP = getHomeProgress(targetProgress);
+    const stepFrac = 1.0 / HOME_STEPS; // 0.25 per step
+
+    // If at Solar System edge (p >= 0.995) scrolling DOWN -> advance to Planet 01 dwell
+    if (curTargetP >= 0.995 && direction > 0) {
+      setTargetProgress(0.205, true);
+      return true;
+    }
+    // If at Home (p <= 0.005) scrolling UP -> stay at 0.000
+    if (curTargetP <= 0.005 && direction < 0) {
+      setTargetProgress(0.000, true);
+      return true;
+    }
+
+    const snappedIdx = Math.round(curTargetP * HOME_STEPS);
+    const nextIdx = Math.max(0, Math.min(HOME_STEPS, snappedIdx + (direction > 0 ? 1 : -1)));
+    const nextP = nextIdx * stepFrac;
+    setHomeProgress(nextP, false);
+    return true;
+  }
+
+  function computeHomeDistanceReadout(p) {
+    // Logarithmic countdown to Sun: ~12.5 LY (~790,512 AU) at Home -> 40 AU at Solar System edge
+    const au = 790512.0 * Math.pow(40.0 / 790512.0, Math.max(0.0, Math.min(1.0, p)));
+    if (au >= AU_PER_LIGHT_YEAR) {
+      const ly = au / AU_PER_LIGHT_YEAR;
+      return `${ly.toFixed(2)} LY`;
+    }
+    return `${Math.round(au).toLocaleString()} AU`;
+  }
+
+  function formatHomeTelemetry(p) {
+    const stepNum = Math.min(HOME_STEPS, Math.max(1, Math.ceil(Math.max(0.01, p) * HOME_STEPS)));
+    let phaseLabel = 'Leaving the black hole';
+    if (p >= 0.88) {
+      phaseLabel = 'Solar system';
+    } else if (p >= 0.58) {
+      phaseLabel = 'Approaching the Sun';
+    } else if (p >= 0.22) {
+      phaseLabel = 'Deep space';
+    }
+    return {
+      phaseLabel,
+      stepText: `${stepNum}/${HOME_STEPS}`,
+      distText: computeHomeDistanceReadout(p)
+    };
+  }
+
+  /**
+   * Pure normalized transitionProgress ∈ [0, 1] from Planet 07 (0.572) -> Sky Map (0.850)
+   */
+  function getTransitionProgress(t = currentProgress) {
+    return Math.max(0.0, Math.min(1.0, (t - TRANSITION_T_START) / TRANSITION_SPAN));
+  }
+
+  function setTransitionProgress(p, instant = false) {
+    const clampedP = Math.max(0.0, Math.min(1.0, p));
+    const mappedT = TRANSITION_T_START + clampedP * TRANSITION_SPAN;
+    if (instant) {
+      autoPlayState = null;
+      hideSkipButton();
+      jumpToProgress(mappedT);
+    } else {
+      setTargetProgress(mappedT, true);
+    }
+  }
+
+  function isInTransitionCorridor(t) {
+    return t >= (TRANSITION_T_START - 0.002) && t <= (TRANSITION_T_END + 0.002);
+  }
+
+  function stepTransition(direction) {
+    const curTargetP = getTransitionProgress(targetProgress);
+    const stepFrac = 1.0 / TRANSITION_STEPS; // 0.25 per step
+
+    // If at Sky Map (p >= 0.995) scrolling DOWN -> hold comfortably on Sky Map unless user explicitly scrolls into Contact
+    if (curTargetP >= 0.995 && direction > 0) {
+      if (targetProgress < 0.93) {
+        setTargetProgress(Math.min(0.93, targetProgress + 0.015), true);
+        return true;
+      }
+      setTargetProgress(Math.min(1.0, targetProgress + 0.035), true);
+      return true;
+    }
+    // If at Planet 07 (p <= 0.005) scrolling UP -> return to Planet 06 transit
+    if (curTargetP <= 0.005 && direction < 0) {
+      setTargetProgress(Math.max(0.0, TRANSITION_T_START - 0.032), true);
+      return true;
+    }
+
+    const snappedIdx = Math.round(curTargetP * TRANSITION_STEPS);
+    const nextIdx = Math.max(0, Math.min(TRANSITION_STEPS, snappedIdx + (direction > 0 ? 1 : -1)));
+    const nextP = nextIdx * stepFrac;
+    setTransitionProgress(nextP, false);
+    return true;
+  }
+
+  function computeDistanceReadout(p) {
+    // Consistent continuous radial distance from Sun: 40 AU at Planet 07 -> ~18.4 ly at Sky Map
+    const au = 40.0 * Math.pow(29000.0, Math.max(0.0, Math.min(1.0, p)));
+    if (au < AU_PER_LIGHT_YEAR) {
+      return `${Math.round(au).toLocaleString()} AU`;
+    }
+    const ly = au / AU_PER_LIGHT_YEAR;
+    return `${ly.toFixed(2)} LY`;
+  }
+
+  function formatTransitionTelemetry(p) {
+    const stepNum = Math.min(TRANSITION_STEPS, Math.max(1, Math.ceil(Math.max(0.01, p) * TRANSITION_STEPS)));
+    let phaseLabel = 'Leaving the solar system';
+    if (p >= 0.75) {
+      phaseLabel = 'Sky map';
+    } else if (p >= 0.25) {
+      phaseLabel = 'Deep space';
+    }
+    return {
+      phaseLabel,
+      stepText: `${stepNum}/${TRANSITION_STEPS}`,
+      distText: computeDistanceReadout(p)
+    };
+  }
+
   function updateCockpitHud(s, t) {
     if (!isSpaceTheme()) return;
 
-    // 1. Cockpit Section Label & HUD Mode Text
+    const inHomeWindow = t >= 0.002 && t <= (HOME_T_END + 0.005);
+    const inTransitionWindow = t >= (TRANSITION_T_START + 0.002) && t <= (TRANSITION_T_END + 0.005);
+    const pSky = getTransitionProgress(t);
+    const pHome = getHomeProgress(t);
+    const tInfo = inHomeWindow ? formatHomeTelemetry(pHome) : formatTransitionTelemetry(pSky);
+    const inFlight = inHomeWindow || inTransitionWindow;
+
+    // 1. Cockpit Section Label (Bottom-left plain status during flight, or standard sector label)
     const cockpitSection = document.getElementById('cockpitSectionLabel');
-    const expectedSection = `SECTOR ${s.name}`;
+    const expectedSection = inFlight ? tInfo.phaseLabel : `SECTOR ${s.name}`;
     if (cockpitSection && cockpitSection.textContent !== expectedSection) {
       cockpitSection.textContent = expectedSection;
     }
 
     const navModeText = document.getElementById('cockpitNavModeText');
-    const expectedNavMode = `MODE: ${s.hudMode}`;
+    const expectedNavMode = inFlight
+      ? `STEP ${tInfo.stepText} // ${tInfo.distText}`
+      : `MODE: ${s.hudMode}`;
     if (navModeText && navModeText.textContent !== expectedNavMode) {
       navModeText.textContent = expectedNavMode;
     }
@@ -321,39 +504,52 @@
       spaceCockpitHud.style.visibility = 'visible';
     }
 
-    // 3. Telemetry Deck Values
+    // 3. Telemetry Deck Values (plain distance & step counter during flight)
     const sysModeEl = document.getElementById('cockpitSysMode');
-    if (sysModeEl && sysModeEl.textContent !== s.sysMode) {
-      sysModeEl.textContent = s.sysMode;
+    const expectedSys = inFlight ? `TRANSIT ${tInfo.stepText}` : s.sysMode;
+    if (sysModeEl && sysModeEl.textContent !== expectedSys) {
+      sysModeEl.textContent = expectedSys;
     }
 
     const coordsEl = document.getElementById('cockpitFlightCoords');
     if (coordsEl) {
-      if (s.id !== 2 || !coordsEl.getAttribute('data-target-locked')) {
-        if (coordsEl.textContent !== s.coords) {
-          coordsEl.textContent = s.coords;
-        }
+      const targetCoords = inHomeWindow
+        ? `DISTANCE TO SUN // ${tInfo.distText}`
+        : (inTransitionWindow ? `DISTANCE FROM SUN // ${tInfo.distText}` : s.coords);
+      if ((inFlight || s.id !== 2 || !coordsEl.getAttribute('data-target-locked')) && coordsEl.textContent !== targetCoords) {
+        coordsEl.textContent = targetCoords;
       }
     }
 
     const statusEl = document.getElementById('cockpitStatusVal');
     if (statusEl) {
-      if (s.id !== 2 || !statusEl.getAttribute('data-target-locked')) {
-        if (statusEl.textContent !== s.status) {
-          statusEl.textContent = s.status;
-        }
+      const targetStatus = inFlight ? `STEP ${tInfo.stepText}` : s.status;
+      if ((inFlight || s.id !== 2 || !statusEl.getAttribute('data-target-locked')) && statusEl.textContent !== targetStatus) {
+        statusEl.textContent = targetStatus;
       }
     }
 
     const directorEl = document.getElementById('cockpitTargetDirector');
     if (directorEl) {
-      directorEl.style.opacity = s.showDirector ? '0.36' : '0';
-      directorEl.style.visibility = s.showDirector ? 'visible' : 'hidden';
+      directorEl.style.opacity = (inFlight || s.showDirector) ? '0.36' : '0';
+      directorEl.style.visibility = (inFlight || s.showDirector) ? 'visible' : 'hidden';
     }
 
     const directorLabelEl = document.getElementById('cockpitDirectorReadout');
-    if (directorLabelEl && directorLabelEl.textContent !== s.directorLabel) {
-      directorLabelEl.textContent = s.directorLabel;
+    const expectedDirector = inFlight ? `${tInfo.stepText} • ${tInfo.distText}` : s.directorLabel;
+    if (directorLabelEl && directorLabelEl.textContent !== expectedDirector) {
+      directorLabelEl.textContent = expectedDirector;
+    }
+
+    // Sync ?debug=1 sliders if mounted
+    if (debugValEl) {
+      if (t <= HOME_T_END + 0.005) {
+        if (homeSliderEl) homeSliderEl.value = pHome.toFixed(3);
+        debugValEl.textContent = `Home p=${pHome.toFixed(2)} | ${tInfo.stepText} | ${tInfo.distText}`;
+      } else {
+        if (debugSliderEl) debugSliderEl.value = pSky.toFixed(3);
+        debugValEl.textContent = `Sky p=${pSky.toFixed(2)} | ${tInfo.stepText} | ${tInfo.distText}`;
+      }
     }
 
     // 4. Update Navbar Links Active State
@@ -361,12 +557,13 @@
   }
 
   function syncNavbarActiveState(t) {
+    const midTransitionT = TRANSITION_T_START + 0.5 * TRANSITION_SPAN; // ~0.711
     let activeId = 'hero';
-    if (t < 0.18) {
+    if (t < 0.09) {
       activeId = 'hero';
-    } else if (t < 0.75) {
+    } else if (t < midTransitionT) {
       activeId = 'works';
-    } else if (t < 0.90) {
+    } else if (t < 0.93) {
       activeId = 'disciplines';
     } else {
       activeId = 'dispatch';
@@ -380,22 +577,157 @@
     });
   }
 
+  function showSkipButton() {
+    if (!skipBtnEl) {
+      skipBtnEl = document.createElement('button');
+      skipBtnEl.id = 'transitionSkipBtn';
+      skipBtnEl.type = 'button';
+      skipBtnEl.textContent = 'Skip [Esc] →';
+      skipBtnEl.style.cssText = [
+        'position:fixed',
+        'bottom:72px',
+        'left:50%',
+        'transform:translateX(-50%)',
+        'z-index:9995',
+        'font-family:"Space Mono",monospace',
+        'font-size:12px',
+        'padding:6px 14px',
+        'border-radius:4px',
+        'border:1px solid rgba(245,158,11,0.55)',
+        'background:rgba(6,9,16,0.86)',
+        'color:#f8fafc',
+        'cursor:pointer',
+        'backdrop-filter:blur(8px)',
+        'transition:opacity 0.25s ease'
+      ].join(';');
+      skipBtnEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        triggerSkipToSkyMap();
+      });
+      document.body.appendChild(skipBtnEl);
+    }
+    skipBtnEl.style.display = 'block';
+    skipBtnEl.style.opacity = '1';
+  }
+
+  function hideSkipButton() {
+    if (skipBtnEl) {
+      skipBtnEl.style.display = 'none';
+      skipBtnEl.style.opacity = '0';
+    }
+  }
+
+  function startAutoPlayToSkills(fromStart = false) {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      // 0.6s clean crossfade under prefers-reduced-motion
+      if (currentProgress < TRANSITION_T_START) {
+        jumpToProgress(TRANSITION_T_START);
+      }
+      autoPlayState = {
+        type: 'skills',
+        startP: getTransitionProgress(currentProgress),
+        endP: 1.0,
+        startMs: performance.now(),
+        durationMs: SKIP_DURATION_MS,
+        isSkip: true
+      };
+      return;
+    }
+
+    if (fromStart || currentProgress < TRANSITION_T_START - 0.01) {
+      jumpToProgress(TRANSITION_T_START);
+    }
+    const startP = getTransitionProgress(currentProgress);
+    if (startP >= 0.995) {
+      setTargetProgress(TRANSITION_T_END, true);
+      return;
+    }
+    const remainingFrac = 1.0 - startP;
+    autoPlayState = {
+      type: 'skills',
+      startP,
+      endP: 1.0,
+      startMs: performance.now(),
+      durationMs: Math.max(800, Math.round(AUTOPLAY_DURATION_MS * remainingFrac)),
+      isSkip: false
+    };
+    showSkipButton();
+  }
+
+  function startAutoPlayToProjects(fromStart = false) {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      jumpToProgress(0.205);
+      return;
+    }
+
+    if (fromStart || currentProgress < 0.005) {
+      jumpToProgress(0.000);
+    }
+    const startP = getHomeProgress(currentProgress);
+    if (startP >= 0.995 || currentProgress >= 0.18) {
+      setTargetProgress(0.205, true);
+      return;
+    }
+    const remainingFrac = 1.0 - startP;
+    autoPlayState = {
+      type: 'home',
+      startP,
+      endP: 1.0,
+      startMs: performance.now(),
+      durationMs: Math.max(800, Math.round(HOME_AUTOPLAY_MS * remainingFrac)),
+      isSkip: false
+    };
+    showSkipButton();
+  }
+
+  function triggerSkipToProjects() {
+    autoPlayState = null;
+    hideSkipButton();
+    setTargetProgress(0.205, true);
+  }
+
+  function triggerSkipToSkyMap() {
+    const curP = getTransitionProgress(currentProgress);
+    if (curP >= 0.995) {
+      autoPlayState = null;
+      hideSkipButton();
+      return;
+    }
+    autoPlayState = {
+      type: 'skills',
+      startP: curP,
+      endP: 1.0,
+      startMs: performance.now(),
+      durationMs: SKIP_DURATION_MS,
+      isSkip: true
+    };
+  }
+
+  function interruptAutoPlay() {
+    if (!autoPlayState) return;
+    autoPlayState = null;
+    hideSkipButton();
+    targetProgress = currentProgress;
+  }
+
   function setupNavbarNavigation() {
     const navCheckpoints = {
       '#hero': 0.00,
       '#works': 0.205,
-      '#disciplines': 0.85,
+      '#disciplines': TRANSITION_T_END,
       '#dispatch': 0.96
     };
 
     const links = document.querySelectorAll(
-      '#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"], .space-btn-expedition, .spatial-scroll-indicator, a[href="#works"], a[href="#disciplines"], a[href="#dispatch"]'
+      '#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"], .space-btn-expedition, .hero-cta-btn, .spatial-scroll-indicator, a[href="#works"], a[href="#disciplines"], a[href="#dispatch"]'
     );
     links.forEach(link => {
       link.addEventListener('click', function (e) {
         if (!isSpaceTheme()) return;
 
-        const href = this.getAttribute('href') || (this.classList.contains('brand-monogram') ? '#hero' : null);
+        const href = this.getAttribute('href') || (this.classList.contains('brand-monogram') ? '#hero' : null) || (this.classList.contains('space-btn-expedition') || this.classList.contains('hero-cta-btn') || this.classList.contains('spatial-scroll-indicator') ? '#works' : null);
         if (!href) return;
 
         const targetT = navCheckpoints[href];
@@ -414,6 +746,32 @@
           menuBtn.setAttribute('aria-expanded', 'false');
         }
 
+        if (href === '#works') {
+          if (currentProgress <= HOME_T_END + 0.01) {
+            startAutoPlayToProjects(currentProgress < 0.005);
+            return;
+          }
+        }
+
+        if (href === '#disciplines') {
+          if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) {
+            window.GalaxyJourney.closeConstellationDetail(false);
+            return;
+          }
+          if (currentProgress <= TRANSITION_T_END + 0.005) {
+            startAutoPlayToSkills(currentProgress < TRANSITION_T_START - 0.01);
+          } else {
+            // Returning backward from Contact (#dispatch) -> Sky Map
+            autoPlayState = null;
+            setTargetProgress(TRANSITION_T_END, true);
+          }
+          return;
+        }
+
+        if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
+          window.GalaxyJourney.closeConstellationDetail(true);
+        }
+        interruptAutoPlay();
         setTargetProgress(targetT, true);
       }, true);
     });
@@ -437,6 +795,7 @@
     const bhIntroHud = document.getElementById('blackHoleIntroHud');
 
     // ── 1. SECTOR 01: SINGULARITY CORE & HANDOFF WINDOW (0.00 <= t <= 0.18) ──
+    const homeP = getHomeProgress(t);
     if (t <= 0.18) {
       if (heroEl) {
         heroEl.style.opacity = '1';
@@ -447,86 +806,96 @@
         window.SpaceBlackHoleHero3D.resume();
       }
 
-      // Phase 2.6: Crisp, Zero-Overlap Black Hole Lifecycle Handoff
-      // Hero Canvas Opacity: Solid 1.0 from t=0 to 0.07,
-      // then smooth Hermite crossfade 1.0 -> 0.0 across [0.07, 0.095] (Dissolves completely into Deep Space Transit Void before Sun emerges at t=0.13)
-      let heroCanvasAlpha = 1.0;
-      if (t > 0.07) {
-        const fadeU = Math.min(1.0, (t - 0.07) / 0.025);
-        const smoothFade = fadeU * fadeU * (3.0 - 2.0 * fadeU);
-        heroCanvasAlpha = Math.max(0.0, 1.0 - smoothFade);
+      // Continuous 3D coordination for both WebGL canvases
+      if (window.SpaceBlackHoleHero3D && typeof window.SpaceBlackHoleHero3D.setHomeTransitionProgress === 'function') {
+        window.SpaceBlackHoleHero3D.setHomeTransitionProgress(homeP);
+      }
+      if (window.GalaxyJourney && typeof window.GalaxyJourney.setHomeTransitionProgress === 'function') {
+        window.GalaxyJourney.setHomeTransitionProgress(homeP, !isMoving);
       }
 
+      // Hero text & UI elements lift away and fade out across [0.015, 0.140]
+      const FADE_START = 0.015;
+      const FADE_END = 0.140;
+      let heroSyncAlpha = 1.0;
+      let u = 0.0;
+      if (homeP > FADE_START) {
+        u = Math.min(1.0, (homeP - FADE_START) / (FADE_END - FADE_START));
+        const smoothU = u * u * (3.0 - 2.0 * u);
+        heroSyncAlpha = Math.max(0.0, 1.0 - smoothU);
+      }
+
+      // Black Hole canvas remains visible throughout flight (shader shrinks black hole to 4px orange speck)
       if (heroCanvas) {
-        heroCanvas.style.opacity = heroCanvasAlpha.toFixed(4);
-        heroCanvas.style.display = heroCanvasAlpha > 0.001 ? 'block' : 'none';
-        heroCanvas.style.visibility = heroCanvasAlpha > 0.001 ? 'visible' : 'hidden';
+        heroCanvas.style.opacity = '1';
+        heroCanvas.style.visibility = 'visible';
+        heroCanvas.style.pointerEvents = homeP > 0.03 ? 'none' : 'auto';
       }
-
-      // Phase 2.6 Requirement 3: Synchronize ENTIRE Home Hero with 3D Camera Movement
-      // All hero elements participate in spatial depth flight:
-      // u: 0.0 at rest -> 1.0 at t=0.10
-      const u = Math.min(1.0, t / 0.10);
-      const smoothU = u * u * (3.0 - 2.0 * u);
-      const heroFade = Math.max(0.0, 1.0 - smoothU);
 
       const monographEl = document.querySelector('.space-hero-monograph');
       const leadEl = document.querySelector('.space-monograph-lead') || document.querySelector('.space-hero-lead');
       const ctaEl = document.querySelector('.hero-actions') || document.querySelector('.space-hero-cta-group');
       const cockpitDeckEl = document.querySelector('.space-cockpit-instruments-deck');
       const accretionFooter = document.getElementById('spaceAccretionStatusPill') || document.querySelector('.space-accretion-hud');
+      const constellationEl = document.querySelector('.space-orbital-constellation');
 
       if (heroLayout) {
-        heroLayout.style.opacity = heroFade.toFixed(3);
-        heroLayout.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+        heroLayout.style.opacity = heroSyncAlpha.toFixed(3);
+        heroLayout.style.pointerEvents = homeP > 0.03 ? 'none' : 'auto';
+      }
+
+      if (constellationEl) {
+        const isDestroyedOrConsuming = (typeof BlackHoleLifecycle !== 'undefined' &&
+          (BlackHoleLifecycle.isDestroying() || BlackHoleLifecycle.isReadyToDestroy() || BlackHoleLifecycle.isDestroyed())) ||
+          constellationEl.dataset.consumed === '1';
+        if (isDestroyedOrConsuming) {
+          constellationEl.style.opacity = '0';
+          constellationEl.style.pointerEvents = 'none';
+        } else {
+          constellationEl.style.opacity = heroSyncAlpha.toFixed(3);
+          constellationEl.style.pointerEvents = heroSyncAlpha > 0.05 ? 'auto' : 'none';
+        }
       }
 
       if (monographEl) {
-        const tx = (-u * 260.0).toFixed(2);
-        const ty = (-u * 40.0).toFixed(2);
-        const tz = (-u * 380.0).toFixed(2);
-        const scale = (1.0 - u * 0.26).toFixed(3);
-        monographEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
-        monographEl.style.opacity = heroFade.toFixed(3);
+        // Pure camera zoom out: scale down in place without artificial sideways sliding
+        const tz = (-u * 280.0).toFixed(2);
+        const scale = (1.0 - u * 0.28).toFixed(3);
+        monographEl.style.transform = `translate3d(0px, 0px, ${tz}px) scale(${scale})`;
+        monographEl.style.opacity = heroSyncAlpha.toFixed(3);
       }
 
       if (leadEl) {
-        const tx = (-u * 200.0).toFixed(2);
-        const ty = (-u * 20.0).toFixed(2);
-        const tz = (-u * 300.0).toFixed(2);
-        const scale = (1.0 - u * 0.20).toFixed(3);
-        leadEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+        const tz = (-u * 220.0).toFixed(2);
+        const scale = (1.0 - u * 0.22).toFixed(3);
+        leadEl.style.transform = `translate3d(0px, 0px, ${tz}px) scale(${scale})`;
       }
 
       if (ctaEl) {
-        const tx = (-u * 160.0).toFixed(2);
-        const ty = (u * 30.0).toFixed(2);
-        const tz = (-u * 240.0).toFixed(2);
-        const scale = (1.0 - u * 0.16).toFixed(3);
-        ctaEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
+        const tz = (-u * 180.0).toFixed(2);
+        const scale = (1.0 - u * 0.18).toFixed(3);
+        ctaEl.style.transform = `translate3d(0px, 0px, ${tz}px) scale(${scale})`;
       }
 
       if (cockpitDeckEl) {
-        const tx = (-u * 110.0).toFixed(2);
-        const ty = (u * 70.0).toFixed(2);
-        const tz = (-u * 220.0).toFixed(2);
-        const scale = (1.0 - u * 0.14).toFixed(3);
-        cockpitDeckEl.style.transform = `translate3d(${tx}px, ${ty}px, ${tz}px) scale(${scale})`;
-        cockpitDeckEl.style.opacity = heroFade.toFixed(3);
+        const tz = (-u * 160.0).toFixed(2);
+        const scale = (1.0 - u * 0.16).toFixed(3);
+        cockpitDeckEl.style.transform = `translate3d(0px, 0px, ${tz}px) scale(${scale})`;
+        cockpitDeckEl.style.opacity = heroSyncAlpha.toFixed(3);
       }
 
       if (bhIntroHud) {
-        bhIntroHud.style.opacity = heroFade.toFixed(3);
-        bhIntroHud.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+        bhIntroHud.style.opacity = heroSyncAlpha.toFixed(3);
+        bhIntroHud.style.pointerEvents = homeP > 0.03 ? 'none' : 'auto';
       }
 
       if (accretionFooter) {
-        accretionFooter.style.opacity = heroFade.toFixed(3);
-        accretionFooter.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+        accretionFooter.style.opacity = heroSyncAlpha.toFixed(3);
+        accretionFooter.style.pointerEvents = homeP > 0.03 ? 'none' : 'auto';
       }
 
       if (bhContainer) {
-        bhContainer.style.pointerEvents = t > 0.05 ? 'none' : 'auto';
+        bhContainer.style.pointerEvents = homeP > 0.03 ? 'none' : 'auto';
       }
     } 
     // ── 2. SECTOR 02+: DEEP SPACE EXPLORATION & PLANETARY CORRIDOR (t > 0.18) ──
@@ -557,59 +926,70 @@
       if (window.SpaceBlackHoleHero3D && typeof window.SpaceBlackHoleHero3D.pause === 'function') {
         window.SpaceBlackHoleHero3D.pause();
       }
+      if (window.GalaxyJourney && typeof window.GalaxyJourney.setHomeTransitionProgress === 'function') {
+        window.GalaxyJourney.setHomeTransitionProgress(1.0, false);
+      }
     }
 
-    // ── 3. DIRECTIONAL MOTION WARP STREAKS (Phase 2B Requirement 4) ──
-    // As spacecraft accelerates through the transition window t in [0.06, 0.22],
-    // velocity stretches stars into subtle directional streaks
+    // ── 2B. SECTOR 02 -> SKY MAP CONTINUOUS SYNCHRONIZATION ──
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.setProgress === 'function') {
+      if (t < 0.18) {
+        window.GalaxyJourney.setProgress(0.0, true);
+        window.GalaxyJourney.setHomeTransitionProgress(homeP, false);
+      } else if (t <= TRANSITION_T_START) {
+        const frac = (t - 0.18) / Math.max(0.001, TRANSITION_T_START - 0.18);
+        window.GalaxyJourney.setProgress(frac * 0.835, false);
+      } else if (t <= TRANSITION_T_END) {
+        const tp = getTransitionProgress(t);
+        window.GalaxyJourney.setProgress(0.835 + tp * (1.0 - 0.835), false);
+      } else {
+        window.GalaxyJourney.setProgress(1.0, false);
+      }
+    }
+
+    // ── 3. DIRECTIONAL MOTION WARP STREAKS (Suppressed during Deep-Space Sky Map Transition) ──
     if (window.GalaxyJourney && typeof window.GalaxyJourney.getPostMaterial === 'function') {
       const postMat = window.GalaxyJourney.getPostMaterial();
       if (postMat && postMat.uniforms && postMat.uniforms.uMotionBlur) {
         const absVel = Math.abs(v || 0.0);
         let motionBlur = 0.0;
         if (t >= 0.05 && t <= 0.25) {
-          // Dynamic velocity-proportional stretch during transit corridor
           motionBlur = Math.min(0.85, absVel * 95.0 + (isMoving ? 0.18 : 0.0));
+        } else if (t > 0.25 && t < TRANSITION_T_START) {
+          motionBlur = Math.min(0.45, absVel * 50.0);
         } else {
-          motionBlur = Math.min(0.60, absVel * 60.0);
+          // Strict zero warp streaks / zero tunnel effect in Solar -> Deep Space -> Sky Map
+          motionBlur = 0.0;
         }
         postMat.uniforms.uMotionBlur.value = motionBlur;
       }
     }
 
-    // ── 4. SECTOR 04 & SECTOR 05: TECHNOLOGY & BEACON NEXUS HANDOFF ──
+    // ── 4. SECTOR 04 & SECTOR 05 HANDOFF (Stage Gate: Sky Map uses Three.js scene; Contact fades in >0.87) ──
     if (window.GalaxyJourney) {
-      if (t >= 0.75 && t <= 0.90) {
-        const pSkills = (t - 0.75) / 0.15;
-        if (typeof window.GalaxyJourney.updateSkillsDiscoveryProgress === 'function') {
-          window.GalaxyJourney.updateSkillsDiscoveryProgress(pSkills);
-        }
-        if (typeof window.GalaxyJourney.updateBeaconNexusProgress === 'function') {
-          window.GalaxyJourney.updateBeaconNexusProgress(0.0);
-        }
-      } else if (t > 0.90) {
-        // Sector 05: Beacon Nexus
-        const pBeacon = Math.min(1.0, (t - 0.90) / 0.10);
-        if (typeof window.GalaxyJourney.updateSkillsDiscoveryProgress === 'function') {
-          window.GalaxyJourney.updateSkillsDiscoveryProgress(0.0);
-        }
+      if (typeof window.GalaxyJourney.updateSkillsDiscoveryProgress === 'function') {
+        window.GalaxyJourney.updateSkillsDiscoveryProgress(t >= TRANSITION_T_END ? 1.0 : 0.0);
+      }
+      if (t > 0.93) {
+        const pBeacon = Math.min(1.0, (t - 0.93) / 0.07);
         if (typeof window.GalaxyJourney.updateBeaconNexusProgress === 'function') {
           window.GalaxyJourney.updateBeaconNexusProgress(pBeacon);
         }
       } else {
-        // t < 0.75
-        if (typeof window.GalaxyJourney.updateSkillsDiscoveryProgress === 'function') {
-          window.GalaxyJourney.updateSkillsDiscoveryProgress(0.0);
-        }
         if (typeof window.GalaxyJourney.updateBeaconNexusProgress === 'function') {
           window.GalaxyJourney.updateBeaconNexusProgress(0.0);
         }
       }
     }
+
+    // ── 4B. SECTOR 04: THE CONSTELLATION ATLAS SYNCHRONIZATION ──
+    if (window.TechnologyConstellation && typeof window.TechnologyConstellation.updateProgress === 'function') {
+      window.TechnologyConstellation.updateProgress(t);
+    }
   }
 
   /**
-   * Main Frame Loop (Critically Damped Motion Solver)
+   * Main Frame Loop (Critically Damped Motion Solver + Auto-Play)
    */
   function updateLoop(now) {
     rafId = requestAnimationFrame(updateLoop);
@@ -621,7 +1001,51 @@
     const deltaMs = Math.min(64, now - lastFrameTime);
     lastFrameTime = now;
 
-    // Critically Damped Solver with Deadband Snap
+    // 1. Optional Nav-Click Auto-Play (Home or Sky Map flight)
+    if (autoPlayState) {
+      const isHome = autoPlayState.type === 'home';
+      const elapsed = now - autoPlayState.startMs;
+      const rawU = Math.min(1.0, elapsed / Math.max(1, autoPlayState.durationMs));
+      const easedU = autoPlayState.isSkip
+        ? (1.0 - Math.pow(1.0 - rawU, 3.0))
+        : (rawU < 0.5 ? 4.0 * rawU * rawU * rawU : 1.0 - Math.pow(-2.0 * rawU + 2.0, 3.0) / 2.0);
+      const curP = autoPlayState.startP + (autoPlayState.endP - autoPlayState.startP) * easedU;
+      const mappedT = isHome
+        ? (HOME_T_START + curP * HOME_SPAN)
+        : (TRANSITION_T_START + curP * TRANSITION_SPAN);
+      previousProgress = currentProgress;
+      currentProgress = mappedT;
+      targetProgress = mappedT;
+      velocity = currentProgress - previousProgress;
+      isMoving = rawU < 1.0;
+
+      if (scrollDriverEl) {
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        window.scrollTo({ top: mappedT * maxScroll, behavior: 'instant' });
+      }
+
+      updateSectorState();
+      triggerEvent('update', currentProgress);
+      updateTelemetryHud();
+
+      if (rawU >= 1.0) {
+        autoPlayState = null;
+        isMoving = false;
+        velocity = 0.0;
+        hideSkipButton();
+        if (isHome) {
+          setTargetProgress(0.205, true);
+        }
+        triggerEvent('settled', currentProgress);
+      }
+      syncVisualHandoff(currentProgress, velocity);
+      if (window.SpaceStarfield && typeof window.SpaceStarfield.setJourneyState === 'function') {
+        window.SpaceStarfield.setJourneyState(currentProgress, velocity, isMoving);
+      }
+      return;
+    }
+
+    // 2. Critically Damped Solver with Deadband Snap (Longer ease-out in 0.85-1.00 arrival zone)
     const diff = targetProgress - currentProgress;
     const absDiff = Math.abs(diff);
 
@@ -637,8 +1061,9 @@
       }
     } else {
       previousProgress = currentProgress;
-      // Damped step with framerate compensation
-      const frameDamp = 1.0 - Math.pow(1.0 - DAMPING_FACTOR, deltaMs / 16.67);
+      const transP = getTransitionProgress(currentProgress);
+      const damp = (isInTransitionCorridor(currentProgress) && transP >= 0.78) ? ARRIVAL_DAMPING : DAMPING_FACTOR;
+      const frameDamp = 1.0 - Math.pow(1.0 - damp, deltaMs / 16.67);
       currentProgress += diff * frameDamp;
       velocity = currentProgress - previousProgress;
       isMoving = true;
@@ -669,29 +1094,38 @@
   function onWindowWheel(e) {
     if (!isSpaceTheme()) return;
 
-    // Check if target is inside an isolated scroll container
+    // Check if target is inside an open modal OR a card scroller that still has room to scroll
     const targetEl = (e.target && typeof e.target.closest === 'function') ? e.target : null;
-    const isInsideIsolatedContainer = Boolean(
-      targetEl && (
-        targetEl.closest('#projectDossierCard') ||
-        targetEl.closest('#projectExperienceModal') ||
-        targetEl.closest('.dossier-scroll-pane') ||
-        targetEl.closest('.modal-scrollable-body') ||
-        targetEl.closest('.blackhole-intro-hud') ||
-        targetEl.closest('#galaxyDossierCard') ||
-        targetEl.closest('#galaxySpacecraftDossier') ||
-        targetEl.closest('.dossier-panel-scroll') ||
-        targetEl.closest('.experience-dossier-grid') ||
-        targetEl.closest('.dossier-screen-panel')
+    const modalContainer = targetEl && (
+      targetEl.closest('#projectExperienceModal') ||
+      targetEl.closest('.modal-scrollable-body') ||
+      targetEl.closest('.blackhole-intro-hud') ||
+      targetEl.closest('#galaxyDossierCard') ||
+      targetEl.closest('#galaxySpacecraftDossier') ||
+      targetEl.closest('.dossier-panel-scroll') ||
+      targetEl.closest('.experience-dossier-grid') ||
+      targetEl.closest('.dossier-screen-panel')
+    );
+
+    const cardScroller = targetEl && targetEl.closest('.dossier-scroll-pane, #projectDossierCard');
+    const canScrollCard = Boolean(
+      cardScroller && cardScroller.scrollHeight > cardScroller.clientHeight + 2 && (
+        (e.deltaY > 0 && cardScroller.scrollTop + cardScroller.clientHeight < cardScroller.scrollHeight - 2) ||
+        (e.deltaY < 0 && cardScroller.scrollTop > 2)
       )
     );
 
-    if (isInsideIsolatedContainer) {
-      // Allow internal scrolling on the dossier/modal card without advancing journey
+    if (modalContainer || (canScrollCard && !autoPlayState)) {
+      // Allow internal scrolling on open modal or scrollable card interior without advancing journey
       return;
     }
 
     if (isInputLocked()) {
+      return;
+    }
+
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) {
+      // Lock outer timeline scrolling while Constellation Detail View is open
       return;
     }
 
@@ -700,53 +1134,108 @@
     if (e.deltaMode === 1) delta *= 24;      // Line mode
     else if (e.deltaMode === 2) delta *= 800; // Page mode
 
-    // Modulate target progress
-    // Phase C Requirement 1: Calibrated interplanetary pacing
-    // Sector 02 has ~2.8x higher scroll resolution for slow, immersive cinematic planetary exploration
-    // AUTHORITATIVE CONTROL: Prevent native body scroll to eliminate racing/doubling
     if (e.cancelable) {
       e.preventDefault();
     }
 
-    // Clamp single-event delta spike
+    // Interrupt auto-play cleanly in-place if user takes over with wheel
+    if (autoPlayState) {
+      interruptAutoPlay();
+      return;
+    }
+
+    const dir = delta > 0 ? 1 : (delta < 0 ? -1 : 0);
+    if (!dir) return;
+
+    // 4-Step Gesture Control inside Home <-> Solar System Transition [0.000, 0.180]
+    const leavingHome = (targetProgress <= 0.015 && dir > 0);
+    const returningToHome = (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
+    const insideHomeCorridor = (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
+                               (Math.abs(targetProgress - HOME_T_END) <= 0.005 && dir < 0);
+
+    if (leavingHome || insideHomeCorridor || returningToHome) {
+      const now = performance.now();
+      const mag = Math.abs(delta);
+      const dt = now - lastWheelTimeMs;
+      const isInertiaTail = (now < wheelStepLockUntil) && (mag <= lastWheelMagnitude * 0.82 && mag < 35);
+      lastWheelTimeMs = now;
+      lastWheelMagnitude = mag;
+
+      if (now < wheelStepLockUntil && (isInertiaTail || dt < 120)) {
+        return;
+      }
+      wheelStepLockUntil = now + 220;
+
+      if (returningToHome) {
+        setHomeProgress(1.0, false);
+      } else {
+        stepHome(dir);
+      }
+      return;
+    }
+
+    // 4-Step Gesture Control inside Planet 07 <-> Sky Map Transition [0.572, 0.850]
+    const leavingPlanet07 = (targetProgress >= TRANSITION_T_START - 0.014 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0);
+    const returningToMap = (targetProgress > TRANSITION_T_END && targetProgress <= TRANSITION_T_END + 0.06 && dir < 0);
+    const insideCorridor = (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
+                           (Math.abs(targetProgress - TRANSITION_T_END) <= 0.005 && dir < 0);
+
+    if (leavingPlanet07 || insideCorridor || returningToMap) {
+      const now = performance.now();
+      const mag = Math.abs(delta);
+      const dt = now - lastWheelTimeMs;
+      const isInertiaTail = (now < wheelStepLockUntil) && (mag <= lastWheelMagnitude * 0.82 && mag < 35);
+      lastWheelTimeMs = now;
+      lastWheelMagnitude = mag;
+
+      // Filter trackpad momentum decay while still allowing deliberate fast double-scrolls
+      if (now < wheelStepLockUntil && (isInertiaTail || dt < 120)) {
+        return;
+      }
+      wheelStepLockUntil = now + 220;
+
+      if (returningToMap) {
+        setTransitionProgress(1.0, false);
+      } else {
+        stepTransition(dir);
+      }
+      return;
+    }
+
+    // Standard continuous damped pacing outside transition corridor
     const clampedDelta = Math.max(-60, Math.min(60, delta));
 
-    // Modulate target progress with calibrated pacing (Phase 2.6 Requirement 4: Brisk Solar-to-Projects Corridor)
     let divisor = 4500;
     if (targetProgress >= 0.095 && targetProgress < 0.195) {
-      divisor = 2400; // Accelerated dynamic corridor: brisk direct transit from solar system view into Planet 1 presentation
-    } else if (targetProgress >= 0.195 && targetProgress <= 0.58) {
-      divisor = 9200; // Calibrated for smooth, comfortable, detailed planetary exploration and dossiers
-    } else if (targetProgress > 0.58 && targetProgress < 0.74) {
-      divisor = 2800; // Requirement 5: Brisk comfortable corridor through empty interstellar void from Planet 7 to Skills
-    } else if (targetProgress >= 0.74 && targetProgress < 0.90) {
-      divisor = 6500; // Smooth transit and skills discovery
+      divisor = 2400;
+    } else if (targetProgress >= 0.195 && targetProgress <= TRANSITION_T_START) {
+      divisor = 2600; // Smooth planetary flight: ~2-3 deliberate wheel clicks per planet
+    } else if (targetProgress >= TRANSITION_T_START && targetProgress <= 0.93) {
+      divisor = 5500; // Comfortable exploration dwell on Constellation Sky Map
+    } else if (targetProgress > 0.93) {
+      divisor = 3600;
     }
-    
+
     let scrollDeltaProgress = (clampedDelta / divisor);
 
-    // Planetary Waypoint Magnetic Snapping
     const WAYPOINTS = [
       0.000, // Sector 01 Hero
-      0.205, // Planet 01 RepoMentor AI
-      0.266, // Planet 02 GymBuddy AI
-      0.327, // Planet 03 Career AI Platform
-      0.388, // Planet 04 Spotify Clone
-      0.450, // Planet 05 URL Shortener
-      0.511, // Planet 06 MLOps Pipeline
-      0.572, // Planet 07 DSA Journey
-      0.850, // Sector 04 Skills Constellation
-      0.980  // Sector 05 Beacon Nexus Contact
+      0.205, // Planet 01
+      0.266, // Planet 02
+      0.327, // Planet 03
+      0.388, // Planet 04
+      0.450, // Planet 05
+      0.511, // Planet 06
+      0.572, // Planet 07 (Transition Start)
+      0.850, // Sky Map (Transition End)
+      0.980  // Sector 05 Contact
     ];
 
     const currentT = targetProgress;
     for (let i = 0; i < WAYPOINTS.length; i++) {
       const wp = WAYPOINTS[i];
-      const dist = Math.abs(currentT - wp);
-      if (dist < 0.016) {
-        // Strong magnetic resistance when inside waypoint gravitational well
-        // Damps scroll progression by 55%, gently locking user onto the planet/sector
-        scrollDeltaProgress *= 0.45;
+      if (Math.abs(currentT - wp) < 0.012) {
+        scrollDeltaProgress *= 0.70; // Gentle deceleration instead of sticky freeze
         break;
       }
     }
@@ -783,6 +1272,12 @@
 
   function onTouchMove(e) {
     if (!touchActive || !isSpaceTheme() || isInputLocked() || e.touches.length !== 1) return;
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) return;
+
+    if (autoPlayState) {
+      interruptAutoPlay();
+      return;
+    }
 
     const currentY = e.touches[0].clientY;
     const deltaY = lastTouchY - currentY;
@@ -793,6 +1288,11 @@
     lastTouchY = currentY;
     lastTouchTime = now;
 
+    // Defer step inside transition corridors to onTouchEnd swipe
+    const inHomeCorridor = targetProgress >= 0.003 && targetProgress <= HOME_T_END - 0.003;
+    const inCorridor = targetProgress >= TRANSITION_T_START + 0.003 && targetProgress <= TRANSITION_T_END - 0.003;
+    if (inCorridor || inHomeCorridor) return;
+
     const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + (deltaY * TOUCH_SENSITIVITY)));
     setTargetProgress(newTarget, true);
   }
@@ -801,8 +1301,37 @@
     if (!touchActive) return;
     touchActive = false;
 
-    // Apply brief touch momentum
-    if (Math.abs(touchVelocityY) > 0.4 && !isInputLocked()) {
+    if (isInputLocked()) return;
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) return;
+
+    const totalSwipeY = touchStartY - lastTouchY;
+    const dir = totalSwipeY > 28 ? 1 : (totalSwipeY < -28 ? -1 : 0);
+
+    const inOrEnteringHome =
+      (targetProgress <= 0.015 && dir > 0) ||
+      (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
+      (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
+
+    if (dir && inOrEnteringHome) {
+      if (targetProgress > HOME_T_END && dir < 0) {
+        setHomeProgress(1.0, false);
+      } else {
+        stepHome(dir);
+      }
+      return;
+    }
+
+    const inOrEnteringCorridor =
+      (targetProgress >= TRANSITION_T_START - 0.015 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0) ||
+      (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
+      (Math.abs(targetProgress - TRANSITION_T_END) <= 0.006 && dir < 0);
+
+    if (dir && inOrEnteringCorridor) {
+      stepTransition(dir);
+      return;
+    }
+
+    if (Math.abs(touchVelocityY) > 0.4) {
       const momentumDelta = touchVelocityY * 0.045;
       const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + momentumDelta));
       setTargetProgress(newTarget, true);
@@ -814,8 +1343,6 @@
    */
   function onKeyDown(e) {
     if (!isSpaceTheme()) return;
-
-    // Do not interfere if user is typing in a form input or textarea
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
     if (e.key === 't' || e.key === 'T') {
@@ -823,20 +1350,65 @@
       return;
     }
 
-    if (isInputLocked()) return;
+    // Esc skips active auto-play cleanly
+    if (e.key === 'Escape' && autoPlayState) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (autoPlayState.type === 'home') {
+        triggerSkipToProjects();
+      } else {
+        triggerSkipToSkyMap();
+      }
+      return;
+    }
 
-    const STEP = 0.02;
-    if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    if (isInputLocked()) return;
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) return;
+
+    const isFwd = e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ' || e.code === 'Space';
+    const isBwd = e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp';
+
+    if (isFwd || isBwd) {
       e.preventDefault();
-      setTargetProgress(Math.min(1.0, targetProgress + STEP), true);
-    } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-      e.preventDefault();
-      setTargetProgress(Math.max(0.0, targetProgress - STEP), true);
+      if (autoPlayState) {
+        interruptAutoPlay();
+        return;
+      }
+      const dir = isFwd ? 1 : -1;
+
+      const inOrEnteringHome =
+        (targetProgress <= 0.015 && dir > 0) ||
+        (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
+        (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
+
+      if (inOrEnteringHome) {
+        if (targetProgress > HOME_T_END && dir < 0) {
+          setHomeProgress(1.0, false);
+        } else {
+          stepHome(dir);
+        }
+        return;
+      }
+
+      const inOrEntering =
+        (targetProgress >= TRANSITION_T_START - 0.015 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0) ||
+        (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
+        (Math.abs(targetProgress - TRANSITION_T_END) <= 0.006 && dir < 0);
+
+      if (inOrEntering) {
+        stepTransition(dir);
+        return;
+      }
+
+      const STEP = 0.02;
+      setTargetProgress(Math.max(0.0, Math.min(1.0, targetProgress + dir * STEP)), true);
     } else if (e.key === 'Home') {
       e.preventDefault();
+      interruptAutoPlay();
       setTargetProgress(0.0, true);
     } else if (e.key === 'End') {
       e.preventDefault();
+      interruptAutoPlay();
       setTargetProgress(1.0, true);
     }
   }
@@ -940,11 +1512,11 @@
     if (header) {
       header.addEventListener('click', toggleHudMinimization);
     }
-    // Auto-minimize on tablet screens (<=1024px) for unobtrusive cockpit avionics
-    if (window.innerWidth <= 1024 && hudContainerEl) {
+    // Collapsed by default across all viewports (unobtrusive chip; expand with click or [T])
+    if (hudContainerEl) {
       hudContainerEl.classList.add('is-minimized');
       const toggleBtn = document.getElementById('hudToggleBtn');
-      if (toggleBtn) toggleBtn.textContent = '+';
+      if (toggleBtn) toggleBtn.textContent = '▲';
     }
   }
 
@@ -953,7 +1525,7 @@
     hudContainerEl.classList.toggle('is-minimized');
     const btn = document.getElementById('hudToggleBtn');
     if (btn) {
-      btn.textContent = hudContainerEl.classList.contains('is-minimized') ? '+' : '−';
+      btn.textContent = hudContainerEl.classList.contains('is-minimized') ? '▲' : '▼';
     }
   }
 
@@ -1003,6 +1575,80 @@
     document.body.appendChild(scrollDriverEl);
   }
 
+  function mountDebugScrubber() {
+    if (typeof window === 'undefined' || !window.location.search.includes('debug=1')) return;
+    if (document.getElementById('transitionDebugBar')) return;
+
+    debugBarEl = document.createElement('div');
+    debugBarEl.id = 'transitionDebugBar';
+    debugBarEl.style.cssText = [
+      'position:fixed',
+      'top:74px',
+      'right:18px',
+      'z-index:9998',
+      'background:rgba(6,9,16,0.92)',
+      'border:1px solid rgba(245,158,11,0.55)',
+      'border-radius:6px',
+      'padding:8px 12px',
+      'display:flex',
+      'flex-direction:column',
+      'gap:6px',
+      'font-family:"Space Mono",monospace',
+      'font-size:12px',
+      'color:#f8fafc',
+      'backdrop-filter:blur(10px)',
+      'width:280px'
+    ].join(';');
+
+    debugBarEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#f59e0b;font-weight:700;">FLIGHT DEBUG SCRUBBER</span>
+        <span id="transitionDebugVal" style="font-size:11px;">p=0.00</span>
+      </div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:2px;">LEG 1: Home -> Solar System</div>
+      <input id="homeDebugSlider" type="range" min="0" max="1" step="0.005" value="0" style="width:100%;cursor:pointer;" />
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${[0, 0.1, 0.25, 0.5, 0.75, 0.88, 1.0].map(v =>
+          `<button type="button" data-dbg-home="${v}" style="padding:2px 6px;font-size:11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:3px;cursor:pointer;">${v}</button>`
+        ).join('')}
+      </div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:6px;">LEG 2: Solar System -> Sky Map</div>
+      <input id="transitionDebugSlider" type="range" min="0" max="1" step="0.005" value="0" style="width:100%;cursor:pointer;" />
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${[0, 0.25, 0.55, 0.65, 0.75, 0.85, 1.0].map(v =>
+          `<button type="button" data-dbg-p="${v}" style="padding:2px 6px;font-size:11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:3px;cursor:pointer;">${v}</button>`
+        ).join('')}
+      </div>
+    `;
+    document.body.appendChild(debugBarEl);
+
+    debugSliderEl = document.getElementById('transitionDebugSlider');
+    homeSliderEl = document.getElementById('homeDebugSlider');
+    debugValEl = document.getElementById('transitionDebugVal');
+
+    if (homeSliderEl) {
+      homeSliderEl.addEventListener('input', (e) => {
+        setHomeProgress(parseFloat(e.target.value), true);
+      });
+    }
+    debugBarEl.querySelectorAll('[data-dbg-home]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setHomeProgress(parseFloat(btn.getAttribute('data-dbg-home')), true);
+      });
+    });
+
+    if (debugSliderEl) {
+      debugSliderEl.addEventListener('input', (e) => {
+        setTransitionProgress(parseFloat(e.target.value), true);
+      });
+    }
+    debugBarEl.querySelectorAll('[data-dbg-p]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setTransitionProgress(parseFloat(btn.getAttribute('data-dbg-p')), true);
+      });
+    });
+  }
+
   /**
    * Initialize Controller
    */
@@ -1012,6 +1658,7 @@
 
     mountScrollSpineDriver();
     mountTelemetryHud();
+    mountDebugScrubber();
     setupNavbarNavigation();
 
     // Event Listeners
@@ -1021,9 +1668,35 @@
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKeyDown);
+    // Cancel auto-play cleanly if user clicks anywhere outside Skip/Nav
+    window.addEventListener('pointerdown', (e) => {
+      if (autoPlayState && e.target && !e.target.closest('#transitionSkipBtn') && !e.target.closest('a[href="#disciplines"]') && !e.target.closest('a[href="#works"]')) {
+        interruptAutoPlay();
+      }
+    }, { passive: true });
 
-    // Initial sync
+    // Initial sync + Direct-Load handling (?t=... or #works / #disciplines / #skills)
     onWindowScroll();
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search || '');
+      const initialT = urlParams.get('t');
+      const initialP = urlParams.get('p');
+      const initialHomeP = urlParams.get('phome');
+      const hash = (window.location.hash || '').toLowerCase();
+      if (initialHomeP !== null && !isNaN(parseFloat(initialHomeP))) {
+        const clampedHP = Math.max(0.0, Math.min(1.0, parseFloat(initialHomeP)));
+        currentProgress = targetProgress = HOME_T_START + clampedHP * HOME_SPAN;
+      } else if (initialP !== null && !isNaN(parseFloat(initialP))) {
+        const clampedP = Math.max(0.0, Math.min(1.0, parseFloat(initialP)));
+        currentProgress = targetProgress = TRANSITION_T_START + clampedP * TRANSITION_SPAN;
+      } else if (initialT !== null && !isNaN(parseFloat(initialT))) {
+        currentProgress = targetProgress = Math.max(0.0, Math.min(1.0, parseFloat(initialT)));
+      } else if (hash === '#works' || hash === '#projects') {
+        currentProgress = targetProgress = 0.205; // Direct load on Projects skips flight
+      } else if (hash === '#disciplines' || hash === '#skills') {
+        currentProgress = targetProgress = TRANSITION_T_END;
+      }
+    }
     updateSectorState();
     updateTelemetryHud();
     syncVisualHandoff(currentProgress, 0.0);
@@ -1044,6 +1717,23 @@
     on: addEventListener,
     setTargetProgress: setTargetProgress,
     jumpTo: jumpToProgress,
+    jumpToProgress: jumpToProgress,
+    getHomeProgress: getHomeProgress,
+    setHomeProgress: setHomeProgress,
+    stepHome: stepHome,
+    startAutoPlayToProjects: startAutoPlayToProjects,
+    triggerSkipToProjects: triggerSkipToProjects,
+    HOME_T_START: HOME_T_START,
+    HOME_T_END: HOME_T_END,
+    HOME_STEPS: HOME_STEPS,
+    getTransitionProgress: getTransitionProgress,
+    setTransitionProgress: setTransitionProgress,
+    stepTransition: stepTransition,
+    startAutoPlayToSkills: startAutoPlayToSkills,
+    triggerSkipToSkyMap: triggerSkipToSkyMap,
+    TRANSITION_T_START: TRANSITION_T_START,
+    TRANSITION_T_END: TRANSITION_T_END,
+    TRANSITION_STEPS: TRANSITION_STEPS,
     setLock: setLock,
     isLocked: isInputLocked,
     getLockReason: getActiveLockReason,
