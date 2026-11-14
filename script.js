@@ -7185,9 +7185,9 @@
         });
       }
 
-      // Email Copy Button
-      const copyBtn = document.getElementById('copyEmailBtn');
-      if (copyBtn) {
+      // Email Copy Button (Supports both classic and holographic spaceship terminal buttons)
+      const copyBtns = document.querySelectorAll('#copyEmailBtn, .js-copy-email-btn');
+      copyBtns.forEach(copyBtn => {
         let copyResetTimer = null;
         copyBtn.addEventListener('click', function () {
           const email = 'mandoreparth14@gmail.com';
@@ -7214,7 +7214,7 @@
             markCopied();
           }
         });
-      }
+      });
 
       // Input focus and group focus tracking
       if (form) {

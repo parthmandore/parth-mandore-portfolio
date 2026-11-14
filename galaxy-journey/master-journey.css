@@ -798,16 +798,31 @@ html[data-theme="space"] .holo-pedestal-glow {
   100% { transform: translateX(-50%) scale(1.04); opacity: 1; box-shadow: 0 0 40px #00ffff, 0 0 85px rgba(0, 229, 255, 1); }
 }
 
+/* Ambient Cyan Bloom behind Hologram Head */
+html[data-theme="space"] .holo-ambient-bloom {
+  position: absolute !important;
+  top: 40px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 280px !important;
+  height: 280px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(circle, rgba(0, 230, 255, 0.40) 0%, rgba(0, 140, 255, 0.15) 45%, transparent 70%) !important;
+  filter: blur(28px) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
 /* Light Beam Cone */
 html[data-theme="space"] .holo-light-cone {
   position: absolute !important;
   bottom: 20px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 330px !important;
-  height: 440px !important;
+  width: 340px !important;
+  height: 460px !important;
   clip-path: polygon(25% 100%, 75% 100%, 100% 0%, 0% 0%) !important;
-  background: linear-gradient(to top, rgba(0, 229, 255, 0.40) 0%, rgba(0, 200, 255, 0.13) 55%, transparent 100%) !important;
+  background: linear-gradient(to top, rgba(0, 240, 255, 0.45) 0%, rgba(0, 200, 255, 0.18) 42%, rgba(0, 160, 255, 0.03) 85%, transparent 100%) !important;
   pointer-events: none !important;
   z-index: 2 !important;
 }
@@ -842,16 +857,22 @@ html[data-theme="space"] .hp-6 { left: 82%; bottom: 80%; animation-delay: 3.5s !
   100% { transform: translateY(-70px) scale(1.2); opacity: 0; }
 }
 
-/* Hologram Figure Projection */
+/* Hologram Figure Projection (Bust / Head Focus) */
 html[data-theme="space"] .holo-figure-wrap {
   position: absolute !important;
-  bottom: 35px !important;
+  bottom: 40px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  width: 270px !important;
+  width: 280px !important;
   height: 390px !important;
   z-index: 5 !important;
-  animation: holoFlicker 6s ease-in-out infinite !important;
+  mask-image: linear-gradient(to top, transparent 0%, black 16%, black 100%) !important;
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 16%, black 100%) !important;
+  animation: holoFloat 4.5s ease-in-out infinite alternate, holoFlicker 6s ease-in-out infinite !important;
+}
+@keyframes holoFloat {
+  0% { transform: translateX(-50%) translateY(0px); }
+  100% { transform: translateX(-50%) translateY(-6px); }
 }
 @keyframes holoFlicker {
   0%, 100% { opacity: 0.96; }
@@ -866,37 +887,38 @@ html[data-theme="space"] .holo-figure-wrap {
 html[data-theme="space"] .holo-slices-wrap {
   position: absolute !important;
   inset: 0 !important;
-  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.78)) drop-shadow(0 0 35px rgba(0, 180, 255, 0.42)) !important;
 }
 html[data-theme="space"] .holo-slice {
   position: absolute !important;
   inset: 0 !important;
   overflow: hidden !important;
+  filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.95)) drop-shadow(0 0 16px rgba(0, 200, 255, 0.6)) !important;
+  transition: transform 0.2s ease !important;
 }
 html[data-theme="space"] .holo-portrait-img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: bottom center !important;
-  filter: url(#holo-duotone) brightness(1.15) contrast(1.1) !important;
+  position: absolute !important;
+  top: -20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 560px !important;
+  max-width: none !important;
+  height: auto !important;
+  filter: url(#holo-duotone) brightness(1.22) contrast(1.2) !important;
   mix-blend-mode: screen !important;
-  opacity: 0.96 !important;
+  opacity: 0.98 !important;
+  pointer-events: none !important;
+  -webkit-mask-image: repeating-linear-gradient(
+    0deg,
+    black 0px,
+    black 2px,
+    rgba(0, 0, 0, 0.45) 2px,
+    rgba(0, 0, 0, 0.45) 4px
+  ) !important;
 }
 
 /* Scanlines CRT Grid */
 html[data-theme="space"] .holo-scanlines {
-  position: absolute !important;
-  inset: 0 !important;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 229, 255, 0.22) 0px,
-    rgba(0, 229, 255, 0.22) 1px,
-    transparent 1px,
-    transparent 3px
-  ) !important;
-  pointer-events: none !important;
-  z-index: 8 !important;
-  mix-blend-mode: overlay !important;
+  display: none !important;
 }
 
 /* Moving Laser Sweep Bar */

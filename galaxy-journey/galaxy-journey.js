@@ -1712,6 +1712,17 @@
       pillBtn.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
       pillBtn.style.setProperty('--sector-color', sec.color || '#F59E0B');
       pillBtn.style.setProperty('--sector-rgb', sec.rgb || '245, 158, 11');
+      pillBtn.style.background = 'rgba(6, 10, 20, 0.88)';
+      pillBtn.style.backgroundColor = 'rgba(6, 10, 20, 0.88)';
+      pillBtn.style.color = 'rgba(241, 232, 208, 0.94)';
+      pillBtn.style.border = `1px solid rgba(${sec.rgb || '245, 158, 11'}, 0.45)`;
+      pillBtn.style.borderRadius = '20px';
+      pillBtn.style.padding = '6px 14px';
+      pillBtn.style.backdropFilter = 'blur(8px)';
+      pillBtn.style.webkitBackdropFilter = 'blur(8px)';
+      pillBtn.style.boxShadow = `0 4px 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(${sec.rgb || '245, 158, 11'}, 0.15)`;
+      pillBtn.style.cursor = 'pointer';
+      pillBtn.style.outline = 'none';
       pillBtn.innerHTML = `
         <span class="sky-map-pill-dot" style="background:${sec.color || '#F59E0B'}"></span>
         <span class="sky-map-pill-title">${sec.title} &middot; ${sec.techCount}</span>
@@ -4834,11 +4845,11 @@
       const header = dispatchEl.querySelector('.dispatch-header');
       const layout = dispatchEl.querySelector('.dispatch-layout');
 
-      const alpha = Math.min(1.0, p / 0.4);
+      const alpha = Math.min(1.0, p / 0.15);
       if (rubric) rubric.style.opacity = alpha.toFixed(3);
       if (header) header.style.opacity = alpha.toFixed(3);
       if (layout) {
-        const layoutAlpha = Math.max(0.0, Math.min(1.0, (p - 0.2) / 0.5));
+        const layoutAlpha = Math.min(1.0, p / 0.20);
         layout.style.opacity = layoutAlpha.toFixed(3);
       }
     } else {
