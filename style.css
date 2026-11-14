@@ -24,6 +24,22 @@ div.sky-map-item,
   margin: 0 !important;
 }
 
+.dispatch-holo-container,
+.dispatch-space-terminal-header {
+  display: none;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
 .sky-map-pill-wrapper {
   display: flex !important;
   flex-direction: column !important;

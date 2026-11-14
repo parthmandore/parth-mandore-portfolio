@@ -635,6 +635,15 @@ html[data-theme="space"] #disciplines .atlas-stage-container {
    PHASE 3 — STEP 4: SECTOR 05 BEACON NEXUS STYLING
    ══════════════════════════════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 4: SECTOR 05 BEACON NEXUS STYLING & HOLOGRAPHIC TERMINAL
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Space Theme Contact Section & Hologram Identity Terminal */
+html[data-theme="space"] .dispatch-classic-only {
+  display: none !important;
+}
+
 html[data-theme="space"] #dispatch {
   position: fixed !important;
   top: 0 !important;
@@ -651,12 +660,37 @@ html[data-theme="space"] #dispatch {
   border-top: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  padding: 88px 5% 80px !important;
+  padding: max(74px, calc(var(--space-nav-height, 65px) + 12px)) 4% 76px !important;
   box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   perspective: 1200px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(245, 158, 11, 0.4) transparent;
+  scrollbar-color: rgba(0, 229, 255, 0.4) transparent;
   will-change: opacity, transform;
+}
+
+html[data-theme="space"] #dispatch .atelier-container {
+  width: 100% !important;
+  max-width: 1320px !important;
+  height: 100% !important;
+  max-height: calc(100vh - 150px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+html[data-theme="space"] #dispatch .dispatch-layout {
+  display: grid !important;
+  grid-template-columns: minmax(360px, 440px) 1fr !important;
+  gap: 2.5rem !important;
+  align-items: center !important;
+  height: 100% !important;
+  max-height: 680px !important;
+  margin: 0 !important;
 }
 
 html[data-theme="space"] #dispatch::-webkit-scrollbar {
@@ -666,7 +700,7 @@ html[data-theme="space"] #dispatch::-webkit-scrollbar-track {
   background: transparent;
 }
 html[data-theme="space"] #dispatch::-webkit-scrollbar-thumb {
-  background: rgba(245, 158, 11, 0.4);
+  background: rgba(0, 229, 255, 0.4);
   border-radius: 3px;
 }
 
@@ -678,74 +712,503 @@ html[data-theme="space"] #dispatch input,
 html[data-theme="space"] #dispatch textarea,
 html[data-theme="space"] #dispatch .channel-action-btn,
 html[data-theme="space"] #dispatch .channel-main-link,
+html[data-theme="space"] #dispatch .terminal-channel-action,
+html[data-theme="space"] #dispatch .terminal-quick-btn,
 html[data-theme="space"] #dispatch .atelier-btn {
   pointer-events: auto !important;
 }
 
-/* Communication console card styling in Space Theme */
-html[data-theme="space"] .dispatch-channels-card,
+/* ── LEFT COLUMN: HOLOGRAPHIC IDENTITY PROJECTION ── */
+html[data-theme="space"] .dispatch-col-left {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-theme="space"] .dispatch-holo-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 420px !important;
+}
+
+/* Emitter Pedestal Stage */
+html[data-theme="space"] .holo-emitter-stage {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 380px !important;
+  height: 460px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+}
+
+/* Emitter Pedestal Base */
+html[data-theme="space"] .holo-pedestal {
+  position: relative !important;
+  width: 270px !important;
+  height: 48px !important;
+  z-index: 10 !important;
+}
+html[data-theme="space"] .holo-pedestal-rim {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0, 229, 255, 0.48) 0%, rgba(6, 26, 45, 0.88) 60%, rgba(2, 6, 14, 0.98) 100%) !important;
+  border: 2px solid rgba(0, 229, 255, 0.82) !important;
+  box-shadow: 0 0 28px rgba(0, 229, 255, 0.72), inset 0 0 22px rgba(0, 229, 255, 0.52) !important;
+}
+html[data-theme="space"] .holo-pedestal-core {
+  position: absolute !important;
+  bottom: 12px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 160px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: #00ffff !important;
+  box-shadow: 0 0 35px #00ffff, 0 0 70px rgba(0, 229, 255, 0.95) !important;
+  filter: blur(2px) !important;
+  animation: holoPedestalPulse 3.5s ease-in-out infinite alternate !important;
+}
+html[data-theme="space"] .holo-pedestal-glow {
+  position: absolute !important;
+  bottom: -15px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 320px !important;
+  height: 30px !important;
+  border-radius: 50% !important;
+  background: radial-gradient(ellipse, rgba(0, 229, 255, 0.35) 0%, transparent 70%) !important;
+  filter: blur(8px) !important;
+  pointer-events: none !important;
+}
+
+@keyframes holoPedestalPulse {
+  0% { transform: translateX(-50%) scale(0.96); opacity: 0.85; box-shadow: 0 0 25px #00ffff, 0 0 50px rgba(0, 229, 255, 0.7); }
+  100% { transform: translateX(-50%) scale(1.04); opacity: 1; box-shadow: 0 0 40px #00ffff, 0 0 85px rgba(0, 229, 255, 1); }
+}
+
+/* Light Beam Cone */
+html[data-theme="space"] .holo-light-cone {
+  position: absolute !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 330px !important;
+  height: 440px !important;
+  clip-path: polygon(25% 100%, 75% 100%, 100% 0%, 0% 0%) !important;
+  background: linear-gradient(to top, rgba(0, 229, 255, 0.40) 0%, rgba(0, 200, 255, 0.13) 55%, transparent 100%) !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Floating Particles */
+html[data-theme="space"] .holo-particles-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  pointer-events: none !important;
+  z-index: 7 !important;
+}
+html[data-theme="space"] .holo-particle {
+  position: absolute !important;
+  width: 3px !important;
+  height: 3px !important;
+  background: #00ffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 8px #00ffff !important;
+  animation: holoParticleFloat 4s ease-in-out infinite !important;
+}
+html[data-theme="space"] .hp-1 { left: 22%; bottom: 15%; animation-delay: 0s !important; }
+html[data-theme="space"] .hp-2 { left: 78%; bottom: 25%; animation-delay: 0.8s !important; }
+html[data-theme="space"] .hp-3 { left: 35%; bottom: 40%; animation-delay: 1.5s !important; }
+html[data-theme="space"] .hp-4 { left: 65%; bottom: 55%; animation-delay: 2.2s !important; }
+html[data-theme="space"] .hp-5 { left: 45%; bottom: 70%; animation-delay: 2.9s !important; }
+html[data-theme="space"] .hp-6 { left: 82%; bottom: 80%; animation-delay: 3.5s !important; }
+
+@keyframes holoParticleFloat {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  30% { opacity: 0.85; }
+  80% { opacity: 0.6; }
+  100% { transform: translateY(-70px) scale(1.2); opacity: 0; }
+}
+
+/* Hologram Figure Projection */
+html[data-theme="space"] .holo-figure-wrap {
+  position: absolute !important;
+  bottom: 35px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 270px !important;
+  height: 390px !important;
+  z-index: 5 !important;
+  animation: holoFlicker 6s ease-in-out infinite !important;
+}
+@keyframes holoFlicker {
+  0%, 100% { opacity: 0.96; }
+  42% { opacity: 0.94; }
+  43% { opacity: 0.88; }
+  44% { opacity: 0.97; }
+  88% { opacity: 0.95; }
+  89% { opacity: 0.91; }
+  90% { opacity: 0.98; }
+}
+
+html[data-theme="space"] .holo-slices-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.78)) drop-shadow(0 0 35px rgba(0, 180, 255, 0.42)) !important;
+}
+html[data-theme="space"] .holo-slice {
+  position: absolute !important;
+  inset: 0 !important;
+  overflow: hidden !important;
+}
+html[data-theme="space"] .holo-portrait-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: bottom center !important;
+  filter: url(#holo-duotone) brightness(1.15) contrast(1.1) !important;
+  mix-blend-mode: screen !important;
+  opacity: 0.96 !important;
+}
+
+/* Scanlines CRT Grid */
+html[data-theme="space"] .holo-scanlines {
+  position: absolute !important;
+  inset: 0 !important;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 229, 255, 0.22) 0px,
+    rgba(0, 229, 255, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  ) !important;
+  pointer-events: none !important;
+  z-index: 8 !important;
+  mix-blend-mode: overlay !important;
+}
+
+/* Moving Laser Sweep Bar */
+html[data-theme="space"] .holo-sweep-laser {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, transparent, #00ffff 25%, #ffffff 50%, #00ffff 75%, transparent) !important;
+  box-shadow: 0 0 14px #00ffff, 0 0 25px #00ffff !important;
+  z-index: 9 !important;
+  animation: holoSweep 3.8s ease-in-out infinite alternate !important;
+}
+@keyframes holoSweep {
+  0% { top: 6%; opacity: 0.4; }
+  50% { opacity: 0.9; }
+  100% { top: 92%; opacity: 0.5; }
+}
+
+/* Identification Badge */
+html[data-theme="space"] .holo-id-badge {
+  margin-top: 10px !important;
+  width: 100% !important;
+  max-width: 360px !important;
+  background: rgba(4, 12, 24, 0.88) !important;
+  border: 1px solid rgba(0, 229, 255, 0.32) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 229, 255, 0.1) !important;
+  font-family: var(--font-mono, monospace) !important;
+  box-sizing: border-box !important;
+}
+html[data-theme="space"] .holo-id-status {
+  font-size: 9.5px !important;
+  letter-spacing: 0.12em !important;
+  color: #00ffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 3px !important;
+}
+html[data-theme="space"] .holo-id-dot {
+  width: 6px !important;
+  height: 6px !important;
+  background: #00ffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 8px #00ffff !important;
+  animation: holoDotPulse 2s ease-in-out infinite alternate !important;
+}
+@keyframes holoDotPulse {
+  0% { opacity: 0.5; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #00ffff; }
+}
+html[data-theme="space"] .holo-id-name {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.09em !important;
+  color: #f8fafc !important;
+}
+html[data-theme="space"] .holo-id-role {
+  font-size: 10.5px !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(245, 158, 11, 0.95) !important;
+  margin: 2px 0 !important;
+}
+html[data-theme="space"] .holo-id-meta {
+  font-size: 9px !important;
+  letter-spacing: 0.06em !important;
+  color: #94a3b8 !important;
+}
+
+/* ── RIGHT COLUMN: COMMUNICATION TERMINAL ── */
+html[data-theme="space"] .dispatch-col-right {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  height: 100% !important;
+}
+
+html[data-theme="space"] .dispatch-space-terminal-header {
+  display: block !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-rubric {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.16em !important;
+  color: #00ffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+html[data-theme="space"] .terminal-rubric-dot {
+  width: 5px !important;
+  height: 5px !important;
+  background: #00ffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 6px #00ffff !important;
+}
+html[data-theme="space"] .terminal-title {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  margin: 3px 0 !important;
+  letter-spacing: -0.01em !important;
+  color: #ffffff !important;
+}
+html[data-theme="space"] .terminal-sub {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  margin: 0 0 10px 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Channels Grid */
+html[data-theme="space"] .terminal-channels-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-channel-card {
+  background: rgba(10, 18, 32, 0.85) !important;
+  border: 1px solid rgba(0, 229, 255, 0.24) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+html[data-theme="space"] .terminal-channel-card:hover {
+  border-color: rgba(0, 229, 255, 0.55) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 12px rgba(0, 229, 255, 0.15) !important;
+}
+html[data-theme="space"] .terminal-channel-label {
+  display: block !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(245, 158, 11, 0.95) !important;
+}
+html[data-theme="space"] .terminal-channel-val {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  text-decoration: none !important;
+}
+html[data-theme="space"] .terminal-channel-val:hover {
+  color: #00ffff !important;
+}
+html[data-theme="space"] .terminal-channel-action {
+  background: rgba(0, 229, 255, 0.12) !important;
+  border: 1px solid rgba(0, 229, 255, 0.45) !important;
+  color: #00ffff !important;
+  padding: 5px 9px !important;
+  border-radius: 4px !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+html[data-theme="space"] .terminal-channel-action:hover {
+  background: rgba(0, 229, 255, 0.25) !important;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+html[data-theme="space"] .terminal-channel-action.is-copied {
+  background: rgba(16, 185, 129, 0.25) !important;
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+/* Quick External Links (GitHub, LinkedIn, CV) */
+html[data-theme="space"] .terminal-quick-links {
+  display: flex !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-quick-btn {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 5px !important;
+  padding: 7px 10px !important;
+  color: #f8fafc !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10.5px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+html[data-theme="space"] .terminal-quick-btn:hover {
+  border-color: rgba(0, 229, 255, 0.6) !important;
+  background: rgba(0, 229, 255, 0.12) !important;
+  color: #00ffff !important;
+  transform: translateY(-1px) !important;
+}
+html[data-theme="space"] .terminal-quick-btn.terminal-cv-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.65) !important;
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+}
+html[data-theme="space"] .terminal-quick-btn.terminal-cv-btn:hover {
+  background: rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35) !important;
+  color: #fef08a !important;
+}
+
+/* Compact Form inside Terminal */
 html[data-theme="space"] .dispatch-form-wrapper .form-container {
-  background: rgba(10, 15, 26, 0.82) !important;
-  border: 1px solid rgba(245, 158, 11, 0.22) !important;
+  background: rgba(8, 14, 26, 0.88) !important;
+  border: 1px solid rgba(0, 229, 255, 0.25) !important;
   border-radius: 8px !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.05) !important;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 12px 18px 14px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.08) !important;
 }
-
-html[data-theme="space"] .dispatch-channels-card:hover,
-html[data-theme="space"] .dispatch-form-wrapper .form-container:hover {
-  border-color: rgba(245, 158, 11, 0.45) !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7), 0 0 40px rgba(245, 158, 11, 0.10) !important;
+html[data-theme="space"] .form-grid-2col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
 }
-
-/* Restrained amber beacon accents */
-html[data-theme="space"] #dispatch .section-rubric .rubric-title {
-  color: #F59E0B !important;
+html[data-theme="space"] .form-input-group {
+  margin-bottom: 7px !important;
 }
-html[data-theme="space"] #dispatch .editorial-heading {
-  color: #F8FAFC !important;
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.8);
-}
-html[data-theme="space"] #dispatch .dispatch-lead {
-  color: #94A3B8 !important;
-}
-html[data-theme="space"] #dispatch .channel-tag {
-  color: #F59E0B !important;
-  font-family: var(--font-mono, monospace);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-}
-html[data-theme="space"] #dispatch .channel-main-link {
-  color: #F1F5F9 !important;
-}
-html[data-theme="space"] #dispatch .channel-main-link:hover {
-  color: #F59E0B !important;
-}
-html[data-theme="space"] #dispatch .form-input-group label {
-  color: #CBD5E1 !important;
+html[data-theme="space"] .form-input-group label {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.1em !important;
+  color: #94a3b8 !important;
+  margin-bottom: 2px !important;
+  display: block !important;
 }
 html[data-theme="space"] #dispatch input,
 html[data-theme="space"] #dispatch textarea {
-  background: rgba(15, 23, 42, 0.75) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  color: #F8FAFC !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #f8fafc !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+  font-size: 12.5px !important;
+}
+html[data-theme="space"] #dispatch textarea {
+  height: 46px !important;
+  resize: none !important;
 }
 html[data-theme="space"] #dispatch input:focus,
 html[data-theme="space"] #dispatch textarea:focus {
-  border-color: #F59E0B !important;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+  border-color: #00ffff !important;
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.25) !important;
   outline: none !important;
 }
-html[data-theme="space"] #dispatch #sendBtn {
-  background: #F59E0B !important;
-  color: #05070D !important;
-  font-weight: 600;
-  border: none;
+html[data-theme="space"] .terminal-send-btn {
+  background: linear-gradient(90deg, #00e5ff, #00a8ff) !important;
+  color: #030712 !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  padding: 9px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 18px rgba(0, 229, 255, 0.42) !important;
+  transition: all 0.25s ease !important;
+  margin-top: 4px !important;
 }
-html[data-theme="space"] #dispatch #sendBtn:hover {
-  background: #D97706 !important;
+html[data-theme="space"] .terminal-send-btn:hover {
+  background: linear-gradient(90deg, #38bdf8, #00e5ff) !important;
+  box-shadow: 0 6px 24px rgba(0, 229, 255, 0.65) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Responsive Stacking at <= 860px */
+@media (max-width: 860px) {
+  html[data-theme="space"] #dispatch {
+    overflow-y: auto !important;
+    padding: 80px 4% 90px !important;
+    align-items: flex-start !important;
+  }
+  html[data-theme="space"] #dispatch .atelier-container {
+    height: auto !important;
+    max-height: none !important;
+  }
+  html[data-theme="space"] #dispatch .dispatch-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  html[data-theme="space"] .holo-emitter-stage {
+    height: 360px !important;
+  }
+  html[data-theme="space"] .holo-figure-wrap {
+    height: 300px !important;
+    width: 220px !important;
+  }
+  html[data-theme="space"] .holo-light-cone {
+    height: 340px !important;
+    width: 260px !important;
+  }
+  html[data-theme="space"] .form-grid-2col,
+  html[data-theme="space"] .terminal-channels-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* ══════════════════════════════════════════════════════════════════
