@@ -1381,6 +1381,7 @@
   let skyMapStarMeta = [];   // Constellation stars + helper stars metadata for line projection & labels
   let skyMapEdgeList = [];   // { secIdx, metaA, metaB }
   let skyMapSectorCenters = []; // { secIdx, key, title, count, worldCenter, labelEl, baseColorRGB }
+  let contactBeaconMesh = null;
   let skyMapFpsThrottleRatio = 1.0;
   let skyMouseNormX = 0;
   let skyMouseNormY = 0;
@@ -1388,9 +1389,9 @@
   let smoothSkyMouseY = 0;
 
   // Phase 3 & Phase 4: Interactive Sky Map + Open/Close Zoom + 0.4s 3D-to-2D Handoff
-  const DETAIL_ZOOM_FRAC = 0.65;       // 0..0.65 (~720ms) zoom flight; 0.65..1.00 (~400ms) nearly still crossfade
-  const DETAIL_OPEN_MS = 1120;
-  const DETAIL_CLOSE_MS = 1020;
+  const DETAIL_ZOOM_FRAC = 0.50;       // Swift, responsive zoom flight with seamless crossfade
+  const DETAIL_OPEN_MS = 650;          // Fast, deliberate 0.65s zoom into constellation detail
+  const DETAIL_CLOSE_MS = 550;         // Clean, immediate 0.55s return to wide sky map
   let hoveredSkySectorIdx = -1;
   let detailMode = 'skymap';           // 'skymap' | 'opening' | 'detail' | 'closing'
   let detailSectorIdx = 0;
@@ -1601,27 +1602,7 @@
       mountParent.appendChild(skyMapLabelsOverlay);
     }
     skyMapLabelsOverlay.innerHTML = '';
-
-    // Exploration directive hint
-    skyMapHintEl = document.createElement('div');
-    skyMapHintEl.id = 'skyMapHint';
-    skyMapHintEl.className = 'sky-map-hint';
-    skyMapHintEl.innerHTML = `
-      <div class="sky-map-hint-content">
-        <span class="sky-map-hint-pulse">✦</span>
-        <span class="sky-map-hint-text">CLICK ANY CONSTELLATION TO OPEN TECH STACK</span>
-        <span class="sky-map-hint-arrow">&rsaquo;</span>
-      </div>
-      <button type="button" class="sky-map-hint-close" aria-label="Dismiss hint">&times;</button>
-    `;
-    const closeBtn = skyMapHintEl.querySelector('.sky-map-hint-close');
-    if (closeBtn) {
-      closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dismissSkyMapHint();
-      });
-    }
-    skyMapLabelsOverlay.appendChild(skyMapHintEl);
+    skyMapHintEl = null;
 
     // 2A. Constellation Stars (placed along SKY_CAM_POS -> SKY_MAP rays at varied depths)
     sectors.forEach((sec, secIdx) => {
@@ -1640,6 +1621,9 @@
       itemContainer.className = 'sky-map-item';
       itemContainer.setAttribute('data-sector-key', sec.key);
       itemContainer.setAttribute('data-sector-idx', String(secIdx));
+      itemContainer.setAttribute('role', 'button');
+      itemContainer.setAttribute('tabindex', '0');
+      itemContainer.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
       itemContainer.style.background = 'transparent';
       itemContainer.style.backgroundColor = 'transparent';
       itemContainer.style.border = 'none';
@@ -1648,7 +1632,30 @@
       itemContainer.style.padding = '0';
       itemContainer.style.margin = '0';
       itemContainer.style.color = 'inherit';
+      itemContainer.style.cursor = 'pointer';
       itemContainer.style.pointerEvents = 'none';
+
+      // Constellation structure interaction: clicking anywhere on constellation or hovering it focuses/opens it
+      itemContainer.addEventListener('pointerenter', () => setHoveredSkySector(secIdx));
+      itemContainer.addEventListener('pointerleave', () => {
+        if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
+      });
+      itemContainer.addEventListener('focus', () => setHoveredSkySector(secIdx));
+      itemContainer.addEventListener('blur', () => {
+        if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
+      });
+      itemContainer.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openConstellation(secIdx);
+      });
+      itemContainer.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          openConstellation(secIdx);
+        }
+      });
 
       sec.stars.forEach((st, localIdx) => {
         const rx = st.x * cosR - st.y * sinR;
@@ -1664,15 +1671,9 @@
         // Match TechnologyConstellation.drawRealPointStar halo diameter (~2 * glowR) for 3D->2D handoff
         const glowR2d = st.isHelper ? 8.0 : (10.0 + Math.max(0.38, st.brightness || 0.72) * 12.0);
 
-        // Technology tag directly on this constellation star
-        let tagEl = null;
-        if (!st.isHelper && st.tech) {
-          tagEl = document.createElement('span');
-          tagEl.className = 'sky-star-tech-tag';
-          tagEl.setAttribute('data-sec-idx', String(secIdx));
-          tagEl.textContent = st.tech;
-          itemContainer.appendChild(tagEl);
-        }
+        // Individual technology labels removed from 7-constellation overview for a clean astronomical sky map.
+        // Full data for all 39 technologies preserved in st.tech, star meta, and detailed view.
+        const tagEl = null;
 
         const rec = {
           kind: 0, // 0 = constellation star
@@ -1706,10 +1707,9 @@
       const labelNdcY = (Number.isFinite(minStarNdcY) ? minStarNdcY : (slot.y - slot.scale)) - 0.076;
       const centerWorld = ndcToSkyWorld(labelNdcX, labelNdcY, 2200, basis, aspect);
 
-      const pillBtn = document.createElement('button');
-      pillBtn.type = 'button';
+      const pillBtn = document.createElement('div');
       pillBtn.className = 'sky-map-label-pill';
-      pillBtn.setAttribute('aria-label', `Open ${sec.title} constellation (${sec.techCount} technologies)`);
+      pillBtn.setAttribute('aria-label', `${sec.title} constellation (${sec.techCount} technologies)`);
       pillBtn.style.setProperty('--sector-color', sec.color || '#F59E0B');
       pillBtn.style.setProperty('--sector-rgb', sec.rgb || '245, 158, 11');
       pillBtn.style.background = 'rgba(6, 10, 20, 0.88)';
@@ -1722,30 +1722,19 @@
       pillBtn.style.webkitBackdropFilter = 'blur(8px)';
       pillBtn.style.boxShadow = `0 4px 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(${sec.rgb || '245, 158, 11'}, 0.15)`;
       pillBtn.style.cursor = 'pointer';
-      pillBtn.style.outline = 'none';
       pillBtn.innerHTML = `
         <span class="sky-map-pill-dot" style="background:${sec.color || '#F59E0B'}"></span>
         <span class="sky-map-pill-title">${sec.title} &middot; ${sec.techCount}</span>
-        <span class="sky-map-arrow" aria-hidden="true">&rsaquo;</span>
       `;
-
-      const cueSpan = document.createElement('span');
-      cueSpan.className = 'sky-map-click-cue';
-      cueSpan.textContent = 'CLICK TO OPEN \u203a';
 
       const pillWrapper = document.createElement('div');
       pillWrapper.className = 'sky-map-pill-wrapper';
       pillWrapper.appendChild(pillBtn);
-      pillWrapper.appendChild(cueSpan);
 
       itemContainer.appendChild(pillWrapper);
 
       pillBtn.addEventListener('pointerenter', () => setHoveredSkySector(secIdx));
       pillBtn.addEventListener('pointerleave', () => {
-        if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
-      });
-      pillBtn.addEventListener('focus', () => setHoveredSkySector(secIdx));
-      pillBtn.addEventListener('blur', () => {
         if (hoveredSkySectorIdx === secIdx) setHoveredSkySector(-1);
       });
       pillBtn.addEventListener('click', (e) => {
@@ -1915,7 +1904,8 @@
         uHoveredSector: { value: -1.0 },
         uActiveDetailSec: { value: -1.0 },
         uDetailZoom: { value: 0.0 },
-        uDetailFadeOut: { value: 1.0 }
+        uDetailFadeOut: { value: 1.0 },
+        uGather: { value: 0.0 }
       },
       vertexShader: `
         attribute vec3 aColor;
@@ -1931,6 +1921,7 @@
         uniform float uActiveDetailSec;
         uniform float uDetailZoom;
         uniform float uDetailFadeOut;
+        uniform float uGather;
         varying vec3 vColor;
         varying float vAlpha;
         varying float vSpikes;
@@ -1986,7 +1977,19 @@
             ptSize *= 0.88; // Subtle dim
           }
 
-          vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+          vec3 displacedPos = position;
+          if (uGather > 0.001) {
+            float distToBeam = length(position.xy - vec2(280.0, -180.0));
+            float influence = smoothstep(340.0, 40.0, distToBeam) * uGather;
+            vec3 gatherOffset = vec3(
+              sin(aMeta.y * 12.3) * 16.0,
+              cos(aMeta.y * 8.7) * 18.0,
+              0.0
+            );
+            displacedPos += gatherOffset * influence;
+          }
+
+          vec4 mvPos = modelViewMatrix * vec4(displacedPos, 1.0);
           gl_PointSize = ptSize * uPixelRatio;
           gl_Position = projectionMatrix * mvPos;
         }
@@ -2043,6 +2046,38 @@
     skyMapLines = new THREE.LineSegments(lineGeo, skyMapLinesMat);
     skyMapLines.renderOrder = 6;
     skyMapGroup.add(skyMapLines);
+
+    // 4. Distant Contact Transmission Beacon (Leg 3 approach cruise, 0.88 <= t <= 0.94)
+    const beaconCanvas = document.createElement('canvas');
+    beaconCanvas.width = 64;
+    beaconCanvas.height = 64;
+    const bCtx = beaconCanvas.getContext('2d');
+    const grad = bCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+    grad.addColorStop(0.25, 'rgba(0, 240, 255, 0.95)');
+    grad.addColorStop(0.55, 'rgba(0, 180, 255, 0.40)');
+    grad.addColorStop(1.0, 'rgba(0, 80, 200, 0.0)');
+    bCtx.fillStyle = grad;
+    bCtx.fillRect(0, 0, 64, 64);
+    const beaconTex = new THREE.CanvasTexture(beaconCanvas);
+    const beaconMat = new THREE.SpriteMaterial({
+      map: beaconTex,
+      color: 0x00ffff,
+      transparent: true,
+      opacity: 0.0,
+      blending: THREE.AdditiveBlending,
+      depthTest: false,
+      depthWrite: false
+    });
+    contactBeaconMesh = new THREE.Sprite(beaconMat);
+    contactBeaconMesh.scale.set(40, 40, 1);
+    const P_87 = basis.cam.clone()
+      .addScaledVector(basis.fwd, 1100)
+      .addScaledVector(basis.right, 820)
+      .addScaledVector(basis.up, -480);
+    contactBeaconMesh.position.copy(P_87);
+    contactBeaconMesh.renderOrder = 8;
+    skyMapGroup.add(contactBeaconMesh);
   }
 
   function dismissSkyMapHint() {
@@ -2129,27 +2164,10 @@
       : skyMapSectorCenters.findIndex(s => s.key === keyOrIdx);
     if (idx < 0 || idx >= skyMapSectorCenters.length) return;
 
-    const masterT = window.MasterJourneyController ? window.MasterJourneyController.getProgress() : 0.85;
-    if (window.MasterJourneyController && masterT < 0.848) {
-      window.MasterJourneyController.setTransitionProgress(1.0, true);
+    const WAYPOINTS = [0.670, 0.710, 0.750, 0.790, 0.830, 0.870, 0.910];
+    if (window.MasterJourneyController && typeof window.MasterJourneyController.setTargetProgress === 'function') {
+      window.MasterJourneyController.setTargetProgress(WAYPOINTS[idx], true);
     }
-
-    dismissSkyMapHint();
-    setHoveredSkySector(-1);
-    detailSectorIdx = idx;
-
-    if (window.TechnologyConstellation) {
-      if (typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
-        window.TechnologyConstellation.setSharedBackdropMode(true);
-      }
-      if (typeof window.TechnologyConstellation.selectSector === 'function') {
-        window.TechnologyConstellation.selectSector(idx, { instant: true, skipEntrance: true, fromThree: true });
-      }
-    }
-
-    computeDetailStarTargets(idx);
-    detailLastTickMs = performance.now();
-    detailMode = 'opening';
   }
 
   function closeConstellationDetail(instant = false) {
@@ -2216,17 +2234,18 @@
       return u * u * (3.0 - 2.0 * u);
     };
 
-    // Smooth cross-dissolve out when scrolling past Sky Map (0.85) toward Sector 04 Contact (0.88..1.00)
-    const contactFade = (typeof masterT === 'number' && masterT > 0.865)
-      ? (1.0 - smooth(0.865, 0.915, masterT))
+    // Continuous Starfield across all sectors: Stars stay 100% visible across Leg 3 (0.85 -> 1.00)
+    // ONLY constellation lines and interactive labels fade out over 0.85 -> 0.88
+    const lineLeg3Fade = (typeof masterT === 'number' && masterT >= 0.85)
+      ? (1.0 - smooth(0.85, 0.88, masterT))
       : 1.0;
 
     const disciplinesEl = document.getElementById('disciplines');
     const isDestroyed = (typeof BlackHoleLifecycle !== 'undefined' &&
       (BlackHoleLifecycle.isDestroyed() || BlackHoleLifecycle.isDestroying() || BlackHoleLifecycle.isReadyToDestroy()));
 
-    // Hide cleanly when completely back in solar system OR settled in Contact
-    if (p <= 0.01 || contactFade <= 0.005) {
+    // Hide sky map only when completely back in solar system (p <= 0.01)
+    if (p <= 0.01) {
       skyMapGroup.visible = false;
       if (skyMapLabelsOverlay) {
         skyMapLabelsOverlay.style.opacity = '0';
@@ -2276,24 +2295,48 @@
       }
     }
 
-    // 3. Point Cloud Uniforms (identical 1,410 deep-sky stars stay opaque behind Detail View)
+    // 3. Point Cloud Uniforms (identical 1,410 deep-sky stars stay opaque behind Detail View and during Contact)
+    const WAYPOINTS = [0.670, 0.710, 0.750, 0.790, 0.830, 0.870, 0.910];
+    let activeConstellationIdx = -1;
+    if (typeof masterT === 'number' && masterT >= 0.650 && masterT <= 0.920) {
+      let minD = Infinity;
+      for (let i = 0; i < WAYPOINTS.length; i++) {
+        const d = Math.abs(masterT - WAYPOINTS[i]);
+        if (d < minD) {
+          minD = d;
+          activeConstellationIdx = i;
+        }
+      }
+    }
+
     if (skyMapPointsMat) {
       skyMapPointsMat.uniforms.uTime.value = elapsedSec;
       skyMapPointsMat.uniforms.uTransitionP.value = p;
-      skyMapPointsMat.uniforms.uOpacity.value = smooth(0.08, 0.35, p) * contactFade;
-      skyMapPointsMat.uniforms.uHoveredSector.value = (detailMode === 'skymap') ? hoveredSkySectorIdx : -1.0;
-      skyMapPointsMat.uniforms.uActiveDetailSec.value = activeSecForShader;
+      skyMapPointsMat.uniforms.uOpacity.value = smooth(0.08, 0.35, p);
+      skyMapPointsMat.uniforms.uHoveredSector.value = (hoveredSkySectorIdx >= 0) ? hoveredSkySectorIdx : activeConstellationIdx;
+      skyMapPointsMat.uniforms.uActiveDetailSec.value = (activeConstellationIdx >= 0) ? activeConstellationIdx : (detailProgress > 0.001 ? detailSectorIdx : -1.0);
       skyMapPointsMat.uniforms.uDetailZoom.value = smooth(0.0, 1.0, zoomU);
       skyMapPointsMat.uniforms.uDetailFadeOut.value = 1.0 - handoffAlpha;
+      if (skyMapPointsMat.uniforms.uGather) {
+        skyMapPointsMat.uniforms.uGather.value = (typeof masterT === 'number' && masterT >= 0.93)
+          ? smooth(0.93, 0.98, masterT)
+          : 0.0;
+      }
     }
 
-    // 4. Delicate Constellation Lines Drawing (0.68 -> 0.88), hover highlight, and gold->silver-blue 3D/2D handoff
-    const lineDraw = smooth(0.68, 0.88, p);
+    // 4. Delicate Constellation Lines Drawing (0.590 -> 0.635) and fade out at 0.915 -> 0.945
+    let lineDraw = 1.0;
+    if (typeof masterT === 'number') {
+      lineDraw = smooth(0.590, 0.635, masterT);
+    } else {
+      lineDraw = smooth(0.68, 0.88, p);
+    }
+
     if (skyMapLines && skyMapLinesMat) {
       const otherLinesFade = detailProgress > 0.001 ? (1.0 - smooth(0.0, 0.42, zoomU)) : 1.0;
       const activeLineFade = 1.0 - handoffAlpha;
-      const baseLineAlpha = 0.28 * Math.pow(Math.max(0.0, lineDraw), 0.72) * contactFade;
-      skyMapLines.visible = lineDraw > 0.005 && contactFade > 0.005 && activeLineFade > 0.005;
+      const baseLineAlpha = 0.28 * Math.pow(Math.max(0.0, lineDraw), 0.72) * lineLeg3Fade;
+      skyMapLines.visible = lineDraw > 0.005 && lineLeg3Fade > 0.005 && activeLineFade > 0.005;
       skyMapLinesMat.opacity = baseLineAlpha;
 
       if (skyMapLines.visible) {
@@ -2309,7 +2352,8 @@
           dir.divideScalar(len);
 
           // Gap smoothly converges to exact 12px-equivalent of 2D Detail View during zoom
-          const isTargetSec = detailProgress > 0.001 && e.secIdx === detailSectorIdx;
+          const isTargetSec = (activeConstellationIdx >= 0 && e.secIdx === activeConstellationIdx) ||
+                              (detailProgress > 0.001 && e.secIdx === detailSectorIdx);
           const gapFrac = isTargetSec ? (0.012 + (0.0058 - 0.012) * coolingBlend) : 0.012;
           const gapA = a.distanceTo(camera.position) * gapFrac;
           const gapB = b.distanceTo(camera.position) * gapFrac;
@@ -2322,21 +2366,13 @@
 
           let lum = 1.0;
           let rCol = 0.86, gCol = 0.80, bCol = 0.70; // Restrained celestial silver-gold
-          if (detailProgress > 0.001) {
-            if (isTargetSec) {
-              rCol = 0.86 + (0.855 - 0.86) * coolingBlend;
-              gCol = 0.80 + (0.894 - 0.80) * coolingBlend;
-              bCol = 0.70 + (0.973 - 0.70) * coolingBlend;
-              lum = (1.0 - 0.48 * coolingBlend) * activeLineFade;
+          const targetSec = (activeConstellationIdx >= 0) ? activeConstellationIdx : (detailProgress > 0.001 ? detailSectorIdx : hoveredSkySectorIdx);
+          if (targetSec >= 0) {
+            if (e.secIdx === targetSec) {
+              rCol = 0.96; gCol = 0.76; bCol = 0.36; // Warm luminous gold highlight on active constellation
+              lum = 1.40;
             } else {
-              lum = otherLinesFade;
-            }
-          } else if (hoveredSkySectorIdx >= 0) {
-            if (e.secIdx === hoveredSkySectorIdx) {
-              rCol = 0.96; gCol = 0.76; bCol = 0.36; // Warm luminous gold highlight on hover
-              lum = 1.50;
-            } else {
-              lum = 0.20; // Soft dim on unhovered constellations
+              lum = 0.30; // Soft dim on unhovered constellations
             }
           }
           const cIdx = i * 6;
@@ -2352,10 +2388,27 @@
       }
     }
 
-    // 5. Interactive Sky Map Hitboxes & Labels (visible & clickable at p >= 0.85 when Detail is closed)
+    // 4B. Contact Transmission Beacon (Leg 3 approach cruise, 0.92 <= masterT <= 0.96)
+    if (contactBeaconMesh) {
+      if (typeof masterT === 'number' && masterT >= 0.92 && masterT <= 0.96) {
+        const bPhase = (masterT - 0.92) / 0.04;
+        const bAlpha = Math.sin(bPhase * Math.PI) * 0.95;
+        contactBeaconMesh.material.opacity = bAlpha;
+        const bSize = 35 + 40 * bPhase;
+        contactBeaconMesh.scale.set(bSize, bSize, 1);
+        contactBeaconMesh.visible = true;
+      } else {
+        contactBeaconMesh.material.opacity = 0.0;
+        contactBeaconMesh.visible = false;
+      }
+    }
+
+    // 5. Interactive Sky Map Hitboxes & Labels (visible during overview discovery, hides during constellation dwell)
     const detailMask = 1.0 - smooth(0.0, 0.22, detailProgress);
-    const labelAlpha = smooth(0.80, 0.96, p) * contactFade * detailMask;
-    const canClickSky = (detailMode === 'skymap' && p >= 0.84 && contactFade > 0.5 && !isDestroyed);
+    const labelAlpha = (typeof masterT === 'number')
+      ? (smooth(0.615, 0.640, masterT) * (1.0 - smooth(0.665, 0.675, masterT)) * lineLeg3Fade * detailMask)
+      : (smooth(0.80, 0.96, p) * lineLeg3Fade * detailMask);
+    const canClickSky = (detailMode === 'skymap' && p >= 0.84 && lineLeg3Fade > 0.5 && !isDestroyed);
     if (skyMapLabelsOverlay) {
       if (labelAlpha > 0.01 && !isDestroyed) {
         skyMapLabelsOverlay.style.visibility = 'visible';
@@ -2398,11 +2451,14 @@
           item.labelEl.style.boxShadow = 'none';
           item.labelEl.style.width = boxW.toFixed(0) + 'px';
           item.labelEl.style.height = boxH.toFixed(0) + 'px';
-          item.labelEl.style.pointerEvents = 'none';
+          item.labelEl.style.setProperty('pointer-events', canClickSky ? 'auto' : 'none', 'important');
+          item.labelEl.style.setProperty('cursor', canClickSky ? 'pointer' : 'default', 'important');
+          item.labelEl.tabIndex = canClickSky ? 0 : -1;
+          item.labelEl.classList.toggle('is-hovered', hoveredSkySectorIdx === item.secIdx);
           item.labelEl.style.transform = `translate3d(${originLeft.toFixed(1)}px, ${topBox.toFixed(1)}px, 0)`;
 
           if (item.pillEl) {
-            item.pillEl.style.pointerEvents = canClickSky ? 'auto' : 'none';
+            item.pillEl.style.setProperty('pointer-events', canClickSky ? 'auto' : 'none', 'important');
             item.pillEl.tabIndex = canClickSky ? 0 : -1;
           }
 
@@ -2428,8 +2484,8 @@
         skyMapLabelsOverlay.style.opacity = '0';
         skyMapLabelsOverlay.style.visibility = 'hidden';
         skyMapSectorCenters.forEach(item => {
-          item.labelEl.style.pointerEvents = 'none';
-          if (item.pillEl) item.pillEl.style.pointerEvents = 'none';
+          item.labelEl.style.setProperty('pointer-events', 'none', 'important');
+          if (item.pillEl) item.pillEl.style.setProperty('pointer-events', 'none', 'important');
         });
       }
     }
@@ -2442,8 +2498,8 @@
         }
         disciplinesEl.style.visibility = 'visible';
         disciplinesEl.style.opacity = handoffAlpha.toFixed(3);
-        const interactive = handoffAlpha >= 0.85 && detailMode === 'detail';
-        disciplinesEl.style.pointerEvents = interactive ? 'auto' : 'none';
+        const interactive = handoffAlpha >= 0.85 && (detailMode === 'detail' || detailProgress >= 0.95);
+        disciplinesEl.style.setProperty('pointer-events', interactive ? 'auto' : 'none', 'important');
         disciplinesEl.classList.toggle('is-interactive', interactive);
         if (window.TechnologyConstellation && typeof window.TechnologyConstellation.forceRenderNow === 'function') {
           window.TechnologyConstellation.forceRenderNow();
@@ -2455,6 +2511,215 @@
         disciplinesEl.classList.remove('is-interactive');
       }
     }
+  }
+
+  // ── 03C. CONTINUOUS CINEMATIC TECHNOLOGY CONSTELLATION JOURNEY (0.572 <= masterT <= 1.000) ──
+  function evaluateConstellationJourneyCamera(masterT) {
+    const lastIdx = projects.length - 1;
+    const cur = arrivalPoses[lastIdx] || { camPos: new THREE.Vector3(-40, 95, 580), lookTarget: new THREE.Vector3(0, 0, 0) };
+    const basis = getSkyMapBasis();
+    const w = containerEl ? (containerEl.clientWidth || window.innerWidth) : window.innerWidth;
+    const h = containerEl ? (containerEl.clientHeight || window.innerHeight) : window.innerHeight;
+    const aspect = Math.max(0.45, Math.min(2.4, w / Math.max(1, h)));
+
+    const smooth = (a, b, x) => {
+      const u = Math.max(0.0, Math.min(1.0, (x - a) / Math.max(0.0001, b - a)));
+      return u * u * (3.0 - 2.0 * u);
+    };
+    const quintic = (u) => u * u * u * (u * (u * 6.0 - 15.0) + 10.0);
+
+    const P_SOLAR = cur.camPos.clone();
+    const L_SOLAR = cur.lookTarget.clone();
+    const P_FIELD = basis.cam.clone();
+    const L_FIELD = basis.cam.clone().addScaledVector(basis.fwd, 4200);
+
+    // Contact Terminal Target Pose
+    const P_CONTACT = basis.cam.clone()
+      .addScaledVector(basis.fwd, 1100)
+      .addScaledVector(basis.right, 820)
+      .addScaledVector(basis.up, -480);
+    const L_CONTACT = P_CONTACT.clone()
+      .addScaledVector(basis.fwd, 1200)
+      .addScaledVector(basis.right, 260)
+      .addScaledVector(basis.up, -120);
+
+    // ── STAGE 1: SOLAR SYSTEM DEPARTURE -> DEEP SPACE VOID -> CONSTELLATION FIELD DISCOVERY (0.572 -> 0.635) ──
+    if (masterT < 0.635) {
+      const rawU = Math.max(0.0, Math.min(1.0, (masterT - 0.572) / (0.635 - 0.572)));
+      const easedU = quintic(rawU);
+
+      const P_MID = cur.camPos.clone().add(new THREE.Vector3(-20, 140, 520));
+      const P_APPROACH = P_FIELD.clone().add(new THREE.Vector3(-140, -40, -380));
+      const camPos = cubicBezier3(P_SOLAR, P_MID, P_APPROACH, P_FIELD, easedU);
+
+      const L_SUN = new THREE.Vector3(0, 0, 0);
+      let lookTarget;
+      if (rawU < 0.28) {
+        lookTarget = L_SOLAR.clone().lerp(L_SUN, rawU / 0.28);
+      } else if (rawU < 0.65) {
+        const u = quintic((rawU - 0.28) / 0.37);
+        lookTarget = L_SUN.clone().lerp(L_FIELD, u);
+      } else {
+        lookTarget = L_FIELD.clone();
+      }
+
+      const roll = -0.022 * Math.sin(rawU * Math.PI);
+      const fov = 44.0 + 3.0 * Math.sin(rawU * Math.PI);
+
+      return {
+        camPos,
+        lookTarget,
+        segIdx: lastIdx,
+        rawU,
+        easedU,
+        isDwell: false,
+        roll,
+        fov,
+        isDeparture: true,
+        transitionProgress: rawU
+      };
+    }
+
+    // ── STAGE 2: WIDE FIELD DISCOVERY -> APPROACH TO CONSTELLATION 0 (LANGUAGES) (0.635 -> 0.670) ──
+    const pose0 = getZoomCameraPose(0, basis, aspect);
+    if (masterT < 0.670) {
+      const rawU = Math.max(0.0, Math.min(1.0, (masterT - 0.635) / (0.670 - 0.635)));
+      const easedU = quintic(rawU);
+
+      const P_MID0 = P_FIELD.clone().lerp(pose0.camZoom, 0.45).addScaledVector(basis.up, 25);
+      const camPos = cubicBezier3(P_FIELD, P_MID0, pose0.camZoom.clone().addScaledVector(pose0.dir, -40), pose0.camZoom, easedU);
+      const lookTarget = L_FIELD.clone().lerp(pose0.lookZoom, easedU);
+      const fov = 46.0 + (42.0 - 46.0) * easedU;
+      const roll = 0.0;
+
+      return {
+        camPos,
+        lookTarget,
+        segIdx: lastIdx,
+        rawU,
+        easedU,
+        isDwell: rawU > 0.96,
+        roll,
+        fov,
+        isDeparture: true,
+        constellationIdx: 0,
+        constellationProgress: easedU
+      };
+    }
+
+    // ── STAGE 3: 7 CONTINUOUS CONSTELLATIONS EXPLORATION & INTER-CONSTELLATION FLIGHTS (0.670 -> 0.910) ──
+    const WAYPOINTS = [0.670, 0.710, 0.750, 0.790, 0.830, 0.870, 0.910];
+    const bankAngles = [-0.045, 0.050, -0.045, 0.055, -0.045, 0.050];
+
+    for (let k = 0; k < 7; k++) {
+      const wK = WAYPOINTS[k];
+      const dwellHalf = 0.005;
+
+      // Stable Dwell Plateau at Constellation k
+      if (Math.abs(masterT - wK) <= dwellHalf) {
+        const poseK = getZoomCameraPose(k, basis, aspect);
+        return {
+          camPos: poseK.camZoom.clone(),
+          lookTarget: poseK.lookZoom.clone(),
+          segIdx: lastIdx,
+          rawU: 0.0,
+          easedU: 0.0,
+          isDwell: true,
+          roll: 0.0,
+          fov: 42.0,
+          isDeparture: true,
+          constellationIdx: k,
+          constellationProgress: 1.0
+        };
+      }
+
+      // Transit Segment from Constellation k to Constellation k+1
+      if (k < 6) {
+        const wNext = WAYPOINTS[k + 1];
+        const tStart = wK + dwellHalf;
+        const tEnd = wNext - dwellHalf;
+
+        if (masterT > tStart && masterT < tEnd) {
+          const rawU = Math.max(0.0, Math.min(1.0, (masterT - tStart) / (tEnd - tStart)));
+          const easedU = quintic(rawU);
+
+          const poseA = getZoomCameraPose(k, basis, aspect);
+          const poseB = getZoomCameraPose(k + 1, basis, aspect);
+
+          // Flight arc curving back from constellation A and into constellation B
+          const chord = poseB.camZoom.clone().sub(poseA.camZoom);
+          const arcSide = new THREE.Vector3().crossVectors(chord, basis.fwd).normalize();
+          const arcSign = (k % 2 === 0) ? 1.0 : -1.0;
+          const arcOffset = arcSide.multiplyScalar(Math.min(120.0, chord.length() * 0.22) * arcSign);
+
+          const P0 = poseA.camZoom;
+          const P1 = poseA.camZoom.clone().addScaledVector(poseA.dir, -160).add(arcOffset);
+          const P2 = poseB.camZoom.clone().addScaledVector(poseB.dir, -160).add(arcOffset);
+          const P3 = poseB.camZoom;
+
+          const camPos = cubicBezier3(P0, P1, P2, P3, easedU);
+
+          // Look target blending along flight trajectory
+          const tangent = cubicBezierDerivative3(P0, P1, P2, P3, Math.max(0.001, Math.min(0.999, easedU))).normalize();
+          const forwardLook = camPos.clone().addScaledVector(tangent, 300.0);
+
+          let lookTarget;
+          if (easedU < 0.22) {
+            lookTarget = poseA.lookZoom.clone().lerp(forwardLook, easedU / 0.22);
+          } else if (easedU <= 0.72) {
+            lookTarget = forwardLook;
+          } else {
+            lookTarget = forwardLook.clone().lerp(poseB.lookZoom, (easedU - 0.72) / 0.28);
+          }
+
+          const roll = Math.sin(rawU * Math.PI) * (bankAngles[k] || 0.045);
+          const fov = 42.0 + 3.5 * Math.sin(rawU * Math.PI);
+
+          return {
+            camPos,
+            lookTarget,
+            segIdx: lastIdx,
+            rawU,
+            easedU,
+            isDwell: false,
+            roll,
+            fov,
+            isDeparture: true,
+            constellationIdx: easedU > 0.5 ? (k + 1) : k,
+            constellationProgress: easedU
+          };
+        }
+      }
+    }
+
+    // ── STAGE 4: CONSTELLATION 6 DEPARTURE -> CONTACT BEACON NEXUS / HOLOGRAM PROJECTOR (0.910 -> 1.000) ──
+    const pose6 = getZoomCameraPose(6, basis, aspect);
+    const rawU = Math.max(0.0, Math.min(1.0, (masterT - 0.915) / (1.000 - 0.915)));
+    const easedU = quintic(rawU);
+
+    const P0 = pose6.camZoom;
+    const P1 = pose6.camZoom.clone().addScaledVector(pose6.dir, -180).addScaledVector(basis.right, 80);
+    const P2 = P_CONTACT.clone().addScaledVector(basis.fwd, -240).addScaledVector(basis.up, 60);
+    const P3 = P_CONTACT;
+
+    const camPos = cubicBezier3(P0, P1, P2, P3, easedU);
+    const lookTarget = pose6.lookZoom.clone().lerp(L_CONTACT, easedU);
+    const fov = 42.0 + (46.0 - 42.0) * easedU;
+    const roll = -0.018 * Math.sin(rawU * Math.PI);
+
+    return {
+      camPos,
+      lookTarget,
+      segIdx: lastIdx,
+      rawU,
+      easedU,
+      isDwell: rawU >= 0.98,
+      roll,
+      fov,
+      isDeparture: true,
+      constellationIdx: 6,
+      constellationProgress: 1.0 - easedU
+    };
   }
 
   // Continuous 4-Phase Flight Camera (0..0.25 Pull Back -> 0.25..0.55 Deep Space -> 0.55..0.85 Alignment -> 0.85..1.00 Arrival)
@@ -2568,6 +2833,98 @@
       fov,
       isDeparture: true,
       transitionProgress: p
+    };
+  }
+
+  // ── 03D. LEG 3 CAMERA FLIGHT (SKILLS -> CONTACT TERMINAL, 0.85 <= t <= 1.00) ──
+  function evaluateContactFlightCamera(t) {
+    const basis = getSkyMapBasis();
+    const clampedT = Math.max(0.85, Math.min(1.00, t));
+    const u = (clampedT - 0.85) / 0.15; // 0.0 to 1.0 across Leg 3
+
+    const quintic = (v) => v * v * v * (v * (v * 6.0 - 15.0) + 10.0);
+
+    // Key Waypoints in Basis coordinates:
+    // P_00: Exact resting position on Sky Map (camPos: 640, 620, 3150)
+    const P_00 = basis.cam.clone();
+    const L_00 = basis.cam.clone().addScaledVector(basis.fwd, 4200);
+
+    // P_20: Pull back slightly and turn right-down (t = 0.85..0.88)
+    const P_20 = basis.cam.clone()
+      .addScaledVector(basis.fwd, -160)
+      .addScaledVector(basis.right, 140)
+      .addScaledVector(basis.up, -90);
+    const L_20 = L_00.clone()
+      .addScaledVector(basis.right, 320)
+      .addScaledVector(basis.up, -220);
+
+    // P_53: Accelerating approach cruise through starfield (t = 0.88..0.93)
+    const P_53 = basis.cam.clone()
+      .addScaledVector(basis.fwd, 580)
+      .addScaledVector(basis.right, 520)
+      .addScaledVector(basis.up, -310);
+    const L_53 = L_00.clone()
+      .addScaledVector(basis.right, 580)
+      .addScaledVector(basis.up, -400);
+
+    // P_87: Deceleration and settle into Contact terminal (t = 0.93..0.98)
+    const P_87 = basis.cam.clone()
+      .addScaledVector(basis.fwd, 1100)
+      .addScaledVector(basis.right, 820)
+      .addScaledVector(basis.up, -480);
+    const L_87 = P_87.clone()
+      .addScaledVector(basis.fwd, 1200)
+      .addScaledVector(basis.right, 260)
+      .addScaledVector(basis.up, -120);
+
+    let camPos;
+    let lookTarget;
+    let fov = 46.0;
+    let roll = 0.0;
+
+    if (u <= 0.20) {
+      // Phase 1 (0.85 -> 0.88): Pull back & turn right-down
+      const raw = u / 0.20;
+      const ease = quintic(raw);
+      camPos = P_00.clone().lerp(P_20, ease);
+      lookTarget = L_00.clone().lerp(L_20, ease);
+      fov = 46.0 - 0.5 * ease;
+      roll = -0.012 * ease;
+    } else if (u <= 0.533) {
+      // Phase 2 (0.88 -> 0.93): Approach cruise + star streaks
+      const raw = (u - 0.20) / 0.333;
+      const ease = quintic(raw);
+      camPos = P_20.clone().lerp(P_53, ease);
+      lookTarget = L_20.clone().lerp(L_53, ease);
+      fov = 45.5 + 2.5 * Math.sin(raw * Math.PI);
+      roll = -0.012 - 0.014 * Math.sin(raw * Math.PI);
+    } else if (u <= 0.867) {
+      // Phase 3 (0.93 -> 0.98): Landing deceleration & terminal alignment
+      const raw = (u - 0.533) / 0.334;
+      const ease = 1.0 - Math.pow(1.0 - raw, 3.0);
+      camPos = P_53.clone().lerp(P_87, ease);
+      lookTarget = L_53.clone().lerp(L_87, ease);
+      fov = 48.0 - 2.0 * ease;
+      roll = -0.012 * (1.0 - ease);
+    } else {
+      // Phase 4 (0.98 -> 1.00): Settle at terminal
+      camPos = P_87.clone();
+      lookTarget = L_87.clone();
+      fov = 46.0;
+      roll = 0.0;
+    }
+
+    return {
+      camPos,
+      lookTarget,
+      segIdx: projects.length - 1,
+      rawU: u,
+      easedU: u,
+      isDwell: false,
+      roll,
+      fov,
+      isDeparture: true,
+      transitionProgress: clampedT
     };
   }
 
@@ -4045,15 +4402,15 @@
       }
     }
 
-    // ── PLANET 07 -> SKY MAP TRANSITION CAMERA (0.00 <= p <= 1.00) ──
+    // ── PLANET 07 -> SKY MAP -> CONTACT CONTINUOUS CAMERA ──
     const lastIdx = count - 1;
     const lastDEnd = (projects[lastIdx].encounter && projects[lastIdx].encounter.dwellPlateau) ? projects[lastIdx].encounter.dwellPlateau[1] : 0.855;
     if (clampedP > 0.835 || clampedP > lastDEnd) {
       const mCtrl = window.MasterJourneyController;
-      const p = (mCtrl && typeof mCtrl.getTransitionProgress === 'function')
-        ? mCtrl.getTransitionProgress()
-        : Math.max(0.0, Math.min(1.0, (clampedP - 0.835) / 0.165));
-      return evaluateSkillsTransitionCamera(p);
+      const masterT = (mCtrl && typeof mCtrl.getProgress === 'function')
+        ? mCtrl.getProgress()
+        : (0.572 + ((clampedP - 0.835) / 0.165) * (1.0 - 0.572));
+      return evaluateConstellationJourneyCamera(masterT);
     }
 
     // Edge cases (below 0)
@@ -4830,34 +5187,123 @@
     }
   }
 
-  function updateBeaconNexusProgress(progress) {
-    const p = Math.max(0.0, Math.min(1.0, typeof progress === 'number' ? progress : 0.0));
+  function updateContactFlightProgress(masterT) {
+    const t = Math.max(0.0, Math.min(1.0, typeof masterT === 'number' ? masterT : 0.0));
     const dispatchEl = document.getElementById('dispatch');
     if (!dispatchEl) return;
 
-    if (p > 0.01) {
+    if (t >= 0.935) {
       dispatchEl.style.opacity = '1';
       dispatchEl.style.visibility = 'visible';
-      dispatchEl.style.pointerEvents = (p > 0.25) ? 'auto' : 'none';
+      dispatchEl.style.pointerEvents = (t >= 0.98) ? 'auto' : 'none';
       dispatchEl.classList.add('is-interactive');
+      if (!dispatchEl.classList.contains('is-projecting')) {
+        dispatchEl.classList.add('is-projecting');
+      }
 
+      const stageEl = document.getElementById('luminousIdentityStage') || document.getElementById('holoEmitterStage');
+      if (window.LuminousIdentityStage) {
+        if (typeof window.LuminousIdentityStage.init === 'function') {
+          window.LuminousIdentityStage.init(stageEl);
+        }
+        if (typeof window.LuminousIdentityStage.updateFlightProgress === 'function') {
+          window.LuminousIdentityStage.updateFlightProgress(t);
+        }
+      } else if (window.HologramProjectorStage) {
+        if (typeof window.HologramProjectorStage.init === 'function') {
+          window.HologramProjectorStage.init(stageEl);
+        }
+        if (typeof window.HologramProjectorStage.updateFlightProgress === 'function') {
+          window.HologramProjectorStage.updateFlightProgress(t);
+        }
+      }
+
+      // Contact Page Cards (Right-hand side: contact info + form)
+      // Spec: Fades in smoothly between t = 0.97 and t = 1.00 with a subtle slide from the right (15-20 px)
+      const formWrapper = dispatchEl.querySelector('.dispatch-col-right') || dispatchEl.querySelector('.dispatch-form-wrapper');
+      const layout = dispatchEl.querySelector('.dispatch-layout');
       const rubric = dispatchEl.querySelector('.section-rubric');
       const header = dispatchEl.querySelector('.dispatch-header');
-      const layout = dispatchEl.querySelector('.dispatch-layout');
 
-      const alpha = Math.min(1.0, p / 0.15);
-      if (rubric) rubric.style.opacity = alpha.toFixed(3);
-      if (header) header.style.opacity = alpha.toFixed(3);
+      const cardAlpha = Math.min(1.0, Math.max(0.0, (t - 0.97) / 0.03));
+      const cardSlide = (1.0 - cardAlpha) * 18.0;
+
+      if (formWrapper) {
+        formWrapper.style.opacity = cardAlpha.toFixed(3);
+        formWrapper.style.transform = `translateX(${cardSlide.toFixed(1)}px)`;
+      }
+      if (rubric) rubric.style.opacity = cardAlpha.toFixed(3);
+      if (header) header.style.opacity = cardAlpha.toFixed(3);
       if (layout) {
-        const layoutAlpha = Math.min(1.0, p / 0.20);
-        layout.style.opacity = layoutAlpha.toFixed(3);
+        layout.style.opacity = '1';
       }
     } else {
+      if (window.LuminousIdentityStage && typeof window.LuminousIdentityStage.updateFlightProgress === 'function') {
+        window.LuminousIdentityStage.updateFlightProgress(t);
+      } else if (window.HologramProjectorStage && typeof window.HologramProjectorStage.updateFlightProgress === 'function') {
+        window.HologramProjectorStage.updateFlightProgress(t);
+      }
       dispatchEl.style.opacity = '0';
       dispatchEl.style.visibility = 'hidden';
       dispatchEl.style.pointerEvents = 'none';
       dispatchEl.classList.remove('is-interactive');
+      dispatchEl.classList.remove('is-projecting');
     }
+  }
+
+  function updateBeaconNexusProgress(progress) {
+    const p = Math.max(0.0, Math.min(1.0, typeof progress === 'number' ? progress : 0.0));
+    updateContactFlightProgress(0.93 + p * 0.07);
+  }
+
+  /**
+   * Real-Time Telemetry Metrics for Leg 3 Flight Verification Table
+   */
+  function getLeg3Metrics(tInput) {
+    const t = (typeof tInput === 'number')
+      ? tInput
+      : (window.MasterJourneyController ? window.MasterJourneyController.getProgress() : 1.0);
+    
+    // Ensure all stage, shader, and projector states are synchronously evaluated at t
+    updateContactFlightProgress(t);
+    const camData = evaluateContactFlightCamera(t);
+    const starCount = 1410;
+
+    let projMetrics = {
+      projector: (t < 0.88) ? 'off' : (t < 0.92) ? 'beacon' : (t < 0.94) ? 'lens glow' : 'full',
+      beamHeightPct: (t < 0.94) ? 0 : Math.round(Math.min(1.0, (t - 0.94) / 0.02) * 100),
+      figureAlpha: (t < 0.96) ? 0.0 : Number(Math.min(1.0, (t - 0.96) / 0.02).toFixed(2)),
+      nameRing: (t < 0.98) ? 'off' : 'active (4.0 rpm)'
+    };
+    if (window.LuminousIdentityStage && typeof window.LuminousIdentityStage.getMetrics === 'function') {
+      const pm = window.LuminousIdentityStage.getMetrics();
+      if (pm) projMetrics = Object.assign(projMetrics, pm);
+    } else if (window.HologramProjectorStage && typeof window.HologramProjectorStage.getMetrics === 'function') {
+      const pm = window.HologramProjectorStage.getMetrics();
+      if (pm) projMetrics = Object.assign(projMetrics, pm);
+    }
+
+    const formOpacity = (t < 0.97) ? 0.0 : Number(Math.min(1.0, (t - 0.97) / 0.03).toFixed(2));
+
+    let pitch = 0, yaw = 0, roll = 0;
+    if (camData && camData.camPos && camData.lookTarget) {
+      const dir = new THREE.Vector3().subVectors(camData.lookTarget, camData.camPos).normalize();
+      pitch = Number((-Math.asin(dir.y) * 180 / Math.PI).toFixed(1));
+      yaw = Number((Math.atan2(dir.x, dir.z) * 180 / Math.PI).toFixed(1));
+      roll = Number(((camData.roll || 0) * 180 / Math.PI).toFixed(1));
+    }
+
+    return {
+      t: Number(t.toFixed(2)),
+      camPos: camData ? `(${Math.round(camData.camPos.x)}, ${Math.round(camData.camPos.y)}, ${Math.round(camData.camPos.z)})` : '(0,0,0)',
+      camRot: `(${pitch}°, ${yaw}°, ${roll}°)`,
+      starCount: starCount,
+      projector: projMetrics.projector,
+      beamHeightPct: `${projMetrics.beamHeightPct}%`,
+      figureAlpha: projMetrics.figureAlpha.toFixed(2),
+      nameRing: projMetrics.nameRing,
+      formOpacity: formOpacity.toFixed(2)
+    };
   }
 
   // ── 11. SCROLLTRIGGER PINNING & JOURNEY TIMELINE ──
@@ -6641,12 +7087,12 @@
             instancedAsteroidMesh.material.opacity = 1.0;
           }
 
-          // Interplanetary lateral stardust parallax
+          // Interplanetary lateral stardust parallax (enhanced cosmic depth during deep-space cruise)
           if (foregroundStardustGroup) {
             if (!pose.isDwell && typeof pose.rawU === 'number') {
               const arcSign = (pose.segIdx % 2 === 0) ? 1.0 : -1.0;
-              foregroundStardustGroup.position.x = Math.sin(pose.rawU * Math.PI) * 45.0 * arcSign;
-              foregroundStardustGroup.position.z = -Math.sin(pose.rawU * Math.PI) * 35.0;
+              foregroundStardustGroup.position.x = Math.sin(pose.rawU * Math.PI) * 65.0 * arcSign;
+              foregroundStardustGroup.position.z = -Math.sin(pose.rawU * Math.PI) * 50.0;
             } else {
               foregroundStardustGroup.position.x = 0;
               foregroundStardustGroup.position.z = 0;
@@ -6901,6 +7347,9 @@
     updateSector01VisualStaging: updateSector01VisualStaging,
     updateSkillsDiscoveryProgress: updateSkillsDiscoveryProgress,
     updateBeaconNexusProgress: updateBeaconNexusProgress,
+    updateContactFlightProgress: updateContactFlightProgress,
+    getLeg3Metrics: getLeg3Metrics,
+    evaluateContactFlightCamera: evaluateContactFlightCamera,
     getProgress: () => currentScrollProgress,
     getScrollTrigger: () => scrollTriggerInstance,
     getProjects: () => projects,
