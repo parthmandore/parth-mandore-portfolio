@@ -1,0 +1,2926 @@
+:root {
+  --space-nav-height: 88px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PARTH MANDORE — SPACE PORTFOLIO
+   Phase 2: Cinematic Solar-System Experience Stylesheet
+   Futuristic Holographic Mission Telemetry HUD & 3D Stage
+   Premium Spacecraft Scanning Experience
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── 01. FULLSCREEN PINNED SOLAR SYSTEM CANVAS ── */
+.galaxy-3d-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+/* ── 02. HOLOGRAPHIC MISSION TELEMETRY HUD OVERLAY ── */
+.galaxy-hud-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: calc(var(--space-nav-height, 88px) + 28px) 4.5% calc(48px + 1.2rem) !important;
+  box-sizing: border-box;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+/* Redundant topbar hidden to preserve clean section header */
+.galaxy-hud-topbar {
+  display: none;
+}
+
+.galaxy-hud-sector {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sector-status-pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 12px #F59E0B, 0 0 24px rgba(245, 158, 11, 0.6);
+  animation: telemetry-pip-pulse 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes telemetry-pip-pulse {
+  from { opacity: 0.55; transform: scale(0.9); }
+  to { opacity: 1.0; transform: scale(1.2); }
+}
+
+.galaxy-hud-coords {
+  color: var(--text-muted, #94A3B8);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   03. HUD CENTER — Right-Aligned Dossier Container
+   ═══════════════════════════════════════════════════════════════════ */
+.galaxy-hud-center {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  margin-left: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1;
+  min-height: 0 !important;
+  padding-top: clamp(16px, 2.5vh, 32px) !important;
+  padding-left: 0 !important;
+  padding-right: clamp(1.2rem, 3.2vw, 4rem) !important;
+  pointer-events: none !important;
+  z-index: 16 !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   04. HOLOGRAPHIC PLANETARY SCANNING CONSOLE
+   ═══════════════════════════════════════════════════════════════════ */
+.galaxy-hologram-console,
+.galaxy-dossier-card {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(20px) scale(0.97);
+  max-width: clamp(420px, 35vw, 510px) !important;
+  width: 100% !important;
+  margin-top: clamp(12px, 2vh, 24px) !important;
+  max-height: calc(100vh - var(--space-nav-height, 88px) - 130px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45) rgba(0, 0, 0, 0.2);
+
+  /* Translucent golden/amber holographic glass */
+  background: linear-gradient(
+    135deg,
+    rgba(3, 4, 7, 0.88) 0%,
+    rgba(6, 8, 14, 0.82) 50%,
+    rgba(2, 3, 6, 0.90) 100%
+  ) !important;
+
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.30) !important;
+  border-radius: 8px !important;
+  padding: 1.25rem 1.45rem !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.90),
+    0 0 18px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.10),
+    inset 0 0 15px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.03) !important;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem !important;
+  position: relative;
+
+  transition:
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+  will-change: opacity, transform;
+}
+
+/* Corner crosshair notches `+` inspired by HUD visor */
+.galaxy-hologram-console::before,
+.galaxy-hologram-console::after,
+.galaxy-dossier-card::before,
+.galaxy-dossier-card::after {
+  content: '+';
+  position: absolute;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.75rem;
+  color: var(--planet-accent, #F59E0B);
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.galaxy-hologram-console::before,
+.galaxy-dossier-card::before {
+  top: 4px;
+  left: 6px;
+}
+.galaxy-hologram-console::after,
+.galaxy-dossier-card::after {
+  bottom: 4px;
+  right: 6px;
+}
+
+.galaxy-hologram-console.is-active,
+.galaxy-hologram-console.is-arrival-active,
+.galaxy-dossier-card.is-active,
+.galaxy-dossier-card.is-arrival-active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+/* Custom scrollbar styling */
+.galaxy-hologram-console::-webkit-scrollbar,
+.galaxy-dossier-card::-webkit-scrollbar {
+  width: 4px;
+}
+.galaxy-hologram-console::-webkit-scrollbar-track,
+.galaxy-dossier-card::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+.galaxy-hologram-console::-webkit-scrollbar-thumb,
+.galaxy-dossier-card::-webkit-scrollbar-thumb {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  border-radius: 2px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   05. DOSSIER CARD HEADER (Legacy — still used by older markup)
+   ═══════════════════════════════════════════════════════════════════ */
+.dossier-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.65rem;
+}
+
+.dossier-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.dossier-index-badge {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #FAF9F6;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 14px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.5);
+}
+
+.dossier-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 8px var(--planet-accent, #F59E0B);
+  animation: telemetry-pip-pulse 1.8s ease-in-out infinite alternate;
+}
+
+.dossier-classification-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  text-align: right;
+}
+
+.dossier-constellation {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: var(--text-muted, #94A3B8);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dossier-class {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  color: #FAF9F6;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   05. TOP HOLOGRAPHIC SCAN BAR & TELEMETRY METER
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-console-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.22);
+  padding-bottom: 0.75rem;
+  gap: 0.8rem;
+}
+
+.hud-topbar-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+}
+
+.hud-scan-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hud-scan-pulse-pip {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 10px var(--planet-accent, #F59E0B);
+  animation: telemetry-pip-pulse 1.4s ease-in-out infinite alternate;
+  flex-shrink: 0;
+}
+
+.hud-scan-title {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.4);
+}
+
+.hud-flashing-status-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  color: var(--text-muted, #94A3B8);
+  letter-spacing: 0.06em;
+}
+
+.hud-chevrons {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+  display: inline-flex;
+  gap: 1px;
+}
+.hud-chevrons span {
+  animation: chevronPulse 1.2s infinite;
+}
+.hud-chevrons span:nth-child(1) { animation-delay: 0.0s; }
+.hud-chevrons span:nth-child(2) { animation-delay: 0.15s; }
+.hud-chevrons span:nth-child(3) { animation-delay: 0.3s; }
+.hud-chevrons span:nth-child(4) { animation-delay: 0.45s; }
+.hud-chevrons span:nth-child(5) { animation-delay: 0.6s; }
+
+@keyframes chevronPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1.0; }
+}
+
+.hud-status-state {
+  color: #FAF9F6;
+  font-weight: 600;
+}
+
+.hud-topbar-center {
+  flex-shrink: 0;
+}
+
+.hud-meter-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.2);
+  border-radius: 4px;
+  padding: 0.35rem 0.6rem;
+}
+
+.hud-meter-tag {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.50rem;
+  color: var(--text-muted, #94A3B8);
+  letter-spacing: 0.08em;
+}
+
+.hud-segmented-meter {
+  display: flex;
+  gap: 2px;
+}
+.hud-segmented-meter .seg-block {
+  width: 7px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.hud-segmented-meter .seg-block.active {
+  background: var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 6px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.6);
+}
+
+.hud-meter-percent {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.54rem;
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+.hud-topbar-right {
+  flex-shrink: 0;
+}
+
+.hud-index-badge {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FAF9F6;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  text-shadow: 0 0 10px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.5);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   06. SIGNAL & FREQUENCY SUB-STRIP
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-signal-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+}
+.hud-signal-item {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.hud-signal-item .sig-label {
+  color: var(--text-muted, #94A3B8);
+}
+.hud-signal-item .sig-val {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   07. HUD SCROLL BODY & MODULAR BOXES
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-scroll-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(82vh - 160px);
+  padding-right: 0.35rem;
+}
+
+.hud-scroll-body::-webkit-scrollbar {
+  width: 4px;
+}
+.hud-scroll-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 2px;
+}
+.hud-scroll-body::-webkit-scrollbar-thumb {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  border-radius: 2px;
+}
+.hud-scroll-body::-webkit-scrollbar-thumb:hover {
+  background: var(--planet-accent, #F59E0B);
+}
+
+.hud-module-box {
+  background: rgba(4, 5, 10, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-left: 2px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+  border-radius: 4px;
+  padding: 0.75rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  position: relative;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.hud-module-box:hover {
+  border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  background: rgba(6, 8, 14, 0.75);
+}
+
+.hud-module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.35rem;
+}
+
+.hud-mod-badge {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  color: var(--planet-accent, #F59E0B);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  padding: 0.1rem 0.35rem;
+  border-radius: 2px;
+  font-weight: 700;
+}
+
+.hud-mod-title {
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+.hud-mod-status {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   08. MODULE 01: IDENTITY & MISSION
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-identity-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.hud-headline-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.hud-headline {
+  font-family: var(--font-display, 'Cinzel', serif);
+  font-size: clamp(1.15rem, 1.8vw, 1.35rem);
+  font-weight: 800;
+  color: #FAF9F6;
+  letter-spacing: 0.02em;
+  margin: 0;
+  line-height: 1.25;
+  text-shadow: 0 0 16px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.3);
+}
+
+.hud-category-chip {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.54rem;
+  color: #FAF9F6;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hud-tagline {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.78rem;
+  color: #94A3B8;
+  line-height: 1.45;
+  margin: 0;
+  font-weight: 400;
+}
+
+.hud-role-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+}
+
+.hud-role-label {
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-role-value {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+.hud-problem-block {
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 2px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.65);
+  border-radius: 0 3px 3px 0;
+  padding: 0.45rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.hud-problem-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.52rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.hud-problem-text {
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.74rem;
+  line-height: 1.45;
+  color: #94A3B8;
+  font-weight: 300;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   09. MODULE 02: CORE CAPABILITIES
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-features-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.hud-feature-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.76rem;
+  line-height: 1.45;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 0.35rem 0.55rem;
+  border-radius: 3px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.hud-feature-item:hover {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.05);
+  border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.25);
+}
+
+.hud-feature-glyph {
+  color: var(--planet-accent, #F59E0B);
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+
+.hud-feature-name {
+  color: #FAF9F6;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+.hud-feature-detail {
+  color: #94A3B8;
+  font-weight: 300;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. MODULE 03: ARCHITECTURE DIAGNOSTIC RADAR & TELEMETRY
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-diagnostics-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.hud-radar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.45rem;
+  position: relative;
+}
+
+.hud-radar-svg {
+  width: 100%;
+  max-width: 130px;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.hud-radar-legend {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 0.3rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.52rem;
+  text-transform: uppercase;
+}
+
+.radar-sublabel {
+  color: #64748B;
+  letter-spacing: 0.06em;
+}
+
+.radar-readout {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+.hud-diag-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.hud-tech-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.hud-tech-chip {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.56rem;
+  color: #E2E8F0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 0.2rem 0.45rem;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  transition: all 0.2s ease;
+}
+
+.hud-tech-chip:hover {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  border-color: var(--planet-accent, #F59E0B);
+  color: #FAF9F6;
+  transform: translateY(-1px);
+}
+
+.hud-telemetry-tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.hud-telemetry-tile {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-left: 2px solid var(--planet-accent, #F59E0B);
+  border-radius: 3px;
+  padding: 0.3rem 0.45rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.hud-telemetry-tile .tt-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.50rem;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hud-telemetry-tile .tt-value {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #FAF9F6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. ACTION DECK & CONTROLS
+   ═══════════════════════════════════════════════════════════════════ */
+.hud-action-deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.4rem 0.75rem;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.hud-btn-icon {
+  font-size: 0.75rem;
+}
+
+.hud-btn-amber {
+  background: var(--planet-accent, #F59E0B);
+  color: #0a0910 !important;
+  border: 1px solid var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 16px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+}
+
+.hud-btn-amber:hover {
+  background: #fbbf24;
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+}
+
+.hud-btn-amber-outline {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  color: var(--planet-accent, #F59E0B) !important;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.5);
+}
+
+.hud-btn-amber-outline:hover {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.25);
+  border-color: var(--planet-accent, #F59E0B);
+  color: #FAF9F6 !important;
+  transform: translateY(-1px);
+}
+
+.hud-btn-nav {
+  background: rgba(255, 255, 255, 0.04);
+  color: #E2E8F0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.4rem 0.6rem;
+}
+
+.hud-btn-nav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #FAF9F6 !important;
+  transform: translateY(-1px);
+}
+
+.hud-btn-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.hud-btn-ghost {
+  background: transparent;
+  color: #94A3B8 !important;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  margin-left: auto;
+}
+
+.hud-btn-ghost:hover {
+  color: var(--planet-accent, #F59E0B) !important;
+  border-color: var(--planet-accent, #F59E0B);
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.06);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   20. COCKPIT VISOR FRAME & SPACECRAFT HUD
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Cockpit Visor Outer Frame Contour */
+.galaxy-cockpit-frame {
+  position: absolute;
+  inset: 12px;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid rgba(245, 158, 11, 0.32);
+  border-radius: 20px;
+  box-shadow:
+    inset 0 0 45px rgba(245, 158, 11, 0.06),
+    0 0 25px rgba(0, 0, 0, 0.7);
+  transition: opacity 0.5s ease, visibility 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.galaxy-hud-overlay.is-visible .galaxy-cockpit-frame,
+.galaxy-cockpit-frame.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Scanning pulse on cockpit frame */
+.galaxy-cockpit-frame.is-scanning {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow:
+    inset 0 0 45px rgba(245, 158, 11, 0.10),
+    0 0 25px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.08);
+  animation: cockpitScanPulse 2s ease-in-out infinite;
+}
+
+@keyframes cockpitScanPulse {
+  0%, 100% {
+    border-color: rgba(245, 158, 11, 0.32);
+    box-shadow:
+      inset 0 0 45px rgba(245, 158, 11, 0.06),
+      0 0 25px rgba(0, 0, 0, 0.7);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.52);
+    box-shadow:
+      inset 0 0 55px rgba(245, 158, 11, 0.10),
+      0 0 35px rgba(0, 0, 0, 0.7),
+      0 0 50px rgba(245, 158, 11, 0.06);
+  }
+}
+
+/* Corner Brackets */
+.cockpit-corner-bracket {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-color: #F59E0B;
+  border-style: solid;
+  pointer-events: none;
+}
+.cockpit-corner-bracket.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-top-left-radius: 6px; }
+.cockpit-corner-bracket.tr { top: -2px; right: -2px; border-width: 3px 3px 0 0; border-top-right-radius: 6px; }
+.cockpit-corner-bracket.bl { bottom: -2px; left: -2px; border-width: 0 0 3px 3px; border-bottom-left-radius: 6px; }
+.cockpit-corner-bracket.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-bottom-right-radius: 6px; }
+
+/* Top Border with Tick Scale */
+.cockpit-border-top {
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cockpit-tick-scale {
+  display: flex;
+  gap: clamp(2rem, 5vw, 6rem);
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: rgba(245, 158, 11, 0.65);
+  letter-spacing: 0.12em;
+}
+
+/* Left and Right Border Scales */
+.cockpit-border-left,
+.cockpit-border-right {
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  width: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+.cockpit-border-left { left: 4px; }
+.cockpit-border-right { right: 4px; }
+
+.cockpit-scale-v {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  color: rgba(245, 158, 11, 0.55);
+}
+
+/* Visor Labels */
+.cockpit-visor-label-tl {
+  position: absolute;
+  top: 14px;
+  left: 24px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: rgba(245, 158, 11, 0.85);
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  background: rgba(3, 4, 7, 0.65);
+  backdrop-filter: blur(8px);
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.cockpit-visor-label-br {
+  position: absolute;
+  top: 14px;
+  right: 24px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  color: rgba(245, 158, 11, 0.85);
+  letter-spacing: 0.12em;
+  background: rgba(3, 4, 7, 0.65);
+  backdrop-filter: blur(8px);
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   21. PLANETARY TARGETING RETICLE
+   ═══════════════════════════════════════════════════════════════════ */
+.galaxy-planet-reticle {
+  position: absolute;
+  left: 34%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(260px, 24vw, 360px);
+  height: clamp(260px, 24vw, 360px);
+  pointer-events: none;
+  z-index: 14;
+  opacity: 1;
+  transition:
+    opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Outer Compass Ring */
+.reticle-outer-compass {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px dashed rgba(var(--planet-accent-rgb, 245, 158, 11), 0.42);
+  box-shadow: 0 0 16px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.22);
+}
+
+/* Middle Scanning Arcs */
+.reticle-middle-arc {
+  position: absolute;
+  inset: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+.reticle-middle-arc.cw {
+  border-top-color: var(--planet-accent, #F59E0B);
+  border-right-color: var(--planet-accent, #F59E0B);
+  animation: reticleSpinCW 16s linear infinite;
+}
+.reticle-middle-arc.ccw {
+  border-bottom-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+  border-left-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+  animation: reticleSpinCCW 12s linear infinite reverse;
+}
+
+@keyframes reticleSpinCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes reticleSpinCCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
+/* Inner Bracket */
+.reticle-inner-bracket {
+  position: absolute;
+  inset: 38%;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.65);
+  border-radius: 6px;
+}
+
+/* Center Crosshair */
+.reticle-center-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+}
+.reticle-center-crosshair::before,
+.reticle-center-crosshair::after {
+  content: '';
+  position: absolute;
+  background: var(--planet-accent, #F59E0B);
+}
+.reticle-center-crosshair::before { top: 6px; left: 0; right: 0; height: 2px; }
+.reticle-center-crosshair::after { left: 6px; top: 0; bottom: 0; width: 2px; }
+
+/* Status Readout (below reticle) */
+.reticle-status-readout {
+  position: absolute;
+  bottom: -58px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  white-space: nowrap;
+  background: rgba(8, 9, 16, 0.88);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  z-index: 16;
+}
+
+.reticle-tag {
+  font-size: 0.60rem;
+  letter-spacing: 0.14em;
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: 0 0 8px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.4);
+}
+
+.reticle-dist {
+  font-size: 0.62rem;
+  letter-spacing: 0.10em;
+  color: #FAF9F6;
+  line-height: 1.25;
+  text-shadow: 0 0 10px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.6);
+}
+
+/* Coordinates Label (above reticle) */
+.reticle-coords-top {
+  position: absolute;
+  top: -54px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  background: rgba(8, 9, 16, 0.88);
+  backdrop-filter: blur(10px);
+  padding: 5px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 12px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  text-shadow: 0 0 8px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.6);
+  z-index: 16;
+}
+
+/* Radar Sweep Effect (conic gradient animation) */
+.reticle-radar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 94%;
+  height: 94%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.28) 45deg,
+    transparent 55deg
+  );
+  animation: radarSweepSpin 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes radarSweepSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Pulsing Rings on Reticle */
+.reticle-pulse-ring {
+  position: absolute;
+  inset: 5%;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.25);
+  animation: reticlePulseRing 3s ease-out infinite;
+  pointer-events: none;
+}
+
+.reticle-pulse-ring:nth-child(2) {
+  animation-delay: 1s;
+}
+
+.reticle-pulse-ring:nth-child(3) {
+  animation-delay: 2s;
+}
+
+@keyframes reticlePulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+    border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+    border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   22. SCANNING SEQUENCE EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Scan Sweep Ring — vertical scanning beam on reticle */
+.scan-sweep-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.galaxy-planet-reticle.is-scanning .scan-sweep-ring {
+  opacity: 1;
+}
+
+.scan-sweep-ring::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.6) 40%,
+    var(--planet-accent, #F59E0B) 50%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.6) 60%,
+    transparent 100%
+  );
+  filter: blur(1px);
+  animation: scanSweepVertical 2s ease-in-out infinite;
+}
+
+.scan-sweep-ring::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 60px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.06) 40%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12) 50%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.06) 60%,
+    transparent 100%
+  );
+  animation: scanSweepVertical 2s ease-in-out infinite;
+}
+
+@keyframes scanSweepVertical {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  50% { transform: translateX(-50%) rotate(180deg); }
+  100% { transform: translateX(-50%) rotate(360deg); }
+}
+
+/* Scan Beam — thin amber line from reticle center */
+.scan-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 1.5px;
+  transform-origin: 0 50%;
+  background: linear-gradient(
+    90deg,
+    var(--planet-accent, #F59E0B) 0%,
+    rgba(var(--planet-accent-rgb, 245, 158, 11), 0.5) 40%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(0.5px);
+  transition: opacity 0.3s ease;
+}
+
+.galaxy-planet-reticle.is-scanning .scan-beam {
+  opacity: 1;
+  animation: scanBeamSweep 2.5s ease-in-out infinite;
+}
+
+@keyframes scanBeamSweep {
+  0% { transform: rotate(-30deg); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: rotate(30deg); opacity: 0.8; }
+  85% { opacity: 1; }
+  100% { transform: rotate(-30deg); opacity: 0; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   23. BOTTOM NAVIGATIONAL STEPPER BAR
+   ═══════════════════════════════════════════════════════════════════ */
+.galaxy-hud-bottombar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.85rem;
+  margin-bottom: 3.4rem; /* Lifts number bar cleanly above bottom accretion badge */
+  position: relative;
+  z-index: 20;
+}
+
+.waypoint-stepper-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.stepper-arrow {
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  background: rgba(3, 4, 7, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #FAF9F6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(10px);
+}
+
+.stepper-arrow:hover {
+  border-color: #F59E0B;
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.18);
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+.waypoint-pips-track {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(3, 4, 7, 0.82);
+  backdrop-filter: blur(12px);
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65);
+}
+
+.waypoint-pip {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.70rem;
+  letter-spacing: 0.08em;
+  padding: 0.42rem 0.80rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(4, 5, 10, 0.75);
+  color: var(--text-muted, #94A3B8);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+
+.waypoint-pip:hover {
+  border-color: #F59E0B;
+  color: #FAF9F6;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.waypoint-pip.active {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: #F59E0B;
+  color: #F59E0B;
+  font-weight: 700;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
+}
+
+.galaxy-scroll-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted, #94A3B8);
+  text-transform: uppercase;
+  background: rgba(3, 4, 7, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prompt-glyph {
+  color: #F59E0B;
+  animation: telemetry-pip-pulse 1.8s infinite alternate;
+}
+
+/* Skip Journey Transit Button */
+.galaxy-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(3, 4, 7, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.18), inset 0 0 12px rgba(245, 158, 11, 0.08);
+  color: #FAF9F6;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  padding: 0.45rem 1.0rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: all 0.25s ease;
+  z-index: 25;
+}
+
+.galaxy-skip-btn:hover {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: #F59E0B;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+  transform: translateY(-1px);
+}
+
+.skip-btn-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+  animation: telemetry-pip-pulse 1.2s infinite alternate;
+}
+
+.skip-kbd {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.56rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Step Indicator during Journey Transit (Task 2) */
+.galaxy-step-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(3, 4, 7, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.22), inset 0 0 10px rgba(245, 158, 11, 0.08);
+  color: #FAF9F6;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  padding: 0.42rem 0.95rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 25;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.galaxy-step-indicator .step-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+  animation: telemetry-pip-pulse 1.2s infinite alternate;
+}
+
+.galaxy-step-indicator .step-label {
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.galaxy-step-indicator .step-val {
+  color: #FBBF24;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+/* Planetary Assets Initial Telemetry Preloader */
+.galaxy-preloader {
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  background: rgba(6, 6, 12, 0.92);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  pointer-events: none;
+}
+
+.galaxy-preloader.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.preloader-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.preloader-scanner-bar {
+  width: 240px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.preloader-scanner-bar::after {
+  content: '';
+  position: absolute;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #F59E0B, transparent);
+  animation: preloaderSweep 1.4s ease-in-out infinite;
+}
+
+@keyframes preloaderSweep {
+  0% { left: -50%; }
+  100% { left: 100%; }
+}
+
+.preloader-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: #F59E0B;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+.preloader-subtext {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  color: var(--text-muted, #94A3B8);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   24. RESPONSIVE — HEIGHT CONSTRAINT
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-height: 850px) {
+  .galaxy-hud-overlay {
+    padding: calc(var(--space-nav-height, 65px) + 22px) 3.5% 0.6rem !important;
+  }
+  .galaxy-hud-topbar {
+    padding-bottom: 0.4rem;
+    font-size: 0.65rem;
+  }
+  .galaxy-dossier-card {
+    padding: 1.1rem 1.35rem !important;
+    gap: 0.8rem !important;
+    max-height: calc(100vh - var(--space-nav-height, 65px) - 105px) !important;
+  }
+  .dossier-headline {
+    font-size: clamp(1.3rem, 2vw, 1.6rem);
+  }
+  .dossier-tagline {
+    font-size: 0.80rem;
+  }
+  .dossier-problem-box {
+    padding: 0.65rem 0.9rem;
+  }
+  .dossier-problem-text {
+    font-size: 0.78rem;
+  }
+  .dossier-features-list {
+    gap: 0.35rem;
+  }
+  .dossier-feature-item {
+    font-size: 0.78rem;
+  }
+  .dossier-actions-row {
+    gap: 0.4rem;
+  }
+  .dossier-actions-row .atelier-btn {
+    padding: 0.38rem 0.75rem;
+    font-size: 0.62rem;
+  }
+  .dossier-screenshot-frame {
+    height: 120px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   25. RESPONSIVE — DESKTOP > 1200px (Full two-column)
+   ═══════════════════════════════════════════════════════════════════ */
+/* Default desktop styles are already >1200px-ready */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   26. RESPONSIVE — 900px to 1200px (Single column, smaller card)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .galaxy-dossier-card {
+    max-width: clamp(620px, 52vw, 780px) !important;
+    padding: 1.5rem 1.8rem !important;
+    gap: 1rem !important;
+  }
+  .dossier-two-column-grid {
+    grid-template-columns: 1fr;
+    gap: 1.15rem;
+  }
+  .dossier-headline {
+    font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   27. RESPONSIVE — < 900px (Reticle top center, card fills width)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .galaxy-planet-reticle {
+    left: 50% !important;
+    top: 24% !important;
+    width: 220px !important;
+    height: 220px !important;
+  }
+  .galaxy-hud-center {
+    justify-content: center !important;
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+    top: 36% !important;
+    align-items: flex-start !important;
+  }
+  .galaxy-dossier-card {
+    max-width: 94vw !important;
+    max-height: 55vh !important;
+    margin: 0 auto !important;
+    padding: 1.25rem 1.4rem !important;
+  }
+  .dossier-two-column-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .dossier-console-banner {
+    flex-wrap: wrap;
+  }
+  .dossier-headline {
+    font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+  }
+  .dossier-tagline {
+    font-size: 0.82rem;
+  }
+  .feature-card {
+    padding: 0.55rem 0.75rem;
+  }
+  .feature-card-detail {
+    font-size: 0.74rem;
+  }
+  .dossier-screenshot-frame {
+    height: 120px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   28. RESPONSIVE — < 768px (Mobile)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .galaxy-hud-overlay {
+    padding: 0.4rem 3% 0.6rem;
+  }
+  .galaxy-hud-topbar {
+    font-size: 0.62rem;
+    padding-bottom: 0.35rem;
+  }
+  .galaxy-hud-center {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin-bottom: 3rem;
+    align-items: flex-end !important;
+  }
+  .galaxy-dossier-card {
+    max-width: 100% !important;
+    max-height: 52vh !important;
+    padding: 0.85rem 1rem !important;
+    gap: 0.65rem !important;
+  }
+  .dossier-headline {
+    font-size: clamp(1.1rem, 4vw, 1.3rem);
+  }
+  .dossier-tagline {
+    font-size: 0.75rem;
+  }
+  .dossier-problem-box {
+    padding: 0.5rem 0.75rem;
+  }
+  .dossier-problem-text {
+    font-size: 0.74rem;
+    line-height: 1.38;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .dossier-capabilities-box {
+    display: none;
+  }
+  .dossier-tech-chip,
+  .tech-chip {
+    font-size: 0.60rem;
+    padding: 0.2rem 0.45rem;
+  }
+  .dossier-actions-row {
+    gap: 0.35rem;
+  }
+  .dossier-actions-row .atelier-btn {
+    padding: 0.32rem 0.6rem;
+    font-size: 0.58rem;
+  }
+  .dossier-telemetry-footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    padding-top: 0.5rem;
+  }
+  .waypoint-stepper-wrap {
+    gap: 0.35rem;
+    max-width: 100%;
+  }
+  .stepper-arrow {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+  .waypoint-pips-track {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.3rem;
+  }
+  .waypoint-pips-track::-webkit-scrollbar {
+    display: none;
+  }
+  .waypoint-pip {
+    padding: 0.25rem 0.45rem;
+    font-size: 0.56rem;
+    flex-shrink: 0;
+  }
+  .galaxy-scroll-prompt {
+    display: none;
+  }
+
+  /* Hide waveform banner center on mobile */
+  .dossier-banner-center {
+    display: none;
+  }
+
+  /* Stack action buttons vertically */
+  .dossier-action-deck {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Compact screenshot */
+  .dossier-screenshot-frame {
+    height: 100px;
+  }
+
+  /* Feature cards compact */
+  .feature-card {
+    padding: 0.45rem 0.65rem;
+  }
+  .feature-card-name {
+    font-size: 0.78rem;
+  }
+  .feature-card-detail {
+    font-size: 0.72rem;
+    padding-left: 0;
+  }
+
+  /* Telemetry grid single column */
+  .dossier-telemetry-grid {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   29. RESPONSIVE — < 480px (Very small mobile)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .galaxy-cockpit-frame {
+    inset: 6px;
+    border-radius: 12px;
+  }
+  .cockpit-corner-bracket {
+    width: 16px;
+    height: 16px;
+  }
+  .galaxy-planet-reticle {
+    width: 160px !important;
+    height: 160px !important;
+    top: 20% !important;
+  }
+  .galaxy-dossier-card {
+    padding: 0.65rem 0.75rem !important;
+    gap: 0.5rem !important;
+    max-height: 50vh !important;
+    border-radius: 6px !important;
+  }
+  .galaxy-dossier-card::after {
+    border-radius: 6px;
+  }
+  .dossier-console-banner {
+    gap: 0.6rem;
+    padding-bottom: 0.55rem;
+  }
+  .scan-status-text {
+    font-size: 0.66rem;
+  }
+  .dossier-index-badge {
+    font-size: 1.15rem;
+    padding: 0.25rem 0.55rem;
+  }
+  .dossier-headline {
+    font-size: 1.05rem;
+  }
+  .dossier-tagline {
+    font-size: 0.70rem;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .dossier-role-row {
+    font-size: 0.62rem;
+    padding: 0.25rem 0.55rem;
+  }
+  .dossier-section-header {
+    font-size: 0.60rem;
+  }
+  .dossier-text-block {
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+  .decision-item {
+    font-size: 0.76rem;
+  }
+  .telemetry-tile {
+    padding: 0.35rem 0.5rem;
+  }
+  .telemetry-v {
+    font-size: 0.70rem;
+  }
+  .dossier-action-deck {
+    gap: 0.5rem;
+    padding-top: 0.65rem;
+  }
+  .cockpit-border-left,
+  .cockpit-border-right {
+    display: none;
+  }
+  .cockpit-visor-label-tl {
+    font-size: 0.52rem;
+    top: 8px;
+    left: 14px;
+  }
+  .cockpit-visor-label-br {
+    font-size: 0.50rem;
+    bottom: 8px;
+    right: 14px;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   30. UTILITY & ANIMATION KEYFRAMES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Arrival materialize animation for card */
+@keyframes dossierMaterialize {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.85;
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Optional: apply materialize as a class */
+.galaxy-dossier-card.materialize-in {
+  animation: dossierMaterialize 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Gentle glow pulse for accent elements */
+@keyframes accentGlowPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.30);
+  }
+}
+
+/* Prevent layout shifts from scrollbar appearance */
+.galaxy-dossier-card {
+  overflow-y: overlay;
+}
+
+/* Smooth scrolling within the dossier */
+@supports (scrollbar-gutter: stable) {
+  .galaxy-dossier-card {
+    scrollbar-gutter: stable;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   31. RESPONSIVE HUD ADAPTATIONS (< 900px and < 480px)
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .galaxy-hologram-console {
+    max-width: clamp(340px, 92vw, 560px) !important;
+    max-height: 54vh !important;
+  }
+  .hud-diagnostics-grid {
+    grid-template-columns: 120px 1fr;
+    gap: 0.5rem;
+  }
+  .hud-scroll-body {
+    max-height: calc(54vh - 140px);
+  }
+}
+
+@media (max-width: 680px) {
+  .hud-diagnostics-grid {
+    grid-template-columns: 1fr;
+  }
+  .hud-radar-container {
+    max-width: 160px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .galaxy-hologram-console {
+    max-width: 96vw !important;
+    max-height: 52vh !important;
+    padding: 0.65rem 0.75rem !important;
+  }
+  .hud-segmented-meter {
+    gap: 1.5px;
+  }
+  .hud-meter-block {
+    width: 9px;
+    height: 7px;
+  }
+  .hud-headline {
+    font-size: 1.05rem;
+  }
+  .hud-tagline {
+    font-size: 0.72rem;
+  }
+  .hud-feature-item {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.45rem;
+  }
+  .hud-action-deck {
+    gap: 0.35rem;
+  }
+  .hud-btn {
+    font-size: 0.56rem;
+    padding: 0.35rem 0.55rem;
+  }
+  .hud-scroll-body {
+    max-height: calc(52vh - 130px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   32. COMPACT DISCOVERY INTERFACE & 3-SCREEN SPACECRAFT DOSSIER
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── COMPACT DISCOVERY INTERFACE ── */
+.galaxy-compact-discovery {
+  max-width: clamp(330px, 28vw, 400px) !important;
+  width: 100% !important;
+  max-height: calc(100vh - var(--space-nav-height, 88px) - 96px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  padding: 1.15rem 1.35rem !important;
+  gap: 0.85rem !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.32) !important;
+  background: linear-gradient(
+    145deg,
+    rgba(3, 4, 7, 0.88) 0%,
+    rgba(6, 8, 14, 0.82) 60%,
+    rgba(2, 3, 6, 0.92) 100%
+  ) !important;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.90),
+    0 0 14px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.10) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.discovery-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.55rem;
+}
+
+.discovery-telemetry-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.discovery-pulse-pip {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 10px var(--planet-accent, #F59E0B);
+  animation: telemetry-pip-pulse 2s ease-in-out infinite alternate;
+}
+
+.discovery-tag {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-telemetry-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.discovery-status-pill {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: #FAF9F6;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.14);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.discovery-index-badge {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--planet-accent, #F59E0B);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.discovery-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.discovery-category-row {
+  display: flex;
+  align-items: center;
+}
+
+.discovery-category {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: #94A3B8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.discovery-title {
+  margin: 0;
+  font-family: var(--font-display, 'Syne', sans-serif);
+  font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+  font-weight: 700;
+  color: #FAF9F6;
+  letter-spacing: -0.015em;
+  line-height: 1.18;
+}
+
+.discovery-tagline {
+  margin: 0;
+  font-size: 0.80rem;
+  line-height: 1.45;
+  color: #94A3B8;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Optical Telemetry Media Frame ── */
+.discovery-preview-frame {
+  position: relative;
+  width: 100%;
+  height: clamp(100px, 12vw, 135px);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 16px rgba(0, 0, 0, 0.8);
+}
+
+.discovery-preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.discovery-preview-frame:hover .discovery-preview-img {
+  transform: scale(1.04);
+}
+
+.discovery-preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, transparent 45%, rgba(3, 4, 7, 0.85) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0.45rem 0.65rem;
+}
+
+.preview-status-tag {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--planet-accent, #F59E0B);
+  background: rgba(0, 0, 0, 0.75);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.38);
+}
+
+.discovery-tech-deck {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.discovery-tech-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: #FAF9F6;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.28);
+  border-radius: 4px;
+  padding: 0.22rem 0.55rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.discovery-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding-top: 0.25rem;
+}
+
+.discovery-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  border: none;
+}
+
+.discovery-btn-primary {
+  background: linear-gradient(135deg, rgba(var(--planet-accent-rgb, 245, 158, 11), 0.95), rgba(var(--planet-accent-rgb, 245, 158, 11), 0.75));
+  color: #08070B;
+  box-shadow: 0 4px 18px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+}
+
+.discovery-btn-primary:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, rgba(var(--planet-accent-rgb, 245, 158, 11), 1.0), rgba(var(--planet-accent-rgb, 245, 158, 11), 0.85));
+  box-shadow: 0 6px 24px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+}
+
+.btn-step-count {
+  font-size: 0.60rem;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  margin-left: auto;
+}
+
+.discovery-btn-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.discovery-btn-secondary:hover {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  color: #FAF9F6;
+  transform: translateY(-1px);
+}
+
+.discovery-quick-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.45rem;
+}
+
+.discovery-quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #94A3B8;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.discovery-quick-link:hover {
+  color: var(--planet-accent, #F59E0B);
+}
+
+/* ── 3-SCREEN SPACECRAFT COMPUTER DOSSIER MODAL ── */
+.galaxy-hud-center.has-dossier-open {
+  z-index: 60 !important;
+  pointer-events: auto !important;
+}
+
+.galaxy-spacecraft-dossier {
+  position: absolute;
+  right: clamp(1.2rem, 3.2vw, 4rem);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: clamp(480px, 44vw, 640px);
+  width: 100%;
+  max-height: min(85vh, 720px);
+  display: flex;
+  flex-direction: column;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+  overscroll-behavior: auto;
+  box-sizing: border-box;
+  animation: dossierFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dossierFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-50% + 15px)) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+.dossier-console-inner {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    145deg,
+    rgba(3, 4, 8, 0.94) 0%,
+    rgba(7, 9, 16, 0.90) 60%,
+    rgba(3, 4, 8, 0.96) 100%
+  );
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  border-radius: 8px;
+  padding: 1.25rem 1.45rem;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.92),
+    0 0 22px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.10),
+    inset 0 0 15px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.03);
+  backdrop-filter: blur(28px) saturate(1.4);
+  -webkit-backdrop-filter: blur(28px) saturate(1.4);
+  box-sizing: border-box;
+}
+
+/* Aerospace Corner Crosshairs */
+.dossier-corner-bracket {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.dossier-corner-bracket.tl { top: -1px; left: -1px; border-top: 2px solid var(--planet-accent, #F59E0B); border-left: 2px solid var(--planet-accent, #F59E0B); }
+.dossier-corner-bracket.tr { top: -1px; right: -1px; border-top: 2px solid var(--planet-accent, #F59E0B); border-right: 2px solid var(--planet-accent, #F59E0B); }
+.dossier-corner-bracket.bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--planet-accent, #F59E0B); border-left: 2px solid var(--planet-accent, #F59E0B); }
+.dossier-corner-bracket.br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--planet-accent, #F59E0B); border-right: 2px solid var(--planet-accent, #F59E0B); }
+
+.dossier-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 2px,
+    rgba(0, 0, 0, 0.15) 4px
+  );
+  border-radius: 8px;
+  opacity: 0.6;
+}
+
+/* Dossier Header */
+.dossier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.dossier-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dossier-signal-pip {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--planet-accent, #F59E0B);
+  box-shadow: 0 0 12px var(--planet-accent, #F59E0B);
+  animation: telemetry-pip-pulse 2.2s ease-in-out infinite alternate;
+}
+
+.dossier-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.dossier-sys-id {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.12em;
+}
+
+.dossier-project-title {
+  margin: 0;
+  font-family: var(--font-sans, 'Space Grotesk', sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #FAF9F6;
+  line-height: 1.2;
+}
+
+.dossier-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dossier-status-nominal {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: #4ADE80;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+.dossier-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94A3B8;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dossier-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #F87171;
+}
+
+/* Stepper Tabs */
+.dossier-stepper-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.55rem;
+}
+
+.dossier-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 0.35rem 0.75rem;
+  color: #94A3B8;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.dossier-tab .tab-index {
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 800;
+}
+
+.dossier-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #FAF9F6;
+}
+
+.dossier-tab.active {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.16);
+  border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.55);
+  color: #FAF9F6;
+  box-shadow: 0 0 12px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.25);
+}
+
+.dossier-stepper-counter {
+  margin-left: auto;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.70rem;
+  font-weight: 700;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.10em;
+}
+
+/* Dialogue Panels Body & Scroll */
+.dossier-screen-panel {
+  display: none;
+  min-height: 280px;
+}
+
+.dossier-screen-panel.active {
+  display: block;
+  animation: panelFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes panelFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dossier-panel-scroll {
+  max-height: min(48vh, 380px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45) rgba(0, 0, 0, 0.2);
+}
+
+.dossier-panel-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.dossier-panel-scroll::-webkit-scrollbar-thumb {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  border-radius: 2px;
+}
+
+.dossier-block {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 0.75rem 0.95rem;
+}
+
+.dossier-block-label {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.10em;
+  margin-bottom: 0.40rem;
+}
+
+.dossier-lead-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #FAF9F6;
+  font-weight: 500;
+}
+
+.dossier-body-text {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #94A3B8;
+}
+
+.dossier-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.dossier-mini-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mini-spec-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+.mini-spec-row .k {
+  color: #94A3B8;
+}
+
+.mini-spec-row .v {
+  color: #FAF9F6;
+  font-weight: 700;
+  text-align: right;
+}
+
+/* Screen 2: Stack Layers & Pipeline */
+.dossier-stack-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.dossier-layer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.dossier-layer-row .layer-title {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.60rem;
+  color: var(--planet-accent, #F59E0B);
+  letter-spacing: 0.08em;
+}
+
+.layer-techs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.dossier-tech-chip {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.62rem;
+  color: #FAF9F6;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.12);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.35);
+  border-radius: 4px;
+  padding: 0.2rem 0.5rem;
+}
+
+.dossier-flow-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.dossier-flow-step {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.78rem;
+  color: #E2E8F0;
+}
+
+.dossier-flow-step .step-num {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  color: var(--planet-accent, #F59E0B);
+  font-weight: 700;
+}
+
+.dossier-decisions-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.dossier-decision-item {
+  font-size: 0.80rem;
+  line-height: 1.45;
+  color: #94A3B8;
+}
+
+/* Screen 3: Features, Challenges & Links */
+.dossier-features-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.dossier-feature-card {
+  display: flex;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 0.55rem 0.75rem;
+}
+
+.feat-glyph {
+  color: var(--planet-accent, #F59E0B);
+  font-size: 0.85rem;
+}
+
+.feat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.feat-name {
+  font-size: 0.80rem;
+  color: #FAF9F6;
+  font-weight: 600;
+}
+
+.feat-detail {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.4;
+  color: #94A3B8;
+}
+
+.dossier-challenges-deck {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.dossier-challenge-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 0.65rem 0.75rem;
+}
+
+.challenge-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.challenge-badge {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  color: #F87171;
+  background: rgba(239, 68, 68, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.challenge-badge-sol {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.58rem;
+  color: #4ADE80;
+  background: rgba(74, 222, 128, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.challenge-text {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #94A3B8;
+}
+
+.dossier-external-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.dossier-external-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.95rem;
+  border-radius: 6px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  border: 1px solid rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  color: #FAF9F6;
+  transition: all 0.25s ease;
+}
+
+.dossier-external-btn:hover {
+  background: var(--planet-accent, #F59E0B);
+  color: #08070B;
+  box-shadow: 0 4px 18px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+}
+
+.dossier-external-demo {
+  background: rgba(34, 211, 238, 0.15);
+  border-color: rgba(34, 211, 238, 0.45);
+}
+
+.dossier-external-demo:hover {
+  background: #22D3EE;
+  color: #08070B;
+  box-shadow: 0 4px 18px rgba(34, 211, 238, 0.45);
+}
+
+/* Dossier Footer Navigation */
+.dossier-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 0.85rem;
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+.dossier-nav-btns {
+  display: flex;
+  gap: 0.45rem;
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+.dossier-footer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 4px;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+  transition: all 0.2s ease;
+  position: relative !important;
+  z-index: 50 !important;
+  pointer-events: auto !important;
+}
+
+.dossier-footer-btn * {
+  pointer-events: none !important;
+}
+
+.dossier-footer-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.09);
+  color: #FAF9F6;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.dossier-btn-resume {
+  background: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.15);
+  border-color: rgba(var(--planet-accent-rgb, 245, 158, 11), 0.45);
+  color: var(--planet-accent, #F59E0B);
+}
+
+.dossier-btn-resume:hover {
+  background: var(--planet-accent, #F59E0B);
+  color: #08070B;
+  box-shadow: 0 4px 16px rgba(var(--planet-accent-rgb, 245, 158, 11), 0.40);
+}
+
+/* Responsive Dossier rules */
+@media (max-width: 900px) {
+  .galaxy-spacecraft-dossier {
+    right: 50%;
+    transform: translate(50%, -50%);
+    max-width: 92vw;
+    max-height: 80vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .dossier-grid-two {
+    grid-template-columns: 1fr;
+  }
+  .dossier-stepper-nav {
+    flex-wrap: wrap;
+  }
+  .dossier-stepper-counter {
+    margin-left: 0;
+    width: 100%;
+    text-align: right;
+  }
+}
+
+
+/* ── VIEWPORT BOUNDARY ENFORCEMENT BELOW NAVBAR ── */
+.works-galaxy-stage {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+.galaxy-3d-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}

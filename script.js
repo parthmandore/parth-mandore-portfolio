@@ -7091,7 +7091,7 @@
           const now = Date.now();
           if (now - lastSubmitTime < SUBMIT_COOLDOWN_MS) {
             const remaining = Math.ceil((SUBMIT_COOLDOWN_MS - (now - lastSubmitTime)) / 1000);
-            const cooldownMsg = `Please wait ${remaining}s before dispatching another message.`;
+            const cooldownMsg = `Please wait ${remaining}s before sending another message.`;
             showAlert('error', cooldownMsg);
             showToast(cooldownMsg, 'warning');
             return;
@@ -7138,7 +7138,7 @@
           }
 
           btn.disabled = true;
-          showAlert('sending', 'Transmitting inquiry signal...');
+          showAlert('sending', 'Sending message...');
 
           try {
             const res = await fetch('https://formsubmit.co/ajax/mandoreparth14@gmail.com', {
@@ -7160,9 +7160,9 @@
             const data = await res.json();
             if (data.success === 'true' || data.success === true) {
               lastSubmitTime = Date.now();
-              showAlert('success', 'Message dispatched successfully. I will review and reply soon.');
+              showAlert('success', 'Thank you! Your message has been sent successfully. I will get back to you shortly.');
               form.reset();
-              showToast('Signal Transmitted Successfully — inquiry received.', 'success');
+              showToast('Message sent successfully.', 'success');
               if (window.PortfolioAnalytics) {
                 window.PortfolioAnalytics.track('contact_form_submit', {
                   status: 'success'
@@ -9544,7 +9544,7 @@
       // Ensure netflix iframe is loaded and notify iframe of theme
       if (netflixFrame) {
         if (!netflixFrame.getAttribute('src') || netflixFrame.getAttribute('src') === 'about:blank') {
-          netflixFrame.setAttribute('src', 'netflix-version/index.html');
+          netflixFrame.setAttribute('src', 'themes/netflix/index.html');
         }
         if (netflixFrame.contentWindow) {
           netflixFrame.contentWindow.postMessage({ type: 'SET_THEME', theme: 'netflix' }, '*');
@@ -9562,6 +9562,9 @@
     try {
       localStorage.setItem(THEME_STORAGE_KEY, newTheme);
       localStorage.setItem('theme', newTheme);
+      const url = new URL(window.location.href);
+      url.searchParams.set('theme', newTheme);
+      window.history.replaceState({}, '', url.toString());
     } catch (e) {}
 
     applyThemeDOM(newTheme);

@@ -104,7 +104,7 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
 
   <!-- Master Stylesheet -->
-  <link rel="stylesheet" href="style.css?v=20261113_v53" />
+  <link rel="stylesheet" href="style.css?v=20261115_v63" />
 
   <!-- Instant Theme Hydration to prevent flash of wrong theme -->
   <script>
@@ -2416,10 +2416,9 @@
     </section>
 
     <!-- ======================================================
-         03 // THE DISPATCH: CONTACT TERMINAL & SPACE HOLOGRAPHIC IDENTITY
+         03 // THE CONTACT TERMINAL: GET IN TOUCH & SPACE HOLOGRAPHIC IDENTITY
          ====================================================== -->
     <section id="dispatch" class="atelier-section">
-      <div class="section-ghost-watermark" aria-hidden="true">DISPATCH</div>
 
       <!-- SVG Duotone Hologram Color Matrix Filter -->
       <svg width="0" height="0" style="position:absolute;pointer-events:none;" aria-hidden="true">
@@ -2458,94 +2457,38 @@
           <!-- LEFT SIDE: Holographic Identity (Space Theme) & Classic Channels (Dark/Light Themes) -->
           <div class="dispatch-col-left">
             
-            <!-- 1. Holographic Identity Projection (Space Theme Exclusive) -->
-            <div class="dispatch-holo-container" aria-label="Holographic Identity Projection of Parth Mandore">
-              <div class="holo-emitter-stage">
-                <!-- Ambient Cyan Back-Bloom behind head -->
-                <div class="holo-ambient-bloom" aria-hidden="true"></div>
+            <!-- 1. Luminous Identity Scan Stage (Space Theme Exclusive) -->
+            <div class="luminous-identity-wrapper" id="luminousIdentityStage" aria-label="Luminous Identity Trace of Parth Mandore">
+              <div class="luminous-canvas-frame">
+                <!-- Tech Accent Brackets -->
+                <div class="luminous-bracket br-tl" aria-hidden="true"></div>
+                <div class="luminous-bracket br-tr" aria-hidden="true"></div>
+                <div class="luminous-bracket br-bl" aria-hidden="true"></div>
+                <div class="luminous-bracket br-br" aria-hidden="true"></div>
 
-                <!-- Upward Volumetric Light Beam Cone -->
-                <div class="holo-light-cone" aria-hidden="true"></div>
-                
-                <!-- Ambient Cyan Particle Sparks -->
-                <div class="holo-particles-wrap" aria-hidden="true">
-                  <span class="holo-particle hp-1"></span>
-                  <span class="holo-particle hp-2"></span>
-                  <span class="holo-particle hp-3"></span>
-                  <span class="holo-particle hp-4"></span>
-                  <span class="holo-particle hp-5"></span>
-                  <span class="holo-particle hp-6"></span>
-                </div>
+                <!-- Luminous Portrait Canvas (Pure White Light Outline + Particles) -->
+                <canvas id="luminousPortraitCanvas" class="luminous-portrait-canvas"></canvas>
 
-                <!-- Hologram Projected Figure with Horizontal Slices -->
-                <div class="holo-figure-wrap" id="holoFigureWrap">
-                  <div class="holo-slices-wrap" id="holoPortraitSlices">
-                    <div class="holo-slice" style="clip-path: inset(0% 0% 94% 0%); transform: translateX(0px);">
-                      <img src="assets/parth-cutout.png" alt="Parth Mandore Hologram" class="holo-portrait-img" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(6.5% 0% 87.5% 0%); transform: translateX(-8px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(13% 0% 81% 0%); transform: translateX(10px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(19.5% 0% 74.5% 0%); transform: translateX(-6px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(26% 0% 68% 0%); transform: translateX(9px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(32.5% 0% 61.5% 0%); transform: translateX(-8px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(39% 0% 55% 0%); transform: translateX(10px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(45.5% 0% 48.5% 0%); transform: translateX(-5px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(52% 0% 42% 0%); transform: translateX(8px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(58.5% 0% 35.5% 0%); transform: translateX(-6px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(65% 0% 29% 0%); transform: translateX(6px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(71.5% 0% 22.5% 0%); transform: translateX(-4px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(78% 0% 16% 0%); transform: translateX(5px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                    <div class="holo-slice" style="clip-path: inset(84.5% 0% 0% 0%); transform: translateX(0px);">
-                      <img src="assets/parth-cutout.png" alt="" class="holo-portrait-img" aria-hidden="true" />
-                    </div>
-                  </div>
-                  <!-- Scanline CRT Texture Overlay -->
-                  <div class="holo-scanlines" aria-hidden="true"></div>
-                  <!-- Vertical Laser Sweep Line -->
-                  <div class="holo-sweep-laser" aria-hidden="true"></div>
-                </div>
-
-                <!-- Emitter Pedestal Base -->
-                <div class="holo-pedestal" aria-hidden="true">
-                  <div class="holo-pedestal-rim"></div>
-                  <div class="holo-pedestal-core"></div>
-                  <div class="holo-pedestal-glow"></div>
+                <!-- Sub-Orbital Telemetry Badge -->
+                <div class="luminous-telemetry-pill">
+                  <span class="telemetry-beacon"></span>
+                  <span class="telemetry-tag">IDENTITY // LUMINOUS TRACE</span>
+                  <span class="telemetry-sep">&bull;</span>
+                  <span class="telemetry-state">SYNCHRONIZED</span>
                 </div>
               </div>
 
-              <!-- Identity Badge -->
-              <div class="holo-id-badge">
-                <div class="holo-id-status">
-                  <span class="holo-id-dot"></span>
-                  <span>STATUS // AVAILABLE FOR COLLABORATION</span>
+              <!-- Luminous Identity Metadata & Availability Banner -->
+              <div class="luminous-identity-meta">
+                <h2 class="luminous-name">PARTH MANDORE</h2>
+                <div class="luminous-role">SOFTWARE ENGINEER &bull; APPLIED AI &bull; SYSTEMS</div>
+                <div class="luminous-status-card">
+                  <span class="status-indicator-dot"></span>
+                  <div class="status-meta">
+                    <span class="status-label">STATUS // READY FOR ENGAGEMENT</span>
+                    <span class="status-detail">Exploring Software Engineering Roles &bull; Distributed Systems</span>
+                  </div>
                 </div>
-                <div class="holo-id-name">PARTH MANDORE</div>
-                <div class="holo-id-role">SYSTEMS ARCHITECT &bull; APPLIED AI</div>
-                <div class="holo-id-meta">SYSTEM ID // PM-2026 &bull; RELAY // PUNE, IN (18.52° N, 73.85° E)</div>
               </div>
             </div>
 
@@ -2617,14 +2560,14 @@
           <!-- RIGHT SIDE: Communication Terminal (Space Theme) & Asynchronous Contact Form -->
           <div class="dispatch-form-wrapper dispatch-col-right">
             
-            <!-- Spaceship Communication Terminal Controls (Space Theme Exclusive) -->
+            <!-- Space Theme Contact Terminal Header -->
             <div class="dispatch-space-terminal-header">
               <div class="terminal-rubric">
                 <span class="terminal-rubric-dot"></span>
-                <span>RELAY // SECTOR 05 &bull; COMMUNICATION TERMINAL</span>
+                <span>GET IN TOUCH &bull; OPEN FOR OPPORTUNITIES</span>
               </div>
-              <h3 class="terminal-title">Direct Uplink &amp; Professional Relay.</h3>
-              <p class="terminal-sub">Quantum sub-ether channels synchronized. Dispatch an encrypted transmission or establish direct contact.</p>
+              <h3 class="terminal-title">Let's Connect.</h3>
+              <p class="terminal-sub">I'm actively exploring software engineering roles, distributed systems challenges, and applied AI collaborations. Send a message or reach out directly.</p>
 
               <!-- Direct Channels (Email & Telephone) -->
               <div class="terminal-channels-grid">
@@ -2644,8 +2587,9 @@
 
                 <div class="terminal-channel-card">
                   <div class="terminal-channel-info">
-                    <span class="terminal-channel-label">TELEPHONE LINK</span>
-                    <a href="tel:+917774091694" class="terminal-channel-val">+91 7774091694</a>
+                    <span class="terminal-channel-label">TELEPHONE</span>
+                    <a href="tel:+917774091694" class="terminal-channel-val">+91 77740 91694</a>
+                    <span class="terminal-channel-note">IST &bull; WhatsApp preferred</span>
                   </div>
                   <a href="tel:+917774091694" class="terminal-channel-action" aria-label="Call Telephone Number">
                     <span>CALL</span>
@@ -2675,7 +2619,7 @@
 
             <!-- The Unified Contact Form -->
             <div class="form-container">
-              <h3 class="form-title dispatch-classic-only">TRANSMIT INQUIRY</h3>
+              <h3 class="form-title dispatch-classic-only">GET IN TOUCH</h3>
               <form id="contactForm" class="atelier-form" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="_honey">
                 
                 <!-- Anti-Spam Honeypot Field (hidden from users, traps automated spambots) -->
@@ -2707,9 +2651,13 @@
                 </div>
 
                 <button type="submit" id="sendBtn" class="atelier-btn btn-solid btn-full terminal-send-btn">
-                  <span>DISPATCH SIGNAL</span>
+                  <span>Send Message</span>
                   <span class="btn-arrow">&rarr;</span>
                 </button>
+
+                <div id="formStatus" class="form-alert-box" role="status" aria-live="polite"></div>
+              </form>
+            </div>
 
                 <div id="formStatus" class="form-alert-box" role="status" aria-live="polite"></div>
               </form>
@@ -3033,9 +2981,47 @@
   <!-- 3. NETFLIX VIEW CONTAINER (Streaming Cinema Theme)       -->
   <!-- =================================================================== -->
   <div id="view-netflix" class="portfolio-view" aria-hidden="true">
+    <!-- Floating Universal Theme Switcher on Netflix View -->
+    <div class="netflix-theme-bar" id="netflixThemeBar" aria-label="Theme Switcher">
+      <div class="theme-dropdown-wrapper" id="netflixThemeDropdownWrapper">
+        <button
+          type="button"
+          class="theme-dropdown-trigger"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-label="Select theme"
+        >
+          <span class="theme-trigger-icon">&#x1F3AC;</span>
+          <span class="theme-trigger-label">Netflix Version</span>
+          <span class="theme-trigger-arrow" aria-hidden="true">&#9662;</span>
+        </button>
+        <ul class="theme-dropdown-menu" id="netflixThemeDropdownMenu" role="listbox" aria-label="Theme options">
+          <li role="option" class="theme-dropdown-item" data-theme-val="space" tabindex="0">
+            <span class="theme-item-icon">&#x1F30C;</span>
+            <span class="theme-item-text">Space</span>
+            <span class="theme-item-check" aria-hidden="true">&#10003;</span>
+          </li>
+          <li role="option" class="theme-dropdown-item" data-theme-val="dark" tabindex="0">
+            <span class="theme-item-icon">&#x1F319;</span>
+            <span class="theme-item-text">Dark</span>
+            <span class="theme-item-check" aria-hidden="true">&#10003;</span>
+          </li>
+          <li role="option" class="theme-dropdown-item" data-theme-val="light" tabindex="0">
+            <span class="theme-item-icon">&#x2600;&#xFE0F;</span>
+            <span class="theme-item-text">Light</span>
+            <span class="theme-item-check" aria-hidden="true">&#10003;</span>
+          </li>
+          <li role="option" class="theme-dropdown-item active" data-theme-val="netflix" tabindex="0">
+            <span class="theme-item-icon">&#x1F3AC;</span>
+            <span class="theme-item-text">Netflix Version</span>
+            <span class="theme-item-check" aria-hidden="true">&#10003;</span>
+          </li>
+        </ul>
+      </div>
+    </div>
     <iframe
       id="netflixPortfolioFrame"
-      src="netflix-version/index.html"
+      src="themes/netflix/index.html"
       title="Netflix Version Portfolio"
       class="netflix-portfolio-iframe"
     ></iframe>
@@ -3046,16 +3032,18 @@
   <!-- =================================================================== -->
   <!-- Three.js 3D WebGL Library -->
   <script src="vendor/three.min.js"></script>
+  <!-- Luminous Identity Scan & Stage (Phase 3 Beacon Nexus) -->
+  <script src="themes/space/galaxy-journey/luminous-identity.js?v=20261116_v71"></script>
   <!-- GSAP & ScrollTrigger Animation Engine -->
   <script src="vendor/gsap.min.js"></script>
   <script src="vendor/ScrollTrigger.min.js"></script>
   <!-- 3D Galaxy Project Specifications & Exhibition Engine -->
-  <script src="galaxy-journey/project-data.js?v=20261107_v50"></script>
-  <script src="galaxy-journey/galaxy-journey.js?v=20261107_v50"></script>
+  <script src="themes/space/galaxy-journey/project-data.js?v=20261107_v50"></script>
+  <script src="themes/space/galaxy-journey/galaxy-journey.js?v=20261115_v63"></script>
   <!-- The Constellation Atlas (Technology & Skills Section - Sector 04) -->
-  <script src="galaxy-journey/technology-constellation.js?v=20261107_v52"></script>
+  <script src="themes/space/galaxy-journey/technology-constellation.js?v=20261115_v60"></script>
   <!-- Master Journey Controller & Cinematic Scroll Spine (Phase 1) -->
-  <script src="galaxy-journey/master-journey-controller.js?v=20261107_v50"></script>
+  <script src="themes/space/galaxy-journey/master-journey-controller.js?v=20261115_v60"></script>
   <!-- GitHub View Controller -->
   <script src="themes/github-classic.js?v=20261107_v50"></script>
   <!-- Master Application & Space Engine -->
