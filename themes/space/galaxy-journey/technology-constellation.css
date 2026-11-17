@@ -1,0 +1,1055 @@
+/**
+ * ============================================================================
+ * CONSTELLATION SKY ATLAS — SKILLS & TECHNOLOGIES (Sector 04)
+ * Hand-sketched astronomical layout: central irregular star constellation inside
+ * a subtle broken ring, perimeter HTML cards joined by non-crossing leader
+ * lines, real point-source starfield canvas, star-body inspect zoom, & list view.
+ * ============================================================================
+ */
+
+/* ── 0. PARENT SECTION RESET (SPACE THEME) ── */
+html[data-theme="space"] #disciplines .section-rubric,
+html[data-theme="space"] #disciplines .disciplines-header,
+html[data-theme="space"] #disciplines .section-ghost-watermark,
+html[data-theme="space"] #disciplines .skills-catalog,
+html[data-theme="space"] #disciplines #skillsMatrix,
+html[data-theme="space"] #disciplines .skills-category-group,
+html[data-theme="space"] #disciplines .disciplines-filter-bar,
+html[data-theme="space"] #disciplines .constellation-filter-nav {
+  display: none !important;
+}
+
+html[data-theme="space"] #disciplines {
+  /* Clear top navbar (~65px), frame degree ticks (~86px), and bottom cockpit bar (~52px) */
+  padding: 90px clamp(16px, 2.2vw, 36px) 54px !important;
+  overflow: hidden !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="space"] #disciplines .atelier-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  position: relative !important;
+}
+
+/* Interactive pointer-events inside fixed disciplines layer */
+html[data-theme="space"] #disciplines.is-interactive .cs-atlas-root,
+html[data-theme="space"] #disciplines.is-interactive .cs-cat-btn,
+html[data-theme="space"] #disciplines.is-interactive .cs-back-sky-btn,
+html[data-theme="space"] #disciplines.is-interactive .cs-list-toggle,
+html[data-theme="space"] #disciplines.is-interactive .cs-tech-card,
+html[data-theme="space"] #disciplines.is-interactive .cs-star-hit,
+html[data-theme="space"] #disciplines.is-interactive .cs-detail-panel,
+html[data-theme="space"] #disciplines.is-interactive .cs-detail-back,
+html[data-theme="space"] #disciplines.is-interactive .cs-detail-project-btn,
+html[data-theme="space"] #disciplines.is-interactive .cs-list-overlay,
+html[data-theme="space"] #disciplines.is-interactive .cs-list-project-btn {
+  pointer-events: auto !important;
+}
+
+/* ── 1. ROOT ATLAS STAGE ── */
+.cs-atlas-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  box-sizing: border-box;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  color: #e8ecf5;
+}
+
+/* ── 2. DEEP SPACE SKY CANVAS + FILM GRAIN + VIGNETTE ── */
+.cs-sky-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cs-sky-vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 78% 72% at 50% 52%,
+    rgba(3, 5, 11, 0) 42%,
+    rgba(2, 3, 7, 0.58) 84%,
+    rgba(1, 2, 5, 0.88) 100%
+  );
+  transition: opacity 0.4s ease;
+}
+
+.cs-atlas-root.is-shared-backdrop .cs-sky-vignette {
+  opacity: 0.35;
+}
+
+/* ── 3. TOP BAR: SECTOR TABS + LIST VIEW TOGGLE (Clearly below Navbar) ── */
+.cs-topbar {
+  position: relative;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 2px 6px 4px;
+  flex-shrink: 0;
+}
+
+.cs-category-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cs-cat-btn {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  line-height: 1.2;
+  padding: 5px 9px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(6, 9, 16, 0.78);
+  color: rgba(232, 236, 245, 0.78);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+  white-space: nowrap;
+}
+
+.cs-cat-btn:hover {
+  border-color: rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+  background: rgba(14, 19, 32, 0.88);
+}
+
+.cs-cat-btn.is-active {
+  border-color: rgba(var(--cat-rgb, 245, 158, 11), 0.72);
+  color: #ffffff;
+  background: rgba(var(--cat-rgb, 245, 158, 11), 0.12);
+}
+
+.cs-cat-btn:focus-visible,
+.cs-back-sky-btn:focus-visible,
+.cs-list-toggle:focus-visible,
+.cs-tech-card:focus-visible,
+.cs-star-hit:focus-visible,
+.cs-detail-back:focus-visible,
+.cs-detail-project-btn:focus-visible,
+.cs-list-project-btn:focus-visible,
+.sky-map-item:focus-visible,
+.sky-map-hint-close:focus-visible {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+.cs-cat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cat-color, #f59e0b);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.cs-cat-count {
+  font-size: 12px;
+  color: rgba(226, 232, 240, 0.62);
+}
+
+.cs-cat-btn.is-active .cs-cat-count {
+  color: var(--cat-color, #f59e0b);
+}
+
+.cs-back-sky-btn,
+.cs-list-toggle,
+#csListOverlay {
+  display: none !important;
+}
+
+.cs-back-sky-btn {
+  position: absolute;
+  top: 8px;
+  left: clamp(16px, 2.2vw, 36px);
+  z-index: 25;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(8, 12, 20, 0.8);
+  color: rgba(232, 236, 245, 0.9);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+}
+
+.cs-back-sky-btn:hover {
+  border-color: rgba(245, 158, 11, 0.72);
+  color: #fff;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+/* ── INTERACTIVE SKY MAP LAYER (PHASE 3) ── */
+.sky-map-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  cursor: default !important;
+  color: inherit !important;
+  text-align: center;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  transition: opacity 0.22s ease;
+  will-change: transform, opacity;
+  pointer-events: none !important;
+}
+
+.sky-map-item:hover,
+.sky-map-item:focus,
+.sky-map-item:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.sky-map-pill-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.sky-map-label-pill {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(241, 232, 208, 0.94) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.98);
+  padding: 6px 14px !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(var(--sector-rgb, 245, 158, 11), 0.45) !important;
+  background: rgba(6, 10, 20, 0.85) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  white-space: nowrap;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.85), 0 0 12px rgba(var(--sector-rgb, 245, 158, 11), 0.15);
+}
+
+.sky-map-item .sky-map-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background-color: var(--sector-color, #f59e0b);
+  box-shadow: 0 0 8px var(--sector-color, #f59e0b);
+}
+
+.sky-map-item .sky-map-arrow {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: bold;
+  color: rgba(245, 158, 11, 0.95);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
+}
+
+.sky-map-item .sky-map-click-cue {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 158, 11, 0.85);
+  margin-top: 3px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.95);
+  opacity: 0.80;
+  transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+  pointer-events: none;
+}
+
+.sky-map-label-pill:hover,
+.sky-map-label-pill:focus-visible,
+.sky-map-pill-wrapper:hover .sky-map-label-pill,
+.sky-map-item.is-hovered .sky-map-label-pill {
+  color: #ffffff !important;
+  border-color: rgba(var(--sector-rgb, 245, 158, 11), 0.90) !important;
+  background: rgba(14, 20, 36, 0.95) !important;
+  box-shadow: 0 0 20px rgba(var(--sector-rgb, 245, 158, 11), 0.50), 0 0 36px rgba(var(--sector-rgb, 245, 158, 11), 0.25) !important;
+  transform: translateY(-2px) scale(1.05);
+}
+
+.sky-map-label-pill:hover .sky-map-arrow,
+.sky-map-pill-wrapper:hover .sky-map-arrow,
+.sky-map-item.is-hovered .sky-map-arrow {
+  color: #fbbf24 !important;
+  transform: translateX(4px);
+}
+
+.sky-map-pill-wrapper:hover .sky-map-click-cue,
+.sky-map-item.is-hovered .sky-map-click-cue {
+  opacity: 1 !important;
+  color: #fbbf24 !important;
+  transform: translateY(1px);
+}
+
+.sky-map-item.is-dimmed {
+  opacity: 0.22 !important;
+  filter: blur(0.5px) grayscale(30%);
+  transition: opacity 0.28s ease, filter 0.28s ease;
+}
+
+.sky-star-tech-tag {
+  position: absolute;
+  font-family: 'Space Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: rgba(241, 245, 249, 0.90);
+  background: rgba(4, 7, 14, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  padding: 1px 6px;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  transition: opacity 0.25s ease, transform 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  z-index: 2;
+}
+
+.sky-map-hint {
+  position: fixed;
+  top: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 18px;
+  border-radius: 24px;
+  background: rgba(6, 10, 20, 0.88);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.85), 0 0 16px rgba(245, 158, 11, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.10em;
+  color: #f59e0b;
+}
+
+.sky-map-hint-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sky-map-hint-pulse {
+  color: #fbbf24;
+  animation: telemetry-pip-pulse 1.8s ease-in-out infinite alternate;
+}
+
+.sky-map-hint-text {
+  text-transform: uppercase;
+  color: #f1e8d0;
+}
+
+.sky-map-hint-arrow {
+  color: #f59e0b;
+  font-size: 14px;
+  font-weight: bold;
+}
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(5, 7, 14, 0.88);
+  color: rgba(241, 232, 208, 0.92);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65), 0 0 14px rgba(245, 158, 11, 0.18);
+  pointer-events: auto;
+}
+
+.sky-map-hint .sky-map-hint-icon {
+  color: #f59e0b;
+  font-size: 14px;
+  font-weight: bold;
+  animation: pulse-arrow 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse-arrow {
+  0%, 100% { transform: translateX(0); opacity: 0.7; }
+  50% { transform: translateX(3px); opacity: 1.0; }
+}
+  transition: opacity 0.35s ease;
+}
+
+.sky-map-hint-close {
+  background: transparent;
+  border: 0;
+  color: rgba(226, 232, 240, 0.7);
+  cursor: pointer;
+  padding: 0 3px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.sky-map-hint-close:hover {
+  color: #fff;
+}
+
+.cs-list-toggle {
+  position: absolute;
+  top: 8px;
+  right: clamp(16px, 2.2vw, 36px);
+  z-index: 25;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(8, 12, 20, 0.8);
+  color: rgba(232, 236, 245, 0.85);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  white-space: nowrap;
+}
+
+.cs-list-toggle:hover,
+.cs-list-toggle[aria-pressed="true"] {
+  border-color: rgba(245, 158, 11, 0.7);
+  color: #fff;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+/* ── 4. MAIN WORKSPACE AREA ── */
+.cs-stage-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Centered Title Block ("Constellation: Frontend Development") */
+.cs-title-header {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  text-align: center;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.cs-constellation-title {
+  margin: 0;
+  font-family: var(--font-serif, 'Instrument Serif', 'Cinzel', Georgia, serif);
+  font-weight: 600;
+  font-size: clamp(20px, 2.05vw, 30px);
+  letter-spacing: 0.02em;
+  color: #f8fafc;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.85);
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.cs-constellation-legend {
+  margin: 4px 0 0;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: rgba(203, 213, 225, 0.72);
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* SVG Overlay for Leader Lines (Tiny ring on star -> 0 or 1 bend -> nearest card corner) */
+.cs-leader-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 12;
+  transition: opacity 0.35s ease;
+}
+
+.cs-leader-path {
+  fill: none;
+  stroke: rgba(215, 226, 245, 0.34);
+  stroke-width: 1;
+  transition: stroke 0.22s ease, stroke-opacity 0.22s ease, opacity 0.22s ease;
+}
+
+.cs-leader-ring {
+  fill: none;
+  stroke: rgba(215, 226, 245, 0.48);
+  stroke-width: 1;
+  transition: stroke 0.22s ease, opacity 0.22s ease;
+}
+
+.cs-leader-dot {
+  fill: rgba(215, 226, 245, 0.65);
+  transition: fill 0.22s ease, opacity 0.22s ease;
+}
+
+.cs-leader-group.is-highlighted .cs-leader-path {
+  stroke: rgba(var(--cat-rgb, 245, 158, 11), 0.92);
+  stroke-width: 1.25;
+}
+
+.cs-leader-group.is-highlighted .cs-leader-ring {
+  stroke: rgba(var(--cat-rgb, 245, 158, 11), 0.95);
+}
+
+.cs-leader-group.is-highlighted .cs-leader-dot {
+  fill: var(--cat-color, #f59e0b);
+}
+
+.cs-leader-group.is-dimmed {
+  opacity: 0.28;
+}
+
+/* Interactive Star Accessibility & Hit Targets */
+.cs-stars-hit-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 16;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.cs-star-hit {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  margin-top: -17px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  pointer-events: auto;
+}
+
+.cs-star-label {
+  position: absolute;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  line-height: 1.2;
+  color: rgba(241, 245, 249, 0.88);
+  background: rgba(4, 6, 12, 0.72);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 4px #000;
+  transition: opacity 0.25s ease, color 0.22s ease;
+}
+
+.cs-star-label.is-dimmed {
+  opacity: 0.38;
+}
+
+.cs-star-label.is-highlighted {
+  color: #ffffff;
+}
+
+/* ── 5. PERIMETER REAL HTML TECHNOLOGY CARDS ── */
+.cs-cards-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.cs-tech-card {
+  position: absolute;
+  pointer-events: auto;
+  background: rgba(6, 9, 16, 0.80);
+  border: 1px solid rgba(226, 232, 240, 0.16);
+  border-radius: 6px;
+  padding: 9px 12px;
+  box-sizing: border-box;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    border-color 0.24s ease,
+    background 0.24s ease,
+    opacity 0.26s ease,
+    transform 0.24s ease;
+  text-align: left;
+}
+
+.cs-tech-card:hover,
+.cs-tech-card.is-highlighted {
+  border-color: rgba(var(--cat-rgb, 245, 158, 11), 0.78);
+  background: rgba(11, 15, 26, 0.92);
+}
+
+.cs-tech-card.is-dimmed {
+  opacity: 0.42;
+}
+
+.cs-card-title {
+  margin: 0 0 3px;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #f8fafc;
+  line-height: 1.25;
+}
+
+.cs-card-desc {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.34;
+  color: rgba(214, 222, 235, 0.84);
+}
+
+.cs-card-used-in {
+  margin: 5px 0 0;
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  line-height: 1.3;
+  color: rgba(var(--cat-rgb, 245, 158, 11), 0.94);
+}
+
+.cs-card-action-cue {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 4px !important;
+  margin-top: 6px !important;
+  padding-top: 4px !important;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12) !important;
+  font-family: var(--font-mono, 'Space Mono', monospace) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: var(--cat-color, #00ffff) !important;
+  opacity: 0.82 !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+.cs-tech-card:hover .cs-card-action-cue,
+.cs-tech-card:focus .cs-card-action-cue,
+.cs-tech-card.is-highlighted .cs-card-action-cue {
+  opacity: 1 !important;
+  transform: translateX(2px) !important;
+}
+
+.cs-card-cue-arrow {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+/* Totally remove and suppress List view option */
+.cs-list-toggle,
+.cs-list-overlay {
+  display: none !important;
+}
+
+.cs-card-used-label {
+  color: rgba(186, 198, 218, 0.72);
+}
+
+/* ── 6. ZOOM-IN STAR DETAIL PANEL (Phase 4) ── */
+.cs-detail-panel {
+  position: absolute;
+  top: 50%;
+  right: clamp(24px, 7vw, 110px);
+  transform: translateY(-50%);
+  width: min(440px, 44vw);
+  z-index: 35;
+  background: rgba(6, 9, 16, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 22px 24px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.72);
+  display: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.cs-detail-panel.is-visible {
+  display: block;
+  opacity: 1;
+}
+
+.cs-detail-back {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+  cursor: pointer;
+  margin-bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-detail-back:hover {
+  border-color: rgba(245, 158, 11, 0.75);
+  color: #fff;
+}
+
+.cs-detail-sector {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: var(--cat-color, #f59e0b);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+.cs-detail-title {
+  margin: 0 0 10px;
+  font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
+  font-size: clamp(26px, 2.8vw, 34px);
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.15;
+}
+
+.cs-detail-desc {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(226, 232, 240, 0.88);
+}
+
+.cs-detail-projects-wrap {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+}
+
+.cs-detail-used-heading {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: rgba(186, 198, 218, 0.78);
+  margin: 0 0 10px;
+}
+
+.cs-detail-project-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cs-detail-project-btn {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  padding: 7px 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(var(--cat-rgb, 245, 158, 11), 0.45);
+  background: rgba(var(--cat-rgb, 245, 158, 11), 0.10);
+  color: #f8fafc;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-detail-project-btn:hover {
+  background: rgba(var(--cat-rgb, 245, 158, 11), 0.24);
+  border-color: var(--cat-color, #f59e0b);
+}
+
+/* ── 7. READABLE LIST VIEW OVERLAY (Phase 5) ── */
+.cs-list-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 32;
+  background: rgba(3, 5, 10, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-y: auto;
+  padding: 18px clamp(16px, 5vw, 64px) 36px;
+  display: none;
+  box-sizing: border-box;
+}
+
+.cs-list-overlay.is-visible {
+  display: block;
+}
+
+.cs-list-grid-wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cs-list-sector-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-serif, 'Instrument Serif', Georgia, serif);
+  font-size: 22px;
+  color: #f8fafc;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.cs-list-sector-count {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: rgba(203, 213, 225, 0.72);
+}
+
+.cs-list-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 12px;
+}
+
+.cs-list-item {
+  background: rgba(10, 14, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.cs-list-item-name {
+  margin: 0 0 5px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.cs-list-item-desc {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(214, 222, 235, 0.84);
+}
+
+.cs-list-item-used {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  color: rgba(203, 213, 225, 0.78);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.cs-list-project-btn {
+  font-family: var(--font-mono, 'Space Mono', monospace);
+  font-size: 12px;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  cursor: pointer;
+}
+
+.cs-list-project-btn:hover {
+  background: rgba(245, 158, 11, 0.22);
+  color: #fff;
+}
+
+/* ── 8. MOBILE RESPONSIVE (390px: Scaled Constellation + Swipeable Bottom Card Strip) ── */
+@media (max-width: 820px) {
+  html[data-theme="space"] #disciplines {
+    padding: 66px 10px 58px !important;
+  }
+
+  .cs-atlas-root,
+  .cs-stage-viewport {
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .cs-topbar {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding: 4px 2px 4px;
+    gap: 6px;
+    max-width: 100%;
+  }
+
+  .cs-topbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cs-category-tabs {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .cs-cat-btn,
+  .cs-back-sky-btn,
+  .cs-list-toggle {
+    font-size: 12px;
+    padding: 5px 9px;
+    flex-shrink: 0;
+  }
+
+  .cs-back-sky-btn {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+  }
+
+  .cs-list-toggle {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+  }
+
+  .sky-map-item .sky-map-label-pill {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    white-space: normal;
+    line-height: 1.2;
+    max-width: 118px;
+    padding: 2px 5px;
+  }
+
+  .sky-map-hint {
+    top: 72px;
+    font-size: 10px;
+    max-width: 86vw;
+    padding: 4px 10px;
+  }
+
+  .cs-title-header {
+    top: 34px;
+    width: 94%;
+  }
+
+  .cs-constellation-title {
+    font-size: 18px;
+    white-space: normal;
+  }
+
+  .cs-constellation-legend {
+    font-size: 12px;
+  }
+
+  /* Swipeable bottom card strip */
+  .cs-cards-layer.is-mobile-strip {
+    top: auto;
+    bottom: 6px;
+    left: 0;
+    right: 0;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 4px 12px 6px;
+    pointer-events: auto;
+    scrollbar-width: none;
+  }
+
+  .cs-cards-layer.is-mobile-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cs-cards-layer.is-mobile-strip .cs-tech-card {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 78vw !important;
+    min-width: 260px;
+    max-width: 310px;
+    flex: 0 0 auto;
+    scroll-snap-align: center;
+  }
+
+  .cs-detail-panel {
+    left: 14px;
+    right: 14px;
+    width: auto;
+    top: auto;
+    bottom: 14px;
+    transform: none;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding: 16px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-cat-btn,
+  .cs-tech-card,
+  .cs-leader-path,
+  .cs-detail-panel,
+  .cs-title-header {
+    transition: none !important;
+  }
+}

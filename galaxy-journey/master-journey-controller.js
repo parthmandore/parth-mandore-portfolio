@@ -42,8 +42,8 @@
       id: 2, 
       name: '02 // SOL-7 PLANETARY SURVEY', 
       hudMode: 'SOL-7 PLANETARY SURVEY',
-      range: [0.18, 0.65], 
-      checkpoint: 0.22,
+      range: [0.18, 0.58], 
+      checkpoint: 0.205,
       navModeKey: 'projects',
       sysMode: 'SYS.FLIGHT // SOL-7 PLANETARY SURVEY',
       coords: 'SOL-7 CORRIDOR // ASTROMETRIC LOCK',
@@ -56,36 +56,36 @@
       id: 3, 
       name: '03 // INTERSTELLAR VOID TRANSIT', 
       hudMode: 'INTERSTELLAR VOID TRANSIT',
-      range: [0.65, 0.75], 
-      checkpoint: 0.68,
+      range: [0.58, 0.65], 
+      checkpoint: 0.635,
       navModeKey: 'transit',
       sysMode: 'SYS.VOID // INTERSTELLAR VOID TRANSIT',
       coords: 'DEEP SPACE VOID // RANGE: 42,000 AU',
-      status: 'STATUS: RELATIVISTIC CRUISE ACTIVE',
+      status: 'STATUS: CONSTELLATION FIELD ACQUIRED',
       directorLabel: 'TRANSIT // WARP VECTOR',
       showDirector: true,
-      desc: 'Relativistic Departure Corridor' 
+      desc: 'Relativistic Departure Corridor & Field Discovery' 
     },
     { 
       id: 4, 
       name: '04 // ASTROMETRIC INVENTORY SCAN', 
       hudMode: 'ASTROMETRIC INVENTORY SCAN',
-      range: [0.75, 0.93], 
-      checkpoint: 0.85,
+      range: [0.65, 0.92], 
+      checkpoint: 0.670,
       navModeKey: 'skills',
       sysMode: 'SYS.DIAG // ASTROMETRIC INVENTORY SCAN',
       coords: 'ASTROMETRIC GRID // 39 SUBSYSTEMS VERIFIED',
       status: 'STATUS: COMPILER & STACK MATRIX SYNCHRONIZED',
       directorLabel: 'DIAG // MATRIX ONLINE',
       showDirector: false,
-      desc: '3D Astrometric Technology Monoliths' 
+      desc: '7 Continuous Astrometric Technology Constellations' 
     },
     { 
       id: 5, 
       name: '05 // BEACON NEXUS TRANSMISSION', 
       hudMode: 'BEACON NEXUS TRANSMISSION',
-      range: [0.93, 1.00], 
-      checkpoint: 0.96,
+      range: [0.92, 1.00], 
+      checkpoint: 1.00,
       navModeKey: 'contact',
       sysMode: 'SYS.COMM // BEACON NEXUS TRANSMISSION',
       coords: 'CARRIER: 1420.405 MHz // GAIN: +18dB',
@@ -98,29 +98,43 @@
 
   // Motion Tuning Constants & Solar-System-to-Sky-Map Transition Parameters
   const DEAD_BAND_EPSILON = 0.00008; // Strictly halts camera when delta is sub-pixel
-  const DAMPING_FACTOR = 0.085;       // Critical damping rate per frame (~60fps)
+  const DAMPING_FACTOR = 0.078;       // Critical damping rate per frame (~60fps)
   const ARRIVAL_DAMPING = 0.058;      // Long calm ease-out in 0.85-1.00 arrival window
-  const TOUCH_SENSITIVITY = 0.00032;  // Normalized progress change per touch pixel
+  const TOUCH_SENSITIVITY = 0.00010;  // Normalized progress change per touch pixel
 
   // Leg 1: Home (Black Hole) -> Sector 02 Solar System Overview Transition [0.000, 0.180]
   const HOME_T_START = 0.000;
   const HOME_T_END = 0.180;
   const HOME_SPAN = HOME_T_END - HOME_T_START;
-  const HOME_STEPS = 4;
-  const HOME_AUTOPLAY_MS = 4000;
+  const HOME_STEPS = 6;
+  const HOME_AUTOPLAY_MS = 2400;
 
-  // Leg 2: Planet 07 -> Sector 04 7-Constellation Sky Map Transition [0.572, 0.850]
+  // Leg 2: Planet 07 -> Sector 04 7-Constellation Continuous Flight [0.572, 0.910]
   const TRANSITION_T_START = 0.572;   // Planet 07 orbital position
-  const TRANSITION_T_END = 0.850;     // Wide 7-Constellation Sky Map arrival
+  const TRANSITION_T_OVERVIEW = 0.635; // Complete constellation field discovered in wide overview
+  const TRANSITION_T_END = 0.670;     // First constellation arrival (Languages)
   const TRANSITION_SPAN = TRANSITION_T_END - TRANSITION_T_START;
-  const TRANSITION_STEPS = 4;
+  const TRANSITION_STEPS = 6;
   const AUTOPLAY_DURATION_MS = 3500;
   const SKIP_DURATION_MS = 600;
   const AU_PER_LIGHT_YEAR = 63241;
 
+  // 7 Verified Technology Constellation Waypoints across Sector 04
+  const CONSTELLATION_WAYPOINTS = [
+    { idx: 0, key: 'languages', title: 'Programming Languages', t: 0.670 },
+    { idx: 1, key: 'backend',   title: 'Backend Development',   t: 0.710 },
+    { idx: 2, key: 'frontend',  title: 'Front End',             t: 0.750 },
+    { idx: 3, key: 'databases', title: 'Databases & Storage',   t: 0.790 },
+    { idx: 4, key: 'ai',        title: 'Applied AI & ML',       t: 0.830 },
+    { idx: 5, key: 'tools',     title: 'Developer Tools',       t: 0.870 },
+    { idx: 6, key: 'cs',        title: 'CS Fundamentals',       t: 0.910 }
+  ];
+  const CONSTELLATION_WAYPOINT_T = [0.670, 0.710, 0.750, 0.790, 0.830, 0.870, 0.910];
+
   // Transition Playback & Step Gesture State
   let autoPlayState = null;           // { startP, endP, startMs, durationMs, isSkip }
   let wheelStepLockUntil = 0;
+  let constellationWheelLockUntil = 0;
   let lastWheelMagnitude = 0;
   let lastWheelTimeMs = 0;
   let skipBtnEl = null;
@@ -557,13 +571,12 @@
   }
 
   function syncNavbarActiveState(t) {
-    const midTransitionT = TRANSITION_T_START + 0.5 * TRANSITION_SPAN; // ~0.711
     let activeId = 'hero';
     if (t < 0.09) {
       activeId = 'hero';
-    } else if (t < midTransitionT) {
+    } else if (t < 0.60) {
       activeId = 'works';
-    } else if (t < 0.93) {
+    } else if (t < 0.925) {
       activeId = 'disciplines';
     } else {
       activeId = 'dispatch';
@@ -655,6 +668,31 @@
     showSkipButton();
   }
 
+  function startAutoPlayToContact() {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      jumpToProgress(1.00);
+      return;
+    }
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
+      window.GalaxyJourney.closeConstellationDetail(true);
+    }
+    const startT = Math.max(0.67, currentProgress);
+    if (startT >= 0.995) {
+      setTargetProgress(1.00, true);
+      return;
+    }
+    const remainingFrac = (1.00 - startT) / (1.00 - 0.67);
+    autoPlayState = {
+      type: 'contact',
+      startT,
+      endT: 1.00,
+      startMs: performance.now(),
+      durationMs: Math.max(800, Math.round(2600 * remainingFrac)),
+      isSkip: false
+    };
+  }
+
   function startAutoPlayToProjects(fromStart = false) {
     const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) {
@@ -717,7 +755,7 @@
       '#hero': 0.00,
       '#works': 0.205,
       '#disciplines': TRANSITION_T_END,
-      '#dispatch': 0.96
+      '#dispatch': 1.00
     };
 
     const links = document.querySelectorAll(
@@ -766,6 +804,13 @@
             setTargetProgress(TRANSITION_T_END, true);
           }
           return;
+        }
+
+        if (href === '#dispatch') {
+          if (currentProgress < 0.99) {
+            startAutoPlayToContact();
+            return;
+          }
         }
 
         if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
@@ -956,7 +1001,13 @@
         if (t >= 0.05 && t <= 0.25) {
           motionBlur = Math.min(0.85, absVel * 95.0 + (isMoving ? 0.18 : 0.0));
         } else if (t > 0.25 && t < TRANSITION_T_START) {
-          motionBlur = Math.min(0.45, absVel * 50.0);
+          const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
+          const isAtPlanetDwell = PLANET_WAYPOINTS.some(wp => Math.abs(t - wp) <= 0.014);
+          // Subtle cinematic star streaks when cruising through interplanetary void
+          motionBlur = isAtPlanetDwell ? 0.0 : Math.min(0.50, absVel * 85.0 + (isMoving ? 0.08 : 0.0));
+        } else if (t >= 0.88 && t <= 0.94) {
+          // Subtle cinematic star streaks during Leg 3 approach cruise (similar to Leg 1)
+          motionBlur = Math.min(0.50, absVel * 75.0 + (isMoving ? 0.10 : 0.0));
         } else {
           // Strict zero warp streaks / zero tunnel effect in Solar -> Deep Space -> Sky Map
           motionBlur = 0.0;
@@ -965,12 +1016,14 @@
       }
     }
 
-    // ── 4. SECTOR 04 & SECTOR 05 HANDOFF (Stage Gate: Sky Map uses Three.js scene; Contact fades in >0.87) ──
+    // ── 4. SECTOR 04 & SECTOR 05 HANDOFF (Leg 3: Continuous Starfield, Projector Ignition & Cards) ──
     if (window.GalaxyJourney) {
       if (typeof window.GalaxyJourney.updateSkillsDiscoveryProgress === 'function') {
         window.GalaxyJourney.updateSkillsDiscoveryProgress(t >= TRANSITION_T_END ? 1.0 : 0.0);
       }
-      if (t > 0.93) {
+      if (typeof window.GalaxyJourney.updateContactFlightProgress === 'function') {
+        window.GalaxyJourney.updateContactFlightProgress(t);
+      } else if (t > 0.93) {
         const pBeacon = Math.min(1.0, (t - 0.93) / 0.07);
         if (typeof window.GalaxyJourney.updateBeaconNexusProgress === 'function') {
           window.GalaxyJourney.updateBeaconNexusProgress(pBeacon);
@@ -1001,18 +1054,25 @@
     const deltaMs = Math.min(64, now - lastFrameTime);
     lastFrameTime = now;
 
-    // 1. Optional Nav-Click Auto-Play (Home or Sky Map flight)
+    // 1. Optional Nav-Click Auto-Play (Home, Sky Map, or Contact flight)
     if (autoPlayState) {
       const isHome = autoPlayState.type === 'home';
+      const isContact = autoPlayState.type === 'contact';
       const elapsed = now - autoPlayState.startMs;
       const rawU = Math.min(1.0, elapsed / Math.max(1, autoPlayState.durationMs));
       const easedU = autoPlayState.isSkip
         ? (1.0 - Math.pow(1.0 - rawU, 3.0))
         : (rawU < 0.5 ? 4.0 * rawU * rawU * rawU : 1.0 - Math.pow(-2.0 * rawU + 2.0, 3.0) / 2.0);
-      const curP = autoPlayState.startP + (autoPlayState.endP - autoPlayState.startP) * easedU;
-      const mappedT = isHome
-        ? (HOME_T_START + curP * HOME_SPAN)
-        : (TRANSITION_T_START + curP * TRANSITION_SPAN);
+      let mappedT;
+      if (isContact) {
+        mappedT = autoPlayState.startT + (autoPlayState.endT - autoPlayState.startT) * easedU;
+      } else if (isHome) {
+        const curP = autoPlayState.startP + (autoPlayState.endP - autoPlayState.startP) * easedU;
+        mappedT = HOME_T_START + curP * HOME_SPAN;
+      } else {
+        const curP = autoPlayState.startP + (autoPlayState.endP - autoPlayState.startP) * easedU;
+        mappedT = TRANSITION_T_START + curP * TRANSITION_SPAN;
+      }
       previousProgress = currentProgress;
       currentProgress = mappedT;
       targetProgress = mappedT;
@@ -1124,11 +1184,6 @@
       return;
     }
 
-    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) {
-      // Lock outer timeline scrolling while Constellation Detail View is open
-      return;
-    }
-
     // Normalized delta (pixels vs lines vs pages)
     let delta = e.deltaY;
     if (e.deltaMode === 1) delta *= 24;      // Line mode
@@ -1147,100 +1202,81 @@
     const dir = delta > 0 ? 1 : (delta < 0 ? -1 : 0);
     if (!dir) return;
 
-    // 4-Step Gesture Control inside Home <-> Solar System Transition [0.000, 0.180]
-    const leavingHome = (targetProgress <= 0.015 && dir > 0);
-    const returningToHome = (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
-    const insideHomeCorridor = (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
-                               (Math.abs(targetProgress - HOME_T_END) <= 0.005 && dir < 0);
+    // ── PLANET WAYPOINT DOCKING & SINGLE-SCROLL TAKEOFF ──
+    const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
+    const dockedPlanetWp = PLANET_WAYPOINTS.find(wp => Math.abs(targetProgress - wp) <= 0.008);
 
-    if (leavingHome || insideHomeCorridor || returningToHome) {
-      const now = performance.now();
-      const mag = Math.abs(delta);
-      const dt = now - lastWheelTimeMs;
-      const isInertiaTail = (now < wheelStepLockUntil) && (mag <= lastWheelMagnitude * 0.82 && mag < 35);
-      lastWheelTimeMs = now;
-      lastWheelMagnitude = mag;
-
-      if (now < wheelStepLockUntil && (isInertiaTail || dt < 120)) {
+    if (dockedPlanetWp !== undefined) {
+      // User is docked at a planet viewing the project dossier.
+      // A SINGLE deliberate scroll movement initiates the takeoff sequence immediately!
+      const takeoffOffset = 0.016; // Propels past dwell threshold [wp - 0.012, wp + 0.012]
+      if (dir > 0) {
+        // Forward takeoff toward next planet / destination
+        const newTarget = Math.min(1.0, dockedPlanetWp + takeoffOffset);
+        setTargetProgress(newTarget, true);
+        return;
+      } else if (dir < 0) {
+        // Reverse takeoff toward previous sector / planet
+        const newTarget = Math.max(0.0, dockedPlanetWp - takeoffOffset);
+        setTargetProgress(newTarget, true);
         return;
       }
-      wheelStepLockUntil = now + 220;
-
-      if (returningToHome) {
-        setHomeProgress(1.0, false);
-      } else {
-        stepHome(dir);
-      }
-      return;
     }
 
-    // 4-Step Gesture Control inside Planet 07 <-> Sky Map Transition [0.572, 0.850]
-    const leavingPlanet07 = (targetProgress >= TRANSITION_T_START - 0.014 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0);
-    const returningToMap = (targetProgress > TRANSITION_T_END && targetProgress <= TRANSITION_T_END + 0.06 && dir < 0);
-    const insideCorridor = (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
-                           (Math.abs(targetProgress - TRANSITION_T_END) <= 0.005 && dir < 0);
-
-    if (leavingPlanet07 || insideCorridor || returningToMap) {
-      const now = performance.now();
-      const mag = Math.abs(delta);
-      const dt = now - lastWheelTimeMs;
-      const isInertiaTail = (now < wheelStepLockUntil) && (mag <= lastWheelMagnitude * 0.82 && mag < 35);
-      lastWheelTimeMs = now;
-      lastWheelMagnitude = mag;
-
-      // Filter trackpad momentum decay while still allowing deliberate fast double-scrolls
-      if (now < wheelStepLockUntil && (isInertiaTail || dt < 120)) {
+    // ── CONSTELLATION WAYPOINT DOCKING & SINGLE-SCROLL TAKEOFF (Phase 2 Continuous Journey) ──
+    const dockedConstellationWp = CONSTELLATION_WAYPOINT_T.find(wp => Math.abs(targetProgress - wp) <= 0.008);
+    if (dockedConstellationWp !== undefined) {
+      // User is settled at a technology constellation exploring its details.
+      // A SINGLE deliberate scroll movement initiates departure immediately!
+      const takeoffOffset = 0.015;
+      if (dir > 0) {
+        const newTarget = Math.min(1.0, dockedConstellationWp + takeoffOffset);
+        setTargetProgress(newTarget, true);
+        return;
+      } else if (dir < 0) {
+        const newTarget = Math.max(0.0, dockedConstellationWp - takeoffOffset);
+        setTargetProgress(newTarget, true);
         return;
       }
-      wheelStepLockUntil = now + 220;
-
-      if (returningToMap) {
-        setTransitionProgress(1.0, false);
-      } else {
-        stepTransition(dir);
-      }
-      return;
     }
 
-    // Standard continuous damped pacing outside transition corridor
-    const clampedDelta = Math.max(-60, Math.min(60, delta));
+    // ── CALIBRATED SLOW & CINEMATIC PROGRESSION ACROSS ALL JOURNEY SECTORS ──
+    const clampedDelta = Math.max(-50, Math.min(50, delta));
 
-    let divisor = 4500;
-    if (targetProgress >= 0.095 && targetProgress < 0.195) {
-      divisor = 2400;
-    } else if (targetProgress >= 0.195 && targetProgress <= TRANSITION_T_START) {
-      divisor = 2600; // Smooth planetary flight: ~2-3 deliberate wheel clicks per planet
-    } else if (targetProgress >= TRANSITION_T_START && targetProgress <= 0.93) {
-      divisor = 5500; // Comfortable exploration dwell on Constellation Sky Map
-    } else if (targetProgress > 0.93) {
-      divisor = 3600;
+    let divisor = 14000;
+    if (targetProgress >= 0.000 && targetProgress < 0.185) {
+      // Sector 01: Deliberate, smooth, slow departure from Black Hole singularity to Solar System
+      divisor = 14000;
+    } else if (targetProgress >= 0.185 && targetProgress <= TRANSITION_T_START) {
+      // Sector 02: Interplanetary travel between planets
+      const isNearPlanet = PLANET_WAYPOINTS.some(wp => Math.abs(targetProgress - wp) <= 0.014);
+      divisor = isNearPlanet ? 9000 : 16000;
+    } else if (targetProgress > TRANSITION_T_START && targetProgress < 0.650) {
+      // Sector 03: Interstellar void departure from Sol-7 to Constellation Field Discovery
+      divisor = 18000;
+    } else if (targetProgress >= 0.650 && targetProgress <= 0.920) {
+      // Sector 04: Astrometric Constellations exploration
+      const isNearConstellation = CONSTELLATION_WAYPOINT_T.some(wp => Math.abs(targetProgress - wp) <= 0.012);
+      divisor = isNearConstellation ? 10000 : 16000;
+    } else {
+      // Sector 05: Calm, cinematic approach into Beacon Nexus / 3D Hologram Projector
+      divisor = 14000;
     }
 
     let scrollDeltaProgress = (clampedDelta / divisor);
 
-    const WAYPOINTS = [
-      0.000, // Sector 01 Hero
-      0.205, // Planet 01
-      0.266, // Planet 02
-      0.327, // Planet 03
-      0.388, // Planet 04
-      0.450, // Planet 05
-      0.511, // Planet 06
-      0.572, // Planet 07 (Transition Start)
-      0.850, // Sky Map (Transition End)
-      0.980  // Sector 05 Contact
-    ];
-
-    const currentT = targetProgress;
-    for (let i = 0; i < WAYPOINTS.length; i++) {
-      const wp = WAYPOINTS[i];
-      if (Math.abs(currentT - wp) < 0.012) {
-        scrollDeltaProgress *= 0.70; // Gentle deceleration instead of sticky freeze
-        break;
-      }
+    // ── INPUT ACCUMULATION CLAMPING (Halts camera crisply when scrolling stops) ──
+    const MAX_LEAD_LAG = 0.035;
+    const prospectiveTarget = targetProgress + scrollDeltaProgress;
+    const prospectiveDiff = prospectiveTarget - currentProgress;
+    let newTarget;
+    if (Math.abs(prospectiveDiff) <= MAX_LEAD_LAG) {
+      newTarget = prospectiveTarget;
+    } else {
+      newTarget = currentProgress + Math.sign(prospectiveDiff) * MAX_LEAD_LAG;
     }
 
-    const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + scrollDeltaProgress));
+    newTarget = Math.max(0.0, Math.min(1.0, newTarget));
     setTargetProgress(newTarget, true);
   }
 
@@ -1288,13 +1324,36 @@
     lastTouchY = currentY;
     lastTouchTime = now;
 
-    // Defer step inside transition corridors to onTouchEnd swipe
-    const inHomeCorridor = targetProgress >= 0.003 && targetProgress <= HOME_T_END - 0.003;
-    const inCorridor = targetProgress >= TRANSITION_T_START + 0.003 && targetProgress <= TRANSITION_T_END - 0.003;
-    if (inCorridor || inHomeCorridor) return;
+    const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
+    const dockedPlanetWp = PLANET_WAYPOINTS.find(wp => Math.abs(targetProgress - wp) <= 0.008);
+    const dir = deltaY > 0 ? 1 : (deltaY < 0 ? -1 : 0);
 
-    const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + (deltaY * TOUCH_SENSITIVITY)));
-    setTargetProgress(newTarget, true);
+    if (dockedPlanetWp !== undefined && Math.abs(deltaY) > 10) {
+      // Single swipe takeoff from planet
+      const takeoffOffset = 0.016;
+      const newTarget = dir > 0
+        ? Math.min(1.0, dockedPlanetWp + takeoffOffset)
+        : Math.max(0.0, dockedPlanetWp - takeoffOffset);
+      setTargetProgress(newTarget, true);
+      return;
+    }
+
+    let touchFactor = TOUCH_SENSITIVITY;
+    const isNearPlanet = PLANET_WAYPOINTS.some(wp => Math.abs(targetProgress - wp) <= 0.014);
+    if (isNearPlanet) {
+      touchFactor *= 1.2;
+    }
+
+    const prospectiveTarget = targetProgress + (deltaY * touchFactor);
+    const prospectiveDiff = prospectiveTarget - currentProgress;
+    const MAX_LEAD_LAG = 0.035;
+    let newTarget;
+    if (Math.abs(prospectiveDiff) <= MAX_LEAD_LAG) {
+      newTarget = prospectiveTarget;
+    } else {
+      newTarget = currentProgress + Math.sign(prospectiveDiff) * MAX_LEAD_LAG;
+    }
+    setTargetProgress(Math.max(0.0, Math.min(1.0, newTarget)), true);
   }
 
   function onTouchEnd() {
@@ -1302,37 +1361,56 @@
     touchActive = false;
 
     if (isInputLocked()) return;
-    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) return;
+    if (window.GalaxyJourney && typeof window.GalaxyJourney.isConstellationDetailActive === 'function' && window.GalaxyJourney.isConstellationDetailActive()) {
+      const totalSwipeY = touchStartY - lastTouchY;
+      const dir = totalSwipeY > 28 ? 1 : (totalSwipeY < -28 ? -1 : 0);
+      if (!dir) return;
 
-    const totalSwipeY = touchStartY - lastTouchY;
-    const dir = totalSwipeY > 28 ? 1 : (totalSwipeY < -28 ? -1 : 0);
+      const totalSectors = (window.TechnologyConstellation && typeof window.TechnologyConstellation.getSectorData === 'function')
+        ? window.TechnologyConstellation.getSectorData().length
+        : 7;
+      const curSec = (window.TechnologyConstellation && typeof window.TechnologyConstellation.getActiveSectorIndex === 'function')
+        ? window.TechnologyConstellation.getActiveSectorIndex()
+        : (window.GalaxyJourney.getDetailTransitionState ? window.GalaxyJourney.getDetailTransitionState().detailSectorIdx : 0);
 
-    const inOrEnteringHome =
-      (targetProgress <= 0.015 && dir > 0) ||
-      (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
-      (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
-
-    if (dir && inOrEnteringHome) {
-      if (targetProgress > HOME_T_END && dir < 0) {
-        setHomeProgress(1.0, false);
+      if (dir > 0) {
+        if (curSec < totalSectors - 1) {
+          const nextSec = curSec + 1;
+          if (window.TechnologyConstellation && typeof window.TechnologyConstellation.selectSector === 'function') {
+            window.TechnologyConstellation.selectSector(nextSec);
+          }
+          if (window.GalaxyJourney && typeof window.GalaxyJourney.setActiveDetailSector === 'function') {
+            window.GalaxyJourney.setActiveDetailSector(nextSec);
+          }
+        } else {
+          if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
+            window.GalaxyJourney.closeConstellationDetail(true);
+          }
+          setTargetProgress(0.980, true);
+        }
       } else {
-        stepHome(dir);
+        if (curSec > 0) {
+          const prevSec = curSec - 1;
+          if (window.TechnologyConstellation && typeof window.TechnologyConstellation.selectSector === 'function') {
+            window.TechnologyConstellation.selectSector(prevSec);
+          }
+          if (window.GalaxyJourney && typeof window.GalaxyJourney.setActiveDetailSector === 'function') {
+            window.GalaxyJourney.setActiveDetailSector(prevSec);
+          }
+        } else {
+          if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
+            window.GalaxyJourney.closeConstellationDetail();
+          }
+        }
       }
       return;
     }
 
-    const inOrEnteringCorridor =
-      (targetProgress >= TRANSITION_T_START - 0.015 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0) ||
-      (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
-      (Math.abs(targetProgress - TRANSITION_T_END) <= 0.006 && dir < 0);
-
-    if (dir && inOrEnteringCorridor) {
-      stepTransition(dir);
-      return;
-    }
+    const totalSwipeY = touchStartY - lastTouchY;
+    const dir = totalSwipeY > 28 ? 1 : (totalSwipeY < -28 ? -1 : 0);
 
     if (Math.abs(touchVelocityY) > 0.4) {
-      const momentumDelta = touchVelocityY * 0.045;
+      const momentumDelta = Math.max(-0.02, Math.min(0.02, touchVelocityY * 0.025));
       const newTarget = Math.max(0.0, Math.min(1.0, targetProgress + momentumDelta));
       setTargetProgress(newTarget, true);
     }
@@ -1376,31 +1454,20 @@
       }
       const dir = isFwd ? 1 : -1;
 
-      const inOrEnteringHome =
-        (targetProgress <= 0.015 && dir > 0) ||
-        (targetProgress > 0.002 && targetProgress < HOME_T_END - 0.002) ||
-        (targetProgress > HOME_T_END && targetProgress <= 0.22 && dir < 0);
+      // Single-action takeoff from docked planet waypoint
+      const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
+      const dockedPlanetWp = PLANET_WAYPOINTS.find(wp => Math.abs(targetProgress - wp) <= 0.008);
 
-      if (inOrEnteringHome) {
-        if (targetProgress > HOME_T_END && dir < 0) {
-          setHomeProgress(1.0, false);
-        } else {
-          stepHome(dir);
-        }
+      if (dockedPlanetWp !== undefined) {
+        const takeoffOffset = 0.016;
+        const newTarget = dir > 0
+          ? Math.min(1.0, dockedPlanetWp + takeoffOffset)
+          : Math.max(0.0, dockedPlanetWp - takeoffOffset);
+        setTargetProgress(newTarget, true);
         return;
       }
 
-      const inOrEntering =
-        (targetProgress >= TRANSITION_T_START - 0.015 && targetProgress <= TRANSITION_T_START + 0.012 && dir > 0) ||
-        (targetProgress > TRANSITION_T_START + 0.002 && targetProgress < TRANSITION_T_END - 0.002) ||
-        (Math.abs(targetProgress - TRANSITION_T_END) <= 0.006 && dir < 0);
-
-      if (inOrEntering) {
-        stepTransition(dir);
-        return;
-      }
-
-      const STEP = 0.02;
+      const STEP = 0.008; // Deliberate small step
       setTargetProgress(Math.max(0.0, Math.min(1.0, targetProgress + dir * STEP)), true);
     } else if (e.key === 'Home') {
       e.preventDefault();
@@ -1619,11 +1686,19 @@
           `<button type="button" data-dbg-p="${v}" style="padding:2px 6px;font-size:11px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#e2e8f0;border-radius:3px;cursor:pointer;">${v}</button>`
         ).join('')}
       </div>
+      <div style="font-size:11px;color:#38bdf8;margin-top:6px;">LEG 3: Skills -> Contact</div>
+      <input id="contactDebugSlider" type="range" min="0.85" max="1.00" step="0.002" value="0.85" style="width:100%;cursor:pointer;" />
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">
+        ${[0.85, 0.88, 0.91, 0.94, 0.97, 0.99, 1.00].map(v =>
+          `<button type="button" data-dbg-contact="${v}" style="padding:2px 6px;font-size:11px;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.4);color:#e0f7fa;border-radius:3px;cursor:pointer;">${v}</button>`
+        ).join('')}
+      </div>
     `;
     document.body.appendChild(debugBarEl);
 
     debugSliderEl = document.getElementById('transitionDebugSlider');
     homeSliderEl = document.getElementById('homeDebugSlider');
+    const contactSliderEl = document.getElementById('contactDebugSlider');
     debugValEl = document.getElementById('transitionDebugVal');
 
     if (homeSliderEl) {
@@ -1645,6 +1720,19 @@
     debugBarEl.querySelectorAll('[data-dbg-p]').forEach(btn => {
       btn.addEventListener('click', () => {
         setTransitionProgress(parseFloat(btn.getAttribute('data-dbg-p')), true);
+      });
+    });
+
+    if (contactSliderEl) {
+      contactSliderEl.addEventListener('input', (e) => {
+        interruptAutoPlay();
+        setTargetProgress(parseFloat(e.target.value), true);
+      });
+    }
+    debugBarEl.querySelectorAll('[data-dbg-contact]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        interruptAutoPlay();
+        setTargetProgress(parseFloat(btn.getAttribute('data-dbg-contact')), true);
       });
     });
   }
@@ -1730,6 +1818,7 @@
     setTransitionProgress: setTransitionProgress,
     stepTransition: stepTransition,
     startAutoPlayToSkills: startAutoPlayToSkills,
+    startAutoPlayToContact: startAutoPlayToContact,
     triggerSkipToSkyMap: triggerSkipToSkyMap,
     TRANSITION_T_START: TRANSITION_T_START,
     TRANSITION_T_END: TRANSITION_T_END,
