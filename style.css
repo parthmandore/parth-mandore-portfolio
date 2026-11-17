@@ -6,10 +6,10 @@
 /* ── 01. THEME IMPORTS ── */
 @import url('themes/github-classic.css?v=20261107_v20');
 @import url('themes/space-cinematic.css?v=20261107_v47');
-@import url('galaxy-journey/galaxy-journey.css?v=20261113_v53');
-@import url('galaxy-journey/project-experience.css?v=20261107_v47');
-@import url('galaxy-journey/master-journey.css?v=20261113_v53');
-@import url('galaxy-journey/technology-constellation.css?v=20261113_v53');
+@import url('themes/space/galaxy-journey/galaxy-journey.css?v=20261113_v53');
+@import url('themes/space/galaxy-journey/project-experience.css?v=20261107_v47');
+@import url('themes/space/galaxy-journey/master-journey.css?v=20261115_v63');
+@import url('themes/space/galaxy-journey/technology-constellation.css?v=20261115_v60');
 
 /* Universal safety reset: guarantee sky map constellation elements never render default native button boxes */
 button.sky-map-item,
@@ -22,6 +22,8 @@ div.sky-map-item,
   box-shadow: none !important;
   padding: 0 !important;
   margin: 0 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
 }
 
 .dispatch-holo-container,
@@ -76,7 +78,10 @@ div.sky-map-item,
 
 .sky-map-label-pill:hover,
 .sky-map-label-pill:focus-visible,
-.sky-map-pill-wrapper:hover .sky-map-label-pill {
+.sky-map-pill-wrapper:hover .sky-map-label-pill,
+.sky-map-item:hover .sky-map-label-pill,
+.sky-map-item:focus-visible .sky-map-label-pill,
+.sky-map-item.is-hovered .sky-map-label-pill {
   color: #ffffff !important;
   border-color: rgba(var(--sector-rgb, 245, 158, 11), 0.90) !important;
   background: rgba(12, 18, 36, 0.92) !important;
@@ -99,7 +104,10 @@ div.sky-map-item,
 }
 
 .sky-map-label-pill:hover .sky-map-arrow,
-.sky-map-pill-wrapper:hover .sky-map-arrow {
+.sky-map-pill-wrapper:hover .sky-map-arrow,
+.sky-map-item:hover .sky-map-arrow,
+.sky-map-item:focus-visible .sky-map-arrow,
+.sky-map-item.is-hovered .sky-map-arrow {
   transform: translateX(3px);
 }
 
@@ -111,6 +119,15 @@ div.sky-map-item,
   color: rgba(245, 185, 80, 0.70);
   margin-top: 3px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.sky-star-tech-tag {
+  display: none !important;
+}
+
+.sky-map-item.is-dimmed {
+  opacity: 0.45 !important;
+  transition: opacity 0.25s ease !important;
 }
 
 /* ── 02. VIEW CONTAINER SYSTEM ── */
