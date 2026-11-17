@@ -1,0 +1,2242 @@
+/* ==========================================================================
+   PHASE 1: MASTER CINEMATIC VIEWPORT RIGGING & SCROLL SPINE STYLING
+   Space Journey 3D Continuous Portfolio
+   ========================================================================== */
+
+/* 1. Dedicated Fixed Viewport Container */
+.cinematic-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Visibility conditioned on Space Theme */
+html[data-theme="space"] .cinematic-viewport {
+  display: block;
+}
+html:not([data-theme="space"]) .cinematic-viewport {
+  display: none !important;
+}
+
+/* Interactive elements inside fixed viewport */
+.cinematic-viewport .is-interactive,
+.cinematic-viewport a,
+.cinematic-viewport button,
+.cinematic-viewport input,
+.cinematic-viewport [role="button"],
+.cinematic-viewport .interactive-plate {
+  pointer-events: auto;
+}
+
+/* 2. Virtual Scroll Driver (Provides calibrated native scroll track) */
+.scroll-spine-driver {
+  position: relative;
+  width: 100%;
+  height: 20000px;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  z-index: -1;
+  margin: 0;
+  padding: 0;
+}
+
+html:not([data-theme="space"]) .scroll-spine-driver {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   3. SLEEK SPACECRAFT AVIONICS NAVIGATION HUD (Docked Cockpit Footer Deck)
+   ══════════════════════════════════════════════════════════════════ */
+.journey-telemetry-hud {
+  position: fixed !important;
+  top: auto !important;
+  bottom: calc(clamp(8px, 1.2vw, 14px) + 50px) !important;
+  right: clamp(14px, 2vw, 28px) !important;
+  z-index: 9992 !important;
+  width: 215px !important;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 11, 18, 0.94) 0%,
+    rgba(4, 5, 10, 0.98) 100%
+  ) !important;
+  border: 1px solid rgba(245, 158, 11, 0.32) !important;
+  border-bottom: none !important;
+  border-radius: 8px 8px 0 0 !important;
+  box-shadow:
+    0 -8px 28px rgba(0, 0, 0, 0.75),
+    0 0 16px rgba(245, 158, 11, 0.08),
+    inset 0 1px 0 rgba(245, 158, 11, 0.35) !important;
+  color: #E2E8F0;
+  font-family: 'Space Mono', 'SF Mono', monospace;
+  font-size: 8.5px;
+  line-height: 1.35;
+  pointer-events: auto;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease !important;
+  backdrop-filter: blur(16px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(1.4) !important;
+  overflow: hidden;
+  user-select: none;
+}
+
+html:not([data-theme="space"]) .journey-telemetry-hud {
+  display: none !important;
+}
+
+.journey-telemetry-hud.is-minimized {
+  transform: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  bottom: calc(clamp(8px, 1.2vw, 14px) + 46px) !important;
+  right: clamp(14px, 2vw, 28px) !important;
+  border-radius: 6px !important;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.25) !important;
+  opacity: 0.85 !important;
+  border-color: rgba(245, 158, 11, 0.24) !important;
+}
+
+.journey-telemetry-hud.is-minimized .hud-telemetry-header {
+  padding: 4px 9px !important;
+  gap: 8px !important;
+}
+
+.journey-telemetry-hud.is-minimized:hover {
+  opacity: 1 !important;
+  border-color: rgba(245, 158, 11, 0.50) !important;
+}
+
+.journey-telemetry-hud.is-minimized .hud-telemetry-body,
+.journey-telemetry-hud.is-minimized .hud-telemetry-footer {
+  display: none !important;
+}
+
+.journey-telemetry-hud.is-minimized .hud-telemetry-header {
+  border-bottom: none;
+}
+
+.hud-telemetry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 10px;
+  background: rgba(245, 158, 11, 0.08);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.22);
+  cursor: pointer;
+  user-select: none;
+}
+  background: rgba(245, 158, 11, 0.08);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.22);
+  cursor: pointer;
+  user-select: none;
+}
+
+.hud-telemetry-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-brand-title {
+  color: #F59E0B;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: 8.5px;
+  text-transform: uppercase;
+}
+
+.hud-telemetry-pip {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #F59E0B;
+  box-shadow: 0 0 6px #F59E0B;
+  animation: hudPipPulse 2s infinite ease-in-out;
+}
+
+@keyframes hudPipPulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px #F59E0B; }
+}
+
+.hud-telemetry-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-lock-badge {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+
+.hud-lock-badge.is-clear {
+  color: #10B981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.hud-lock-badge.is-locked {
+  color: #F59E0B;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.hud-toggle-btn {
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: inherit;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+
+.hud-toggle-btn:hover {
+  color: #F59E0B;
+}
+
+.hud-telemetry-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.hud-sector-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-block-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #64748B;
+  text-transform: uppercase;
+}
+
+.hud-sector-name {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #06B6D4;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-progress-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hud-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-progress-value {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #F59E0B;
+  letter-spacing: 0.04em;
+}
+
+.hud-progress-bar-wrap {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.hud-progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #F59E0B, #FBBF24);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.7);
+  transition: width 0.05s linear;
+}
+
+.hud-telemetry-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hud-grid-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hud-grid-label {
+  font-size: 7.5px;
+  color: #64748B;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hud-grid-val {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #E2E8F0;
+  letter-spacing: 0.02em;
+}
+
+.hud-grid-val.is-amber {
+  color: #F59E0B;
+}
+
+.hud-grid-val.is-green {
+  color: #10B981;
+}
+
+.hud-telemetry-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.45);
+  font-size: 7.5px;
+  color: #64748B;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hud-status-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.06em;
+}
+
+.hud-status-dot.pulse-green {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 4px #10B981;
+}
+
+.hud-key-hint {
+  font-family: inherit;
+  color: rgba(245, 158, 11, 0.7);
+  font-weight: 700;
+}
+
+/* 4. Responsive Media Rules */
+@media (max-width: 768px) {
+  .journey-telemetry-hud {
+    top: auto;
+    bottom: 74px;
+    right: 12px;
+    width: 270px;
+    font-size: 10px;
+  }
+  .scroll-spine-driver {
+    height: 16000px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 2: SEAMLESS VIEWPORT & CANVASES STACKING CONTINUITY
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Fix #hero in Space Theme to eliminate section scrolling jumps */
+html[data-theme="space"] #hero {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 22 !important;
+}
+
+html[data-theme="space"] #hero a,
+html[data-theme="space"] #hero button,
+html[data-theme="space"] #hero input,
+html[data-theme="space"] #hero [role="button"],
+html[data-theme="space"] #hero .interactive-plate,
+html[data-theme="space"] #hero .space-hero-dock {
+  pointer-events: auto !important;
+}
+
+/* Ensure worksGalaxyStage is truly fixed viewport behind hero */
+#worksGalaxyStage.works-galaxy-stage {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 12 !important;
+  pointer-events: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html[data-theme="space"] #works.works-showcase-section,
+html[data-theme="space"] #works {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+  z-index: 10 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+#galaxyHudOverlay.galaxy-hud-overlay {
+  z-index: 25 !important;
+  padding-top: max(84px, calc(var(--space-nav-height, 65px) + 24px)) !important;
+  padding-bottom: calc(48px + 1.2rem) !important;
+  padding-left: 4.5% !important;
+  padding-right: 4.5% !important;
+}
+
+#galaxyHudOverlay .galaxy-hud-center {
+  min-height: 0 !important;
+  align-items: flex-start !important;
+  padding-top: 12px !important;
+}
+
+#galaxyHudOverlay .galaxy-compact-discovery,
+#galaxyDossierCard {
+  max-height: calc(100vh - 84px - 110px) !important;
+  margin-top: 6px !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+}
+
+html[data-theme="space"] #works a,
+html[data-theme="space"] #works button,
+html[data-theme="space"] #works input,
+html[data-theme="space"] #works [role="button"],
+html[data-theme="space"] #works #projectDossierCard,
+html[data-theme="space"] #works #projectExperienceModal,
+html[data-theme="space"] #works .galaxy-spacecraft-hud {
+  pointer-events: auto !important;
+}
+
+#hero3DCanvas.hero-3d-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 20 !important;
+  pointer-events: none !important;
+}
+
+/* Ensure background starfield is behind everything */
+#spaceStarfield.space-starfield-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 5 !important;
+  pointer-events: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 2: FIXED COSMIC VIEWPORT FOR SECTOR 04 (SKILLS)
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Fix #disciplines into the cosmic viewport for Space Theme */
+html[data-theme="space"] #disciplines {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 25 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  visibility: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 68px 5% 90px !important;
+  box-sizing: border-box !important;
+  perspective: 1200px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 158, 11, 0.4) transparent;
+  will-change: opacity, transform;
+}
+
+html[data-theme="space"] #disciplines::-webkit-scrollbar {
+  width: 6px;
+}
+html[data-theme="space"] #disciplines::-webkit-scrollbar-track {
+  background: transparent;
+}
+html[data-theme="space"] #disciplines::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.4);
+  border-radius: 3px;
+}
+
+/* Compact Sector 04 Astrometric Header & Constellation Filters */
+html[data-theme="space"] #disciplines .disciplines-header {
+  margin-bottom: 1.2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.8rem !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-sub-rubric {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.22em !important;
+  color: var(--accent-amber, #f59e0b) !important;
+  text-transform: uppercase !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-headline {
+  font-size: clamp(1.8rem, 2.4vw, 2.5rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.01em !important;
+  color: #FAF9F6 !important;
+  margin: 0 !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-lead {
+  font-size: 0.88rem !important;
+  line-height: 1.45 !important;
+  color: rgba(226, 222, 216, 0.75) !important;
+  max-width: 720px !important;
+  margin: 0 !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-nav {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.5rem !important;
+  margin-top: 0.4rem !important;
+  margin-bottom: 1.2rem !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-btn {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.70rem !important;
+  letter-spacing: 0.12em !important;
+  padding: 0.35rem 0.8rem !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
+  background: rgba(3, 4, 8, 0.65) !important;
+  color: rgba(226, 222, 216, 0.85) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  transition: all 0.2s ease !important;
+}
+
+html[data-theme="space"] #disciplines .constellation-filter-btn:hover,
+html[data-theme="space"] #disciplines .constellation-filter-btn.is-active {
+  border-color: var(--cat-color, #f59e0b) !important;
+  background: rgba(var(--cat-rgb, 245, 158, 11), 0.15) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 12px rgba(var(--cat-rgb, 245, 158, 11), 0.3) !important;
+}
+
+/* Skills Catalog & Cards Layout: Ensure all 39 Technologies are visibly rendered and interactive */
+html[data-theme="space"] #disciplines .skills-catalog {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2.5rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+  margin-top: 1rem !important;
+  padding-bottom: 120px !important;
+}
+
+html[data-theme="space"] #disciplines .skills-category-group {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+  margin-bottom: 1rem !important;
+}
+
+html[data-theme="space"] #disciplines .skills-matrix {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 1.25rem !important;
+  margin-top: 1rem !important;
+}
+
+html[data-theme="space"] #disciplines #skillsMatrix .skill-entry {
+  display: flex !important;
+  flex-direction: column !important;
+  background: rgba(8, 10, 16, 0.75) !important;
+  border: 1px solid rgba(245, 158, 11, 0.20) !important;
+  border-radius: 8px !important;
+  padding: 1.2rem !important;
+  backdrop-filter: blur(8px) !important;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease !important;
+  box-sizing: border-box !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover {
+  transform: translateY(-3px) !important;
+  border-color: rgba(245, 158, 11, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15) !important;
+}
+
+/* Interactive elements inside fixed disciplines viewport */
+html[data-theme="space"] #disciplines.is-interactive,
+html[data-theme="space"] #disciplines a,
+html[data-theme="space"] #disciplines button,
+html[data-theme="space"] #disciplines .skill-entry,
+html[data-theme="space"] #disciplines .skill-repo-link,
+html[data-theme="space"] #disciplines .constellation-filter-btn,
+html[data-theme="space"] #disciplines .poster-category-btn,
+html[data-theme="space"] #disciplines .poster-star-node,
+html[data-theme="space"] #disciplines .poster-hover-hud,
+html[data-theme="space"] #disciplines .poster-hud-repo-link,
+html[data-theme="space"] #disciplines .constellation-poster-stage,
+html[data-theme="space"] #disciplines .atlas-category-btn,
+html[data-theme="space"] #disciplines .atlas-star-node,
+html[data-theme="space"] #disciplines .atlas-tray-pill,
+html[data-theme="space"] #disciplines .atlas-stage-container {
+  pointer-events: auto !important;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 4: SECTOR 05 BEACON NEXUS STYLING
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 4: SECTOR 05 BEACON NEXUS STYLING & HOLOGRAPHIC TERMINAL
+   ══════════════════════════════════════════════════════════════════ */
+
+/* Space Theme Contact Section & Hologram Identity Terminal */
+html[data-theme="space"] .dispatch-classic-only {
+  display: none !important;
+}
+
+html[data-theme="space"] #dispatch {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+  z-index: 26 !important;
+  pointer-events: none !important;
+  opacity: 0;
+  visibility: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+  border-top: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: max(74px, calc(var(--space-nav-height, 65px) + 12px)) 4% 76px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  perspective: 1200px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 229, 255, 0.4) transparent;
+  will-change: opacity, transform;
+}
+
+html[data-theme="space"] #dispatch .atelier-container {
+  width: 100% !important;
+  max-width: 1320px !important;
+  height: 100% !important;
+  max-height: calc(100vh - 150px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+}
+
+html[data-theme="space"] #dispatch .dispatch-layout {
+  display: grid !important;
+  grid-template-columns: minmax(320px, 390px) 1fr !important;
+  gap: clamp(1.5rem, 2.8vw, 2.8rem) !important;
+  align-items: center !important;
+  height: 100% !important;
+  max-height: calc(100vh - 130px) !important;
+  margin: 0 !important;
+}
+
+html[data-theme="space"] #dispatch::-webkit-scrollbar {
+  width: 6px;
+}
+html[data-theme="space"] #dispatch::-webkit-scrollbar-track {
+  background: transparent;
+}
+html[data-theme="space"] #dispatch::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.4);
+  border-radius: 3px;
+}
+
+/* Interactive elements inside fixed dispatch viewport */
+html[data-theme="space"] #dispatch.is-interactive,
+html[data-theme="space"] #dispatch a,
+html[data-theme="space"] #dispatch button,
+html[data-theme="space"] #dispatch input,
+html[data-theme="space"] #dispatch textarea,
+html[data-theme="space"] #dispatch .channel-action-btn,
+html[data-theme="space"] #dispatch .channel-main-link,
+html[data-theme="space"] #dispatch .terminal-channel-action,
+html[data-theme="space"] #dispatch .terminal-quick-btn,
+html[data-theme="space"] #dispatch .atelier-btn {
+  pointer-events: auto !important;
+}
+
+/* ── LEFT COLUMN: LUMINOUS IDENTITY TRACE (Phase 3 Beacon Nexus) ── */
+html[data-theme="space"] .dispatch-col-left {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html[data-theme="space"] .luminous-identity-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  width: 100% !important;
+  max-width: 440px !important;
+}
+
+html[data-theme="space"] .luminous-canvas-frame {
+  position: relative !important;
+  width: 100% !important;
+  height: 420px !important;
+  max-height: 52vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  background: radial-gradient(circle at 50% 50%, rgba(14, 28, 48, 0.25) 0%, rgba(3, 7, 18, 0.45) 80%, transparent 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 0 24px rgba(56, 189, 248, 0.06) !important;
+}
+
+/* Futuristic 1px Corner Tech Brackets */
+html[data-theme="space"] .luminous-bracket {
+  position: absolute !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-color: rgba(56, 189, 248, 0.7) !important;
+  border-style: solid !important;
+  pointer-events: none !important;
+}
+html[data-theme="space"] .luminous-bracket.br-tl {
+  top: -1px !important;
+  left: -1px !important;
+  border-width: 2px 0 0 2px !important;
+}
+html[data-theme="space"] .luminous-bracket.br-tr {
+  top: -1px !important;
+  right: -1px !important;
+  border-width: 2px 2px 0 0 !important;
+}
+html[data-theme="space"] .luminous-bracket.br-bl {
+  bottom: -1px !important;
+  left: -1px !important;
+  border-width: 0 0 2px 2px !important;
+}
+html[data-theme="space"] .luminous-bracket.br-br {
+  bottom: -1px !important;
+  right: -1px !important;
+  border-width: 0 2px 2px 0 !important;
+}
+
+/* Luminous Portrait Canvas */
+html[data-theme="space"] .luminous-portrait-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Sub-Orbital Telemetry Badge */
+html[data-theme="space"] .luminous-telemetry-pill {
+  position: absolute !important;
+  top: 10px !important;
+  left: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: rgba(3, 7, 18, 0.75) !important;
+  border: 1px solid rgba(56, 189, 248, 0.3) !important;
+  border-radius: 4px !important;
+  padding: 3px 8px !important;
+  font-family: var(--font-mono, 'Space Mono', monospace) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.12em !important;
+  color: #e2e8f0 !important;
+  z-index: 3 !important;
+}
+html[data-theme="space"] .luminous-telemetry-pill .telemetry-beacon {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: #38bdf8 !important;
+  box-shadow: 0 0 6px #38bdf8 !important;
+  animation: beaconPulse 2s infinite ease-in-out !important;
+}
+html[data-theme="space"] .luminous-telemetry-pill .telemetry-tag {
+  color: #38bdf8 !important;
+  font-weight: 600 !important;
+}
+html[data-theme="space"] .luminous-telemetry-pill .telemetry-sep {
+  color: rgba(255, 255, 255, 0.3) !important;
+}
+html[data-theme="space"] .luminous-telemetry-pill .telemetry-state {
+  color: #10b981 !important;
+  font-weight: 600 !important;
+}
+
+/* Luminous Identity Meta Details */
+html[data-theme="space"] .luminous-identity-meta {
+  width: 100% !important;
+  margin-top: 14px !important;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+html[data-theme="space"] .luminous-name {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  color: #ffffff !important;
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.45), 0 0 28px rgba(56, 189, 248, 0.25) !important;
+  margin: 0 0 3px 0 !important;
+}
+html[data-theme="space"] .luminous-role {
+  font-family: var(--font-mono, 'Space Mono', monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.12em !important;
+  color: #38bdf8 !important;
+  margin-bottom: 8px !important;
+}
+html[data-theme="space"] .luminous-status-card {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(10, 18, 32, 0.75) !important;
+  border: 1px solid rgba(56, 189, 248, 0.22) !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  text-align: left !important;
+}
+html[data-theme="space"] .luminous-status-card .status-indicator-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: #10b981 !important;
+  box-shadow: 0 0 8px #10b981 !important;
+  flex-shrink: 0 !important;
+}
+html[data-theme="space"] .luminous-status-card .status-meta {
+  display: flex !important;
+  flex-direction: column !important;
+}
+html[data-theme="space"] .luminous-status-card .status-label {
+  font-family: var(--font-mono, 'Space Mono', monospace) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.12em !important;
+  color: #10b981 !important;
+  font-weight: 600 !important;
+}
+html[data-theme="space"] .luminous-status-card .status-detail {
+  font-size: 10px !important;
+  color: #94a3b8 !important;
+}
+
+/* ── RIGHT COLUMN: COMMUNICATION TERMINAL ── */
+html[data-theme="space"] .dispatch-col-right {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  height: 100% !important;
+}
+
+html[data-theme="space"] .dispatch-space-terminal-header {
+  display: block !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-rubric {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.16em !important;
+  color: #00ffff !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+html[data-theme="space"] .terminal-rubric-dot {
+  width: 5px !important;
+  height: 5px !important;
+  background: #00ffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 0 6px #00ffff !important;
+}
+html[data-theme="space"] .terminal-title {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  margin: 3px 0 !important;
+  letter-spacing: -0.01em !important;
+  color: #ffffff !important;
+}
+html[data-theme="space"] .terminal-sub {
+  font-size: 12px !important;
+  color: #94a3b8 !important;
+  margin: 0 0 10px 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Channels Grid */
+html[data-theme="space"] .terminal-channels-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-channel-card {
+  background: rgba(10, 18, 32, 0.85) !important;
+  border: 1px solid rgba(0, 229, 255, 0.24) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+}
+html[data-theme="space"] .terminal-channel-card:hover {
+  border-color: rgba(0, 229, 255, 0.55) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 0 12px rgba(0, 229, 255, 0.15) !important;
+}
+html[data-theme="space"] .terminal-channel-label {
+  display: block !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(245, 158, 11, 0.95) !important;
+}
+html[data-theme="space"] .terminal-channel-val {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: #f1f5f9 !important;
+  text-decoration: none !important;
+}
+html[data-theme="space"] .terminal-channel-val:hover {
+  color: #00ffff !important;
+}
+html[data-theme="space"] .terminal-channel-action {
+  background: rgba(0, 229, 255, 0.12) !important;
+  border: 1px solid rgba(0, 229, 255, 0.45) !important;
+  color: #00ffff !important;
+  padding: 5px 9px !important;
+  border-radius: 4px !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+html[data-theme="space"] .terminal-channel-action:hover {
+  background: rgba(0, 229, 255, 0.25) !important;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+html[data-theme="space"] .terminal-channel-action.is-copied {
+  background: rgba(16, 185, 129, 0.25) !important;
+  border-color: #10b981 !important;
+  color: #10b981 !important;
+}
+
+html[data-theme="space"] .terminal-channel-note {
+  display: block !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  color: rgba(148, 163, 184, 0.72) !important;
+  margin-top: 2px !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Quick External Links (GitHub, LinkedIn, CV) */
+html[data-theme="space"] .terminal-quick-links {
+  display: flex !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+html[data-theme="space"] .terminal-quick-btn {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 5px !important;
+  padding: 7px 10px !important;
+  color: #f8fafc !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10.5px !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+html[data-theme="space"] .terminal-quick-btn:hover {
+  border-color: rgba(0, 229, 255, 0.6) !important;
+  background: rgba(0, 229, 255, 0.12) !important;
+  color: #00ffff !important;
+  transform: translateY(-1px) !important;
+}
+html[data-theme="space"] .terminal-quick-btn.terminal-cv-btn {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: rgba(245, 158, 11, 0.65) !important;
+  color: #fbbf24 !important;
+  font-weight: 700 !important;
+}
+html[data-theme="space"] .terminal-quick-btn.terminal-cv-btn:hover {
+  background: rgba(245, 158, 11, 0.28) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35) !important;
+  color: #fef08a !important;
+}
+
+/* Compact Form inside Terminal */
+html[data-theme="space"] .dispatch-form-wrapper .form-container {
+  background: rgba(8, 14, 26, 0.88) !important;
+  border: 1px solid rgba(0, 229, 255, 0.25) !important;
+  border-radius: 8px !important;
+  padding: 12px 18px 14px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px rgba(0, 229, 255, 0.08) !important;
+}
+html[data-theme="space"] .form-grid-2col {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+html[data-theme="space"] .form-input-group {
+  margin-bottom: 7px !important;
+}
+html[data-theme="space"] .form-input-group label {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.1em !important;
+  color: #94a3b8 !important;
+  margin-bottom: 2px !important;
+  display: block !important;
+}
+html[data-theme="space"] #dispatch input,
+html[data-theme="space"] #dispatch textarea {
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: #f8fafc !important;
+  border-radius: 4px !important;
+  padding: 6px 10px !important;
+  font-size: 12.5px !important;
+}
+html[data-theme="space"] #dispatch textarea {
+  height: 46px !important;
+  resize: none !important;
+}
+html[data-theme="space"] #dispatch input:focus,
+html[data-theme="space"] #dispatch textarea:focus {
+  border-color: #00ffff !important;
+  box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.25) !important;
+  outline: none !important;
+}
+html[data-theme="space"] .terminal-send-btn {
+  background: linear-gradient(90deg, #00e5ff, #00a8ff) !important;
+  color: #030712 !important;
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1em !important;
+  padding: 9px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 18px rgba(0, 229, 255, 0.42) !important;
+  transition: all 0.25s ease !important;
+  margin-top: 4px !important;
+}
+html[data-theme="space"] .terminal-send-btn:hover {
+  background: linear-gradient(90deg, #38bdf8, #00e5ff) !important;
+  box-shadow: 0 6px 24px rgba(0, 229, 255, 0.65) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Floating Universal Theme Switcher on Netflix View */
+.netflix-theme-bar {
+  position: absolute !important;
+  top: 18px !important;
+  right: 28px !important;
+  z-index: 100001 !important;
+  pointer-events: auto !important;
+}
+
+/* Responsive Layout for Laptops & Shorter Desktop Screens (e.g. 1366x768) - ZERO SCROLLBARS */
+@media (max-height: 850px) and (min-width: 901px) {
+  html[data-theme="space"] #dispatch {
+    overflow: hidden !important;
+    padding: max(56px, calc(var(--space-nav-height, 65px) + 4px)) 3.5% 50px !important;
+    align-items: center !important;
+  }
+  html[data-theme="space"] #dispatch .atelier-container {
+    height: 100% !important;
+    max-height: calc(100vh - 110px) !important;
+  }
+  html[data-theme="space"] #dispatch .dispatch-layout {
+    gap: clamp(1rem, 2vw, 1.8rem) !important;
+    max-height: calc(100vh - 110px) !important;
+  }
+  html[data-theme="space"] .luminous-canvas-frame {
+    height: 310px !important;
+    max-height: 44vh !important;
+  }
+  html[data-theme="space"] .luminous-identity-meta {
+    margin-top: 8px !important;
+  }
+  html[data-theme="space"] .luminous-name {
+    font-size: 17px !important;
+  }
+  html[data-theme="space"] .luminous-role {
+    font-size: 9.5px !important;
+    margin-bottom: 5px !important;
+  }
+  html[data-theme="space"] .luminous-status-card {
+    padding: 4px 10px !important;
+  }
+  html[data-theme="space"] .terminal-rubric {
+    font-size: 9px !important;
+  }
+  html[data-theme="space"] .terminal-title {
+    font-size: 19px !important;
+    margin: 1px 0 !important;
+  }
+  html[data-theme="space"] .terminal-sub {
+    font-size: 11px !important;
+    margin: 0 0 6px 0 !important;
+    line-height: 1.3 !important;
+  }
+  html[data-theme="space"] .terminal-channels-grid {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+  html[data-theme="space"] .terminal-channel-card {
+    padding: 6px 10px !important;
+  }
+  html[data-theme="space"] .terminal-quick-links {
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+  html[data-theme="space"] .terminal-quick-btn {
+    padding: 5px 8px !important;
+    font-size: 9.5px !important;
+  }
+  html[data-theme="space"] .dispatch-form-wrapper .form-container {
+    padding: 10px 14px 10px !important;
+  }
+  html[data-theme="space"] .form-input-group {
+    margin-bottom: 5px !important;
+  }
+  html[data-theme="space"] .form-input-group label {
+    font-size: 8.5px !important;
+  }
+  html[data-theme="space"] #dispatch input {
+    padding: 5px 8px !important;
+    font-size: 11.5px !important;
+  }
+  html[data-theme="space"] #dispatch textarea {
+    height: 38px !important;
+    padding: 5px 8px !important;
+    font-size: 11.5px !important;
+  }
+  html[data-theme="space"] .terminal-send-btn {
+    padding: 7px !important;
+    font-size: 10.5px !important;
+  }
+}
+
+/* Responsive Stacking strictly on mobile & tablets <= 900px */
+@media (max-width: 900px) {
+  html[data-theme="space"] #dispatch {
+    overflow-y: auto !important;
+    padding: max(70px, calc(var(--space-nav-height, 65px) + 8px)) 4% 88px !important;
+    align-items: flex-start !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  html[data-theme="space"] #dispatch .atelier-container {
+    height: auto !important;
+    max-height: none !important;
+  }
+  html[data-theme="space"] #dispatch .dispatch-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  html[data-theme="space"] .luminous-identity-wrapper {
+    max-width: 360px !important;
+    margin: 0 auto !important;
+  }
+  html[data-theme="space"] .luminous-canvas-frame {
+    height: 330px !important;
+    max-height: 330px !important;
+  }
+  html[data-theme="space"] .form-grid-2col,
+  html[data-theme="space"] .terminal-channels-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .netflix-theme-bar {
+    top: 12px !important;
+    right: 14px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  html[data-theme="space"] .luminous-identity-wrapper {
+    max-width: 100% !important;
+  }
+  html[data-theme="space"] .luminous-canvas-frame {
+    height: 280px !important;
+    max-height: 280px !important;
+  }
+  html[data-theme="space"] .terminal-quick-links {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  html[data-theme="space"] .terminal-quick-btn {
+    font-size: 10px !important;
+    padding: 6px 10px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 3 — STEP 3: COCKPIT HUD AVIONICS & POINTER ISOLATION
+   ══════════════════════════════════════════════════════════════════ */
+
+html[data-theme="space"] #spaceCockpitHud {
+  pointer-events: none !important;
+}
+html[data-theme="space"] #spaceCockpitHud .cockpit-viewport-frame,
+html[data-theme="space"] #spaceCockpitHud .cockpit-telemetry-bottom,
+html[data-theme="space"] #spaceCockpitHud .cockpit-target-director {
+  pointer-events: none !important;
+}
+html[data-theme="space"] #spaceCockpitHud button,
+html[data-theme="space"] #spaceCockpitHud a {
+  pointer-events: auto !important;
+}
+
+/* Ensure smooth transitions on HUD sector tags and nav mode */
+#cockpitSectionLabel,
+#cockpitSysMode,
+#cockpitFlightCoords,
+#cockpitStatusVal,
+#cockpitNavModeText {
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+#cockpitTargetDirector {
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+/* Constellation spatialization cards & groups styling */
+html[data-theme="space"] .skills-category-group {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+  transition: border-color 0.3s ease;
+}
+
+html[data-theme="space"] .skill-entry {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+html[data-theme="space"] .constellation-filter-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* TARGET RETICLE & PLANETARY HUD: Visibility is managed smoothly by GalaxyJourney and MasterJourneyController */
+html[data-theme="space"][data-cockpit-mode="launch"] #galaxyPlanetReticle {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Telemetry HUD Responsive Stacking - Docked cleanly to lower cockpit footer */
+@media (min-width: 1601px) {
+  .journey-telemetry-hud {
+    bottom: calc(clamp(8px, 1.2vw, 14px) + 50px) !important;
+    right: 28px !important;
+    width: 220px !important;
+  }
+}
+
+@media (max-width: 1600px) and (min-width: 1301px) {
+  .journey-telemetry-hud {
+    bottom: calc(clamp(8px, 1.2vw, 14px) + 50px) !important;
+    right: 20px !important;
+    width: 210px !important;
+  }
+}
+
+@media (max-width: 1300px) and (min-width: 1025px) {
+  .journey-telemetry-hud {
+    bottom: calc(clamp(8px, 1.2vw, 14px) + 50px) !important;
+    right: 16px !important;
+    width: 200px !important;
+    font-size: 8px !important;
+  }
+}
+
+/* Tablet (769px - 1024px) */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .journey-telemetry-hud {
+    bottom: calc(clamp(8px, 1.2vw, 14px) + 50px) !important;
+    right: 12px !important;
+    width: 195px !important;
+    font-size: 8px !important;
+  }
+}
+
+/* Mobile Devices (<= 768px): Suppress telemetry HUD on mobile */
+@media (max-width: 768px) {
+  .journey-telemetry-hud {
+    display: none !important;
+  }
+}
+
+/* ===================================================================
+   ZERO-OVERLAP MASTER HERO ARCHITECTURE (All 6 Standard Viewports)
+   =================================================================== */
+
+/* A. Compact Space Cockpit Canopy Navbar (Integrated directly into the camera screen) */
+html[data-theme="space"] #atelier-header {
+  position: fixed !important;
+  top: clamp(8px, 1.2vw, 14px) !important;
+  left: clamp(8px, 1.2vw, 14px) !important;
+  right: clamp(8px, 1.2vw, 14px) !important;
+  height: 52px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  z-index: 10000 !important;
+  pointer-events: none !important;
+}
+
+html[data-theme="space"] .atelier-nav {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 52px !important;
+  margin: 0 !important;
+  padding: 0 clamp(1rem, 2vw, 2rem) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: linear-gradient(180deg, rgba(8, 7, 12, 0.90) 0%, rgba(8, 7, 12, 0.60) 80%, rgba(8, 7, 12, 0.25) 100%) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(245, 158, 11, 0.22) !important;
+  border-top-left-radius: 15px !important;
+  border-top-right-radius: 15px !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45) !important;
+  pointer-events: auto !important;
+}
+
+/* Nav Brand: Name properly written, aligned horizontally and vertically */
+html[data-theme="space"] .atelier-nav .nav-brand {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-monogram {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  height: 100% !important;
+  text-decoration: none !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-orbital-emblem {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  flex-shrink: 0 !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-orbital-emblem svg {
+  width: 26px !important;
+  height: 26px !important;
+  display: block !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-title-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-title {
+  font-family: var(--font-display, 'Syne', sans-serif) !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: #FFFFFF !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  white-space: nowrap !important;
+  text-transform: uppercase !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-theme="space"] .atelier-nav .brand-sub {
+  display: none !important;
+}
+
+/* Nav Center links vertical alignment */
+html[data-theme="space"] .atelier-nav .nav-center {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+html[data-theme="space"] .atelier-nav-links {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+html[data-theme="space"] .atelier-nav-link {
+  height: 100% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+}
+
+/* Nav tools and mode removal */
+html[data-theme="space"] .atelier-nav .nav-tools {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+  gap: 0.75rem !important;
+}
+
+html[data-theme="space"] .cockpit-mode-pill,
+html[data-theme="space"] #cockpitNavModePill {
+  display: none !important;
+}
+
+@media (max-width: 1440px) {
+  html[data-theme="space"] .nav-tools .studio-pill,
+  html[data-theme="space"] .nav-tools .location-pill:not(.cockpit-mode-pill) {
+    display: none !important;
+  }
+}
+
+/* B. Hero Pavilion Flexbox & Safe Padding */
+html[data-theme="space"] .pavilion-hero {
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  padding-top: clamp(82px, 11vh, 115px) !important;
+  padding-bottom: clamp(65px, 8vh, 85px) !important;
+  padding-left: clamp(1.25rem, 3.5vw, 3.5rem) !important;
+  padding-right: clamp(1.25rem, 3.5vw, 3.5rem) !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Hide duplicate legacy telemetry badge in Space theme so cockpit bottom bar has sole authority */
+#gravityTelemetryBadge,
+.gravitational-telemetry-badge {
+  display: none !important;
+}
+
+/* In Space Theme, the footer belongs exclusively to Sector 05 (Beacon Nexus Contact) */
+html[data-theme="space"]:not([data-cockpit-mode="contact"]) #atelier-footer {
+  display: none !important;
+}
+
+
+/* C. Hero Unified Grid & Zone Separation */
+html[data-theme="space"] .space-hero-unified-layout {
+  max-width: min(1440px, 86vw) !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1.15fr 0.85fr !important;
+  align-items: center !important;
+  gap: clamp(1.5rem, 3vw, 3.5rem) !important;
+  position: relative !important;
+  z-index: 10 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Dedicated Safe Clearance for Right Telemetry HUD on Laptop/Desktop (<= 1650px) */
+@media (min-width: 1025px) and (max-width: 1650px) {
+  html[data-theme="space"] .space-hero-unified-layout {
+    max-width: calc(100vw - 340px) !important;
+    margin-left: clamp(1rem, 2vw, 2.5rem) !important;
+    margin-right: auto !important;
+  }
+}
+
+/* D. Monograph Heading & Left Visual Zone */
+html[data-theme="space"] .space-hero-monograph {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: clamp(0.75rem, 1.8vh, 1.35rem) !important;
+  z-index: 12 !important;
+}
+
+html[data-theme="space"] .space-hero-headline {
+  font-size: clamp(2.3rem, 4.2vw, 5.0rem) !important;
+  line-height: 0.95 !important;
+  margin: 0 !important;
+  letter-spacing: -0.02em !important;
+}
+
+html[data-theme="space"] .space-monograph-lead {
+  max-width: min(540px, 44vw) !important;
+  font-size: clamp(0.88rem, 1.1vw, 1.05rem) !important;
+  line-height: 1.55 !important;
+  color: rgba(226, 232, 240, 0.9) !important;
+}
+
+html[data-theme="space"] .hero-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+  margin-top: 0.2rem !important;
+}
+
+html[data-theme="space"] .space-btn-expedition,
+html[data-theme="space"] .space-btn-cv {
+  padding: 0.65rem 1.35rem !important;
+  font-size: 0.74rem !important;
+}
+
+/* E. Right Zone: 3D Celestial Tactical Sphere & Astrolabe - Concentric Orbit Locked Exactly to Black Hole Center */
+html[data-theme="space"] .space-hero-plinth {
+  position: static !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+html[data-theme="space"] .space-orbital-constellation,
+#blackHoleContainer .space-orbital-constellation {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  width: 600px !important;
+  height: 600px !important;
+  max-width: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+  transition: opacity 0.3s ease;
+}
+
+html[data-theme="space"] .orbital-tracks-svg,
+#blackHoleContainer .orbital-tracks-svg {
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%);
+  width: 580px !important;
+  height: 580px !important;
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+  height: 580px !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+}
+
+/* Astrolabe figure & labels completely removed for Space Theme: Replaced by interactive 3D Black Hole */
+html[data-theme="space"] #spaceCelestialCore,
+html[data-theme="space"] .space-celestial-core,
+html[data-theme="space"] #celestialHolosphereCanvas,
+html[data-theme="space"] .celestial-core-hud,
+html[data-theme="space"] .celestial-data-tag {
+  display: none !important;
+}
+
+html[data-theme="space"] .celestial-data-tag.tag-top {
+  position: absolute !important;
+  top: -12px !important;
+}
+
+html[data-theme="space"] .celestial-data-tag.tag-bottom {
+  position: absolute !important;
+  bottom: -16px !important;
+}
+
+/* Calibrated Keplerian Orbital Badges: Zero Collision 4-Corner Non-Intersecting Geometry */
+
+/* 1. Top-Left: Spring Boot 3 */
+html[data-theme="space"] .badge-orbit-1 {
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+/* 2. Top-Right: pgvector */
+html[data-theme="space"] .badge-orbit-3 {
+  top: 10px !important;
+  right: 10px !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+/* 3. Bottom-Right: FastAPI + ONNX */
+html[data-theme="space"] .badge-orbit-4 {
+  bottom: 12px !important;
+  right: 10px !important;
+  left: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* 4. Bottom-Left: Docker */
+html[data-theme="space"] .badge-orbit-6 {
+  bottom: 12px !important;
+  left: 10px !important;
+  right: auto !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* Secondary Badges: Preserved in stack, hidden in hero to ensure ZERO overlapping */
+html[data-theme="space"] .badge-orbit-2,
+html[data-theme="space"] .badge-orbit-5 {
+  display: none !important;
+}
+
+/* F. Gravity Field Online Guidance Panel */
+html[data-theme="space"] .blackhole-intro-hud {
+  position: fixed !important;
+  z-index: 60 !important;
+  pointer-events: auto !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  bottom: 68px !important;
+  top: auto !important;
+  right: auto !important;
+}
+
+/* Compact Heights (<= 800px): 1366x768 & 1280x720 Laptop Composition */
+@media (max-height: 800px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 96px !important;
+    padding-bottom: 54px !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    font-size: clamp(2.0rem, 3.4vw, 3.0rem) !important;
+    line-height: 0.96 !important;
+  }
+  html[data-theme="space"] .space-monograph-lead {
+    font-size: 0.84rem !important;
+    line-height: 1.44 !important;
+    max-width: 440px !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    gap: 0.70rem !important;
+  }
+  html[data-theme="space"] .space-btn-expedition,
+  html[data-theme="space"] .space-btn-cv {
+    padding: 0.52rem 1.1rem !important;
+    font-size: 0.70rem !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    margin-top: 0.5rem !important;
+    padding-top: 0.5rem !important;
+  }
+  html[data-theme="space"] .space-orbital-constellation {
+    transform: translate(-50%, -50%) scale(0.85) !important;
+  }
+  
+  
+  /* Two diagonally opposing hero badges: Zero collision on laptop */
+  html[data-theme="space"] .badge-orbit-1 { top: 6px !important; left: 10px !important; }
+  html[data-theme="space"] .badge-orbit-4 { bottom: 8px !important; right: 10px !important; }
+  html[data-theme="space"] .badge-orbit-3,
+  html[data-theme="space"] .badge-orbit-6 {
+    display: none !important;
+  }
+  
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+}
+
+/* G. Tablet Viewport (768px - 1024px) */
+@media (max-width: 1024px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 88px !important;
+    padding-bottom: 60px !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  html[data-theme="space"] .space-hero-unified-layout {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+    padding-top: 0 !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    align-items: center !important;
+    text-align: center !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+    gap: 0.75rem !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    align-items: center !important;
+    font-size: clamp(2.2rem, 5.2vw, 3.0rem) !important;
+  }
+  html[data-theme="space"] .space-hero-role-title {
+    margin: 0 auto !important;
+  }
+  html[data-theme="space"] .hero-actions {
+    justify-content: center !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    display: none !important;
+  }
+  html[data-theme="space"] .space-hero-plinth {
+    display: none !important;
+  }
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+}
+
+/* H. Mobile Viewport (<= 768px, including 390x844) */
+@media (max-width: 768px) {
+  html[data-theme="space"] .pavilion-hero {
+    padding-top: 96px !important;
+    padding-bottom: 56px !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  html[data-theme="space"] .space-hero-unified-layout {
+    grid-template-columns: 1fr !important;
+    gap: 0.8rem !important;
+    padding-top: 0 !important;
+  }
+  html[data-theme="space"] .space-hero-monograph {
+    gap: 0.55rem !important;
+    max-width: 100% !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  html[data-theme="space"] .space-hero-headline {
+    font-size: clamp(1.85rem, 7.5vw, 2.3rem) !important;
+    line-height: 0.98 !important;
+    align-items: center !important;
+  }
+  html[data-theme="space"] .space-monograph-lead {
+    font-size: 0.80rem !important;
+    line-height: 1.4 !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+  html[data-theme="space"] .hero-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.5rem !important;
+    align-items: center !important;
+  }
+  html[data-theme="space"] .hero-actions .atelier-btn {
+    width: 100% !important;
+    max-width: 320px !important;
+    justify-content: center !important;
+    padding: 0.55rem 1rem !important;
+  }
+  html[data-theme="space"] .space-hero-plinth {
+    display: none !important;
+  }
+  html[data-theme="space"] .orbital-tech-badge {
+    display: none !important;
+  }
+  html[data-theme="space"] .hero-footer-meta {
+    display: none !important;
+  }
+  html[data-theme="space"] .blackhole-intro-hud {
+    display: none !important;
+  }
+  html[data-theme="space"] .spatial-scroll-indicator {
+    display: none !important;
+  }
+}
+
+/* I. Cookie Banner Clearance */
+html[data-theme="space"] .cookie-banner {
+  bottom: clamp(65px, 8vh, 85px) !important;
+}
+
+html[data-theme="space"] #hero.pavilion-hero,
+html[data-theme="space"] #hero {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FIXED CONTINUOUS COCKPIT BOTTOM AVIONICS BAR DOCKING
+   ═══════════════════════════════════════════════════════════════════ */
+html[data-theme="space"] #spaceCockpitBottomBar,
+html[data-theme="space"] .space-cockpit-bottom-bar {
+  position: fixed !important;
+  bottom: clamp(8px, 1.2vw, 14px) !important;
+  left: clamp(8px, 1.2vw, 14px) !important;
+  right: clamp(8px, 1.2vw, 14px) !important;
+  top: auto !important;
+  height: 50px !important;
+  z-index: 9985 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 clamp(1rem, 2vw, 2rem) !important;
+  background: linear-gradient(0deg, rgba(8, 7, 12, 0.90) 0%, rgba(8, 7, 12, 0.60) 80%, rgba(8, 7, 12, 0.25) 100%) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+  border: none !important;
+  border-top: 1px solid rgba(245, 158, 11, 0.22) !important;
+  border-bottom-left-radius: 15px !important;
+  border-bottom-right-radius: 15px !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45) !important;
+  pointer-events: auto !important;
+}
+
+html[data-theme="space"] .cockpit-border-ticks-top {
+  top: 54px !important;
+  height: 14px !important;
+  opacity: 0.55 !important;
+}
+
+html[data-theme="space"] .cockpit-bar-left,
+html[data-theme="space"] .cockpit-bar-center,
+html[data-theme="space"] .cockpit-bar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
+}
+
+html[data-theme="space"] .cockpit-action-btn {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 0.68rem !important;
+  padding: 0.35rem 0.75rem !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+}
+
+@media (max-width: 768px) {
+  html[data-theme="space"] #spaceCockpitBottomBar {
+    height: 48px !important;
+    padding: 0 0.75rem !important;
+  }
+  html[data-theme="space"] .cockpit-bar-left,
+  html[data-theme="space"] .cockpit-bar-right {
+    display: none !important;
+  }
+  html[data-theme="space"] .cockpit-bar-center {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   FUTURISTIC SPACECRAFT COCKPIT FLIGHT INSTRUMENTS DECK (REQ 1)
+   ══════════════════════════════════════════════════════════════════ */
+.space-cockpit-instruments-deck {
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  margin-top: 1.75rem !important;
+  width: 100% !important;
+  max-width: 620px !important;
+  pointer-events: auto !important;
+  z-index: 22 !important;
+}
+
+.cockpit-instrument-card {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: rgba(6, 8, 14, 0.78);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 6px;
+  padding: 10px 12px;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(245, 158, 11, 0.03);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease,
+              background 0.25s ease;
+  cursor: default;
+  text-decoration: none;
+}
+
+.cockpit-instrument-card.is-link {
+  cursor: pointer;
+}
+
+.cockpit-instrument-card:hover {
+  transform: translateY(-3px);
+  background: rgba(12, 16, 26, 0.92);
+  border-color: rgba(245, 158, 11, 0.65);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.8), 0 0 18px rgba(245, 158, 11, 0.2);
+}
+
+.instrument-meta-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.instrument-beacon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.instrument-beacon.amber-pulse {
+  background: #F59E0B;
+  box-shadow: 0 0 8px #F59E0B;
+  animation: beaconPulseAmber 2.2s infinite ease-in-out;
+}
+
+.instrument-beacon.cyan-pulse {
+  background: #06B6D4;
+  box-shadow: 0 0 8px #06B6D4;
+  animation: beaconPulseCyan 2.4s infinite ease-in-out;
+}
+
+.instrument-beacon.green-pulse {
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  animation: beaconPulseGreen 2s infinite ease-in-out;
+}
+
+@keyframes beaconPulseAmber {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #F59E0B; }
+}
+
+@keyframes beaconPulseCyan {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #06B6D4; }
+}
+
+@keyframes beaconPulseGreen {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); box-shadow: 0 0 12px #10B981; }
+}
+
+.instrument-sys-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.6);
+  text-transform: uppercase;
+}
+
+.instrument-idx {
+  margin-left: auto;
+  font-family: 'Space Mono', monospace;
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(245, 158, 11, 0.5);
+}
+
+.instrument-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #F59E0B;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.instrument-metric {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: #CBD5E1;
+  line-height: 1.3;
+}
+
+.instrument-metric .metric-main {
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.instrument-metric .metric-divider {
+  color: rgba(245, 158, 11, 0.5);
+  font-size: 8px;
+}
+
+.instrument-metric .metric-desc {
+  font-size: 8px;
+  color: #94A3B8;
+  letter-spacing: 0.04em;
+}
+
+.instrument-metric.status-active .metric-main {
+  color: #10B981;
+}
+
+.instrument-metric .metric-arrow {
+  color: #10B981;
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+
+.cockpit-instrument-card.is-link:hover .metric-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+  .space-cockpit-instruments-deck {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REQUIREMENT 4: SAFE SECTOR 02 DOSSIER CORRIDOR (ZERO OVERLAP)
+   ══════════════════════════════════════════════════════════════════ */
+@media (min-width: 1025px) {
+  html[data-theme="space"] .galaxy-hud-center {
+    padding-right: clamp(260px, 17vw, 290px) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html[data-theme="space"] .galaxy-hud-center {
+    padding-right: 1.5rem !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REQUIREMENT 5 & 7: SECTOR 04 SKILLS TOP CLEARANCE & HOVER POLISH
+   ══════════════════════════════════════════════════════════════════ */
+html[data-theme="space"] #disciplines {
+  padding: 84px 5% 100px !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover {
+  transform: translateY(-5px) !important;
+  background: rgba(14, 18, 28, 0.94) !important;
+  border-color: rgba(245, 158, 11, 0.70) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.85), 0 0 20px rgba(245, 158, 11, 0.25) !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry:hover .skill-entry-title,
+html[data-theme="space"] #disciplines .skill-entry:hover .skill-entry-heading {
+  color: #FFFFFF !important;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.6) !important;
+}
+
+html[data-theme="space"] #disciplines .skill-entry .skill-repo-link:hover {
+  color: #F59E0B !important;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.5) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════
+   PHASE 2.6 REFINEMENT: HERO ZERO-COLLISION & 3D CAMERA SYNCHRONIZATION
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1. Strictly hide all floating badges in the hero so zero collisions occur */
+html[data-theme="space"] .space-orbital-constellation .orbital-tech-badge,
+html[data-theme="space"] .badge-orbit-1,
+html[data-theme="space"] .badge-orbit-2,
+html[data-theme="space"] .badge-orbit-3,
+html[data-theme="space"] .badge-orbit-4,
+html[data-theme="space"] .badge-orbit-5,
+html[data-theme="space"] .badge-orbit-6 {
+  display: none !important;
+}
+
+/* 2. Hero 3D Perspective Plane */
+html[data-theme="space"] #hero {
+  perspective: 1200px !important;
+  perspective-origin: 50% 50% !important;
+}
+
+html[data-theme="space"] .space-hero-monograph,
+html[data-theme="space"] .space-monograph-lead,
+html[data-theme="space"] .space-hero-cta-group,
+html[data-theme="space"] .space-cockpit-instruments-deck {
+  transform-style: preserve-3d !important;
+  will-change: transform, opacity !important;
+  transition: transform 0.08s ease-out, opacity 0.08s ease-out;
+}
+
+/* 3. Responsive Navigation & Guaranteed Theme Switcher Visibility */
+html[data-theme="space"] .atelier-nav .nav-tools {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.65rem !important;
+  flex-shrink: 0 !important;
+}
+
+#spaceThemeDropdownWrapper {
+  flex-shrink: 0 !important;
+  position: relative !important;
+  z-index: 10005 !important;
+}
+
+#spaceThemeDropdownMenu {
+  position: absolute !important;
+  top: calc(100% + 8px) !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 10010 !important;
+  min-width: 190px !important;
+}
+
+@media (max-width: 1680px) {
+  html[data-theme="space"] .atelier-nav .nav-tools .location-pill:not(.cockpit-mode-pill) {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1280px) {
+  html[data-theme="space"] .atelier-nav .nav-tools .cockpit-mode-pill {
+    display: none !important;
+  }
+  html[data-theme="space"] .atelier-nav .nav-center {
+    display: none !important;
+  }
+}
+
+/* 4. Skills Category Smooth Crossfade */
+html[data-theme="space"] .skills-category-group {
+  transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+html[data-theme="space"] .skills-category-group.skills-group-entering {
+  animation: skillsCategoryFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes skillsCategoryFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Navbar Compact Layout & Theme Dropdown Safety */
+@media (max-width: 768px) {
+  html[data-theme="space"] #atelier-header {
+    height: 48px !important;
+  }
+  html[data-theme="space"] .atelier-nav {
+    width: 100% !important;
+    height: 48px !important;
+    padding: 0 0.65rem !important;
+    justify-content: space-between !important;
+  }
+  html[data-theme="space"] .atelier-nav .brand-sub {
+    display: none !important;
+  }
+  html[data-theme="space"] .atelier-nav .brand-title {
+    font-size: 0.82rem !important;
+  }
+  html[data-theme="space"] .atelier-nav .nav-tools .location-pill {
+    display: none !important;
+  }
+  html[data-theme="space"] #spaceThemeDropdownWrapper {
+    margin-right: 0.25rem !important;
+  }
+  html[data-theme="space"] .theme-dropdown-trigger {
+    padding: 0.35rem 0.65rem !important;
+    font-size: 0.70rem !important;
+  }
+}
