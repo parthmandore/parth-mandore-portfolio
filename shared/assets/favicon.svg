@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111017"/>
+      <stop offset="100%" stop-color="#060509"/>
+    </linearGradient>
+  </defs>
+  <!-- Background: Obsidian Charcoal Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="5"/>
+  
+  <!-- PM Pure Geometric Monogram -->
+  <g transform="translate(48.27, 355.79) scale(0.2815, -0.2815)" fill="#FFFFFF">
+    <path d="M63 0V709H376Q444 709 498.5 681.5Q553 654 585.5 603.0Q618 552 618 481Q618 410 585.5 359.0Q553 308 498.5 281.0Q444 254 376 254H242V0ZM345 576H242V387H345Q384 387 412.0 411.0Q440 435 440 481Q440 527 412.0 551.5Q384 576 345 576Z"/>
+    <path d="M63 0V709H192L433 344L674 709H803V0H626V362L491 160H375L241 363V0Z" transform="translate(610, 0)"/>
+  </g>
+</svg>

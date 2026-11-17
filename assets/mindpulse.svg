@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0e0d14"/>
+      <stop offset="100%" stop-color="#08070b"/>
+    </linearGradient>
+    <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#bgGrad)"/>
+  <rect width="800" height="500" fill="url(#grid)"/>
+  <rect x="20" y="20" width="760" height="460" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+  <line x1="20" y1="65" x2="780" y2="65" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <text x="40" y="48" font-family="'Space Mono', monospace" font-size="11" fill="#f59e0b" letter-spacing="2">FIG. 04 // RANDOM FOREST BURNOUT RISK PREDICTION MODEL</text>
+  <text x="610" y="48" font-family="'Space Mono', monospace" font-size="10" fill="#6f6b7e">R2: 0.892 • SCIKIT-LEARN</text>
+
+  <!-- Left: Feature Importance Bar Chart -->
+  <g transform="translate(45, 95)">
+    <rect width="440" height="300" rx="4" fill="rgba(18,17,24,0.75)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="20" y="30" font-family="'Space Mono', monospace" font-size="11" fill="#6f6b7e">RANDOM FOREST FEATURE IMPORTANCE</text>
+
+    <!-- Bar 1 -->
+    <text x="20" y="65" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">SLEEP DURATION VARIABILITY</text>
+    <rect x="20" y="75" width="400" height="16" rx="2" fill="rgba(255,255,255,0.06)"/>
+    <rect x="20" y="75" width="290" height="16" rx="2" fill="#f59e0b"/>
+    <text x="320" y="88" font-family="'Space Mono', monospace" font-size="10" fill="#f59e0b">0.38</text>
+
+    <!-- Bar 2 -->
+    <text x="20" y="115" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">WEEKLY WORKING HOURS</text>
+    <rect x="20" y="125" width="400" height="16" rx="2" fill="rgba(255,255,255,0.06)"/>
+    <rect x="20" y="125" width="225" height="16" rx="2" fill="#f59e0b"/>
+    <text x="255" y="138" font-family="'Space Mono', monospace" font-size="10" fill="#f59e0b">0.29</text>
+
+    <!-- Bar 3 -->
+    <text x="20" y="165" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">CONTINUOUS SCREEN TIME</text>
+    <rect x="20" y="175" width="400" height="16" rx="2" fill="rgba(255,255,255,0.06)"/>
+    <rect x="20" y="175" width="140" height="16" rx="2" fill="#e2ded8"/>
+    <text x="170" y="188" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">0.18</text>
+
+    <!-- Bar 4 -->
+    <text x="20" y="215" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">AEROBIC EXERCISE DAYS</text>
+    <rect x="20" y="225" width="400" height="16" rx="2" fill="rgba(255,255,255,0.06)"/>
+    <rect x="20" y="225" width="115" height="16" rx="2" fill="#e2ded8"/>
+    <text x="145" y="238" font-family="'Space Mono', monospace" font-size="10" fill="#e2ded8">0.15</text>
+
+    <text x="20" y="278" font-family="'Space Mono', monospace" font-size="9" fill="#6f6b7e">DATASET: Multi-variable biometric &amp; occupational survey telemetry</text>
+  </g>
+
+  <!-- Right: Prediction Outcome Gauge -->
+  <g transform="translate(510, 95)">
+    <rect width="245" height="300" rx="4" fill="rgba(18,17,24,0.75)" stroke="rgba(255,255,255,0.08)"/>
+    <text x="20" y="30" font-family="'Space Mono', monospace" font-size="11" fill="#6f6b7e">BURNOUT RISK TELEMETRY</text>
+
+    <!-- Dial -->
+    <circle cx="122" cy="100" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+    <circle cx="122" cy="100" r="50" fill="none" stroke="#22c55e" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="260"/>
+    <text x="122" y="102" text-anchor="middle" font-family="'Space Mono', monospace" font-size="22" font-weight="bold" fill="#22c55e">14%</text>
+    <text x="122" y="120" text-anchor="middle" font-family="'Space Mono', monospace" font-size="8" fill="#6f6b7e">BURNOUT PROBABILITY</text>
+
+    <rect x="20" y="170" width="205" height="35" rx="3" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.3)"/>
+    <text x="32" y="192" font-family="'Space Mono', monospace" font-size="10" fill="#22c55e">✓ STATUS: LOW RISK / RESILIENT</text>
+
+    <rect x="20" y="220" width="205" height="60" rx="3" fill="#0c0b10" stroke="rgba(255,255,255,0.08)"/>
+    <text x="30" y="240" font-family="'Space Mono', monospace" font-size="8" fill="#6f6b7e">MODEL METRICS</text>
+    <text x="30" y="255" font-family="'Space Mono', monospace" font-size="9" fill="#FAF9F6">MAE: 0.041 • MSE: 0.003</text>
+    <text x="30" y="270" font-family="'Space Mono', monospace" font-size="8" fill="#f59e0b">ESTIMATORS: 100 TREES</text>
+  </g>
+
+  <!-- Bottom Bar -->
+  <rect x="45" y="420" width="710" height="36" rx="2" fill="rgba(18,17,24,0.85)" stroke="rgba(245,158,11,0.3)" stroke-width="1"/>
+  <text x="65" y="442" font-family="'Space Mono', monospace" font-size="10" fill="#FAF9F6">ACTIVE MODEL: <tspan fill="#f59e0b">RandomForestRegressor • Proactive Behavioral Wellness Telemetry</tspan></text>
+</svg>
