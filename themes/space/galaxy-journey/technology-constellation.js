@@ -436,6 +436,8 @@
       </div>
 
       <div id="csStageViewport" class="cs-stage-viewport">
+        <button type="button" id="csBackSkyBtn" class="cs-back-sky-btn">&larr; Sky Map</button>
+        <button type="button" id="csListToggle" class="cs-list-toggle">List view</button>
         <header id="csTitleHeader" class="cs-title-header">
           <h2 id="csConstellationTitle" class="cs-constellation-title"></h2>
           <p class="cs-constellation-legend">Brighter star = used in more projects</p>
@@ -456,6 +458,9 @@
             <div id="csDetailProjectList" class="cs-detail-project-list"></div>
           </div>
         </aside>
+
+        <!-- Full List Overlay -->
+        <div id="csListOverlay" class="cs-list-overlay" role="dialog" aria-modal="true" aria-label="All technologies list"></div>
       </div>
     `;
 
@@ -469,8 +474,24 @@
     detailPanelEl = rootEl.querySelector('#csDetailPanel');
     listOverlayEl = rootEl.querySelector('#csListOverlay');
     tabsEl = rootEl.querySelector('#csCategoryTabs');
-    backToSkyBtn = null;
-    listToggleBtn = null;
+    backToSkyBtn = rootEl.querySelector('#csBackSkyBtn');
+    listToggleBtn = rootEl.querySelector('#csListToggle');
+
+    if (backToSkyBtn) {
+      backToSkyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (window.MasterJourneyController && typeof window.MasterJourneyController.setTargetProgress === 'function') {
+          window.MasterJourneyController.setTargetProgress(0.635, true);
+        }
+      });
+    }
+
+    if (listToggleBtn) {
+      listToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleListView();
+      });
+    }
 
     // Build Sector Tabs (counts derived strictly from data)
     sectorData.forEach((sec, idx) => {
@@ -1279,10 +1300,11 @@
   function flyToProjectPlanet(projectIndex) {
     exitStarDetail(true);
     if (isListView) toggleListView();
-    if (window.GalaxyJourney && typeof window.GalaxyJourney.closeConstellationDetail === 'function') {
-      window.GalaxyJourney.closeConstellationDetail(true);
-    }
-    if (window.GalaxyJourney && typeof window.GalaxyJourney.jumpToProject === 'function') {
+    const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
+    const targetWp = PLANET_WAYPOINTS[projectIndex] !== undefined ? PLANET_WAYPOINTS[projectIndex] : 0.205;
+    if (window.MasterJourneyController && typeof window.MasterJourneyController.setTargetProgress === 'function') {
+      window.MasterJourneyController.setTargetProgress(targetWp, true);
+    } else if (window.GalaxyJourney && typeof window.GalaxyJourney.jumpToProject === 'function') {
       window.GalaxyJourney.jumpToProject(projectIndex);
     }
   }
@@ -1296,7 +1318,11 @@
   function populateListView() {
     if (!listOverlayEl) return;
     const totalTech = sectorData.reduce((s, c) => s + c.techCount, 0);
-    let html = `<div class="cs-list-grid-wrap">`;
+    let html = `
+      <div class="cs-list-grid-wrap">
+        <div class="cs-list-topbar">
+          <button type="button" id="csListClose" class="cs-list-close-btn">&larr; Back to Constellations (Esc)</button>
+        </div>`;
     sectorData.forEach(sec => {
       html += `<section aria-label="${escapeHtml(sec.title)}">
         <h3 class="cs-list-sector-heading">
@@ -1321,6 +1347,14 @@
     });
     html += `</div>`;
     listOverlayEl.innerHTML = html;
+
+    const closeBtn = listOverlayEl.querySelector('#csListClose');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isListView) toggleListView();
+      });
+    }
 
     listOverlayEl.querySelectorAll('.cs-list-project-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1895,15 +1929,32 @@
       alpha = Math.max(0.0, Math.min(1.0, 1.0 - (masterT - 0.910) / 0.020));
     } else {
       const halfSpan = 0.020;
-      if (minDiff <= 0.006) {
+      if (minDiff <= 0.008) {
         alpha = 1.0;
       } else {
-        alpha = Math.max(0.0, Math.min(1.0, 1.0 - (minDiff - 0.006) / (halfSpan - 0.006)));
+        alpha = Math.max(0.0, Math.min(1.0, 1.0 - (minDiff - 0.008) / (halfSpan - 0.008)));
       }
     }
 
     if (closestIdx !== activeSectorIdx && alpha > 0.15) {
       switchSector(closestIdx, { instant: true, skipEntrance: true, fromThree: true });
+    }
+
+    // Top Bar (Category Tabs) stays cleanly visible across all Sector 04 constellations
+    const topBarEl = rootEl.querySelector('.cs-topbar');
+    if (topBarEl) {
+      const topBarAlpha = Math.max(0.0, Math.min(1.0, (masterT - 0.635) / 0.020));
+      topBarEl.style.opacity = topBarAlpha.toFixed(3);
+      topBarEl.style.pointerEvents = topBarAlpha > 0.4 ? 'auto' : 'none';
+    }
+
+    if (backToSkyBtn) {
+      backToSkyBtn.style.opacity = alpha.toFixed(3);
+      backToSkyBtn.style.pointerEvents = alpha > 0.4 ? 'auto' : 'none';
+    }
+    if (listToggleBtn) {
+      listToggleBtn.style.opacity = alpha.toFixed(3);
+      listToggleBtn.style.pointerEvents = alpha > 0.4 ? 'auto' : 'none';
     }
 
     const titleHeader = rootEl.querySelector('#csTitleHeader');
@@ -1914,7 +1965,7 @@
 
     if (cardsLayerEl) {
       cardsLayerEl.style.opacity = alpha.toFixed(3);
-      cardsLayerEl.style.pointerEvents = (alpha > 0.80) ? 'auto' : 'none';
+      cardsLayerEl.style.pointerEvents = (alpha > 0.70) ? 'auto' : 'none';
       const leftCards = cardsLayerEl.querySelectorAll('.cs-tech-card.is-left');
       const rightCards = cardsLayerEl.querySelectorAll('.cs-tech-card.is-right');
       const transX = 24 * (1.0 - alpha);
@@ -1932,6 +1983,8 @@
     updateProgress,
     config: CONSTELLATION_CONFIG,
     selectCategory: switchSector,
+    isDetailOpen: () => (zoomedStarIdx >= 0) || isListView,
+    getSectorData: () => sectorData,
     selectSector: (keyOrIdx, opts) => {
       if (typeof keyOrIdx === 'number') return switchSector(keyOrIdx, opts);
       const found = sectorData.findIndex(s => s.key === keyOrIdx);

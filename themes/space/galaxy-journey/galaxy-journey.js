@@ -2490,9 +2490,18 @@
       }
     }
 
-    // 6. Seamless 0.40s Crossfade Handoff to 2D Constellation Detail View (#disciplines)
+    // 6. Seamless Crossfade Handoff to 2D Constellation Detail View (#disciplines)
     if (disciplinesEl) {
-      if (handoffAlpha > 0.005 && !isDestroyed && contactFade > 0.5) {
+      const isSector4 = typeof masterT === 'number' && masterT >= 0.635 && masterT <= 0.930;
+      if (isSector4 && !isDestroyed && contactFade > 0.5) {
+        if (window.TechnologyConstellation && typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
+          window.TechnologyConstellation.setSharedBackdropMode(true);
+        }
+        disciplinesEl.style.visibility = 'visible';
+        disciplinesEl.style.opacity = '1';
+        disciplinesEl.style.pointerEvents = 'auto';
+        disciplinesEl.classList.add('is-interactive');
+      } else if (handoffAlpha > 0.005 && !isDestroyed && contactFade > 0.5) {
         if (window.TechnologyConstellation && typeof window.TechnologyConstellation.setSharedBackdropMode === 'function') {
           window.TechnologyConstellation.setSharedBackdropMode(true);
         }
@@ -2613,7 +2622,7 @@
 
     for (let k = 0; k < 7; k++) {
       const wK = WAYPOINTS[k];
-      const dwellHalf = 0.005;
+      const dwellHalf = 0.008;
 
       // Stable Dwell Plateau at Constellation k
       if (Math.abs(masterT - wK) <= dwellHalf) {
@@ -5156,6 +5165,12 @@
     const disciplinesEl = document.getElementById('disciplines');
     if (!disciplinesEl) return;
 
+    const masterT = window.MasterJourneyController && typeof window.MasterJourneyController.getProgress === 'function'
+      ? window.MasterJourneyController.getProgress()
+      : null;
+    const isSector4 = typeof masterT === 'number' && masterT >= 0.635 && masterT <= 0.930;
+    if (isSector4) return;
+
     // Defer #disciplines visibility to Phase 4 handoffAlpha when on Sky Map; hide cleanly if scrolled away
     if (detailMode === 'skymap' && detailProgress <= 0.005) {
       disciplinesEl.style.opacity = '0';
@@ -7399,7 +7414,12 @@
     closeConstellationDetail: closeConstellationDetail,
     setActiveDetailSector: setActiveDetailSector,
     isConstellationDetailOpen: () => detailMode === 'detail' || detailMode === 'opening',
-    isConstellationDetailActive: () => detailMode !== 'skymap' || detailProgress > 0.005,
+    isConstellationDetailActive: () => {
+      if (window.TechnologyConstellation && typeof window.TechnologyConstellation.isDetailOpen === 'function') {
+        return window.TechnologyConstellation.isDetailOpen();
+      }
+      return detailMode !== 'skymap' || detailProgress > 0.005;
+    },
     getDetailTransitionState: () => ({
       detailMode,
       detailProgress: Number(detailProgress.toFixed(4)),

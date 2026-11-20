@@ -754,12 +754,15 @@
     const navCheckpoints = {
       '#hero': 0.00,
       '#works': 0.205,
+      '#projects': 0.205,
       '#disciplines': TRANSITION_T_END,
-      '#dispatch': 1.00
+      '#skills': TRANSITION_T_END,
+      '#dispatch': 1.00,
+      '#contact': 1.00
     };
 
     const links = document.querySelectorAll(
-      '#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"], .space-btn-expedition, .hero-cta-btn, .spatial-scroll-indicator, a[href="#works"], a[href="#disciplines"], a[href="#dispatch"]'
+      '#spaceNavLinks a, #atelier-header a[href^="#"], .brand-monogram, .footer-nav-link[href^="#"], .space-btn-expedition, .hero-cta-btn, .spatial-scroll-indicator, a[href="#works"], a[href="#projects"], a[href="#disciplines"], a[href="#skills"], a[href="#dispatch"], a[href="#contact"]'
     );
     links.forEach(link => {
       link.addEventListener('click', function (e) {
@@ -1228,7 +1231,7 @@
     if (dockedConstellationWp !== undefined) {
       // User is settled at a technology constellation exploring its details.
       // A SINGLE deliberate scroll movement initiates departure immediately!
-      const takeoffOffset = 0.015;
+      const takeoffOffset = 0.016;
       if (dir > 0) {
         const newTarget = Math.min(1.0, dockedConstellationWp + takeoffOffset);
         setTargetProgress(newTarget, true);
@@ -1257,7 +1260,7 @@
     } else if (targetProgress >= 0.650 && targetProgress <= 0.920) {
       // Sector 04: Astrometric Constellations exploration
       const isNearConstellation = CONSTELLATION_WAYPOINT_T.some(wp => Math.abs(targetProgress - wp) <= 0.012);
-      divisor = isNearConstellation ? 10000 : 16000;
+      divisor = isNearConstellation ? 9500 : 16000;
     } else {
       // Sector 05: Calm, cinematic approach into Beacon Nexus / 3D Hologram Projector
       divisor = 14000;
@@ -1265,9 +1268,35 @@
 
     let scrollDeltaProgress = (clampedDelta / divisor);
 
-    // ── INPUT ACCUMULATION CLAMPING (Halts camera crisply when scrolling stops) ──
+    // ── INPUT ACCUMULATION CLAMPING & MAGNETIC WAYPOINT DOCKING ──
     const MAX_LEAD_LAG = 0.035;
     const prospectiveTarget = targetProgress + scrollDeltaProgress;
+
+    // Magnetic Docking to Constellation & Planet Waypoints during flight
+    if (dir > 0) {
+      const catchConstellation = CONSTELLATION_WAYPOINT_T.find(wp => targetProgress < wp && prospectiveTarget >= (wp - 0.006));
+      if (catchConstellation !== undefined) {
+        setTargetProgress(catchConstellation, true);
+        return;
+      }
+      const catchPlanet = PLANET_WAYPOINTS.find(wp => targetProgress < wp && prospectiveTarget >= (wp - 0.006));
+      if (catchPlanet !== undefined) {
+        setTargetProgress(catchPlanet, true);
+        return;
+      }
+    } else if (dir < 0) {
+      const catchConstellation = CONSTELLATION_WAYPOINT_T.slice().reverse().find(wp => targetProgress > wp && prospectiveTarget <= (wp + 0.006));
+      if (catchConstellation !== undefined) {
+        setTargetProgress(catchConstellation, true);
+        return;
+      }
+      const catchPlanet = PLANET_WAYPOINTS.slice().reverse().find(wp => targetProgress > wp && prospectiveTarget <= (wp + 0.006));
+      if (catchPlanet !== undefined) {
+        setTargetProgress(catchPlanet, true);
+        return;
+      }
+    }
+
     const prospectiveDiff = prospectiveTarget - currentProgress;
     let newTarget;
     if (Math.abs(prospectiveDiff) <= MAX_LEAD_LAG) {
@@ -1326,6 +1355,7 @@
 
     const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
     const dockedPlanetWp = PLANET_WAYPOINTS.find(wp => Math.abs(targetProgress - wp) <= 0.008);
+    const dockedConstellationWp = CONSTELLATION_WAYPOINT_T.find(wp => Math.abs(targetProgress - wp) <= 0.008);
     const dir = deltaY > 0 ? 1 : (deltaY < 0 ? -1 : 0);
 
     if (dockedPlanetWp !== undefined && Math.abs(deltaY) > 10) {
@@ -1338,13 +1368,50 @@
       return;
     }
 
+    if (dockedConstellationWp !== undefined && Math.abs(deltaY) > 10) {
+      // Single swipe takeoff from constellation
+      const takeoffOffset = 0.016;
+      const newTarget = dir > 0
+        ? Math.min(1.0, dockedConstellationWp + takeoffOffset)
+        : Math.max(0.0, dockedConstellationWp - takeoffOffset);
+      setTargetProgress(newTarget, true);
+      return;
+    }
+
     let touchFactor = TOUCH_SENSITIVITY;
     const isNearPlanet = PLANET_WAYPOINTS.some(wp => Math.abs(targetProgress - wp) <= 0.014);
-    if (isNearPlanet) {
-      touchFactor *= 1.2;
+    const isNearConstellation = CONSTELLATION_WAYPOINT_T.some(wp => Math.abs(targetProgress - wp) <= 0.014);
+    if (isNearPlanet || isNearConstellation) {
+      touchFactor *= 1.15;
     }
 
     const prospectiveTarget = targetProgress + (deltaY * touchFactor);
+
+    // Magnetic Docking to Constellation & Planet Waypoints during touch gesture
+    if (dir > 0) {
+      const catchConstellation = CONSTELLATION_WAYPOINT_T.find(wp => targetProgress < wp && prospectiveTarget >= (wp - 0.006));
+      if (catchConstellation !== undefined) {
+        setTargetProgress(catchConstellation, true);
+        return;
+      }
+      const catchPlanet = PLANET_WAYPOINTS.find(wp => targetProgress < wp && prospectiveTarget >= (wp - 0.006));
+      if (catchPlanet !== undefined) {
+        setTargetProgress(catchPlanet, true);
+        return;
+      }
+    } else if (dir < 0) {
+      const catchConstellation = CONSTELLATION_WAYPOINT_T.slice().reverse().find(wp => targetProgress > wp && prospectiveTarget <= (wp + 0.006));
+      if (catchConstellation !== undefined) {
+        setTargetProgress(catchConstellation, true);
+        return;
+      }
+      const catchPlanet = PLANET_WAYPOINTS.slice().reverse().find(wp => targetProgress > wp && prospectiveTarget <= (wp + 0.006));
+      if (catchPlanet !== undefined) {
+        setTargetProgress(catchPlanet, true);
+        return;
+      }
+    }
+
     const prospectiveDiff = prospectiveTarget - currentProgress;
     const MAX_LEAD_LAG = 0.035;
     let newTarget;
@@ -1454,15 +1521,25 @@
       }
       const dir = isFwd ? 1 : -1;
 
-      // Single-action takeoff from docked planet waypoint
+      // Single-action takeoff from docked planet or constellation waypoint
       const PLANET_WAYPOINTS = [0.205, 0.266, 0.327, 0.388, 0.450, 0.511, 0.572];
       const dockedPlanetWp = PLANET_WAYPOINTS.find(wp => Math.abs(targetProgress - wp) <= 0.008);
+      const dockedConstellationWp = CONSTELLATION_WAYPOINT_T.find(wp => Math.abs(targetProgress - wp) <= 0.008);
 
       if (dockedPlanetWp !== undefined) {
         const takeoffOffset = 0.016;
         const newTarget = dir > 0
           ? Math.min(1.0, dockedPlanetWp + takeoffOffset)
           : Math.max(0.0, dockedPlanetWp - takeoffOffset);
+        setTargetProgress(newTarget, true);
+        return;
+      }
+
+      if (dockedConstellationWp !== undefined) {
+        const takeoffOffset = 0.016;
+        const newTarget = dir > 0
+          ? Math.min(1.0, dockedConstellationWp + takeoffOffset)
+          : Math.max(0.0, dockedConstellationWp - takeoffOffset);
         setTargetProgress(newTarget, true);
         return;
       }
@@ -1756,6 +1833,22 @@
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd, { passive: true });
     window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('hashchange', () => {
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash === '#works' || hash === '#projects') {
+        interruptAutoPlay();
+        setTargetProgress(0.205, true);
+      } else if (hash === '#disciplines' || hash === '#skills') {
+        interruptAutoPlay();
+        setTargetProgress(TRANSITION_T_END, true);
+      } else if (hash === '#dispatch' || hash === '#contact') {
+        interruptAutoPlay();
+        setTargetProgress(1.0, true);
+      } else if (hash === '#hero') {
+        interruptAutoPlay();
+        setTargetProgress(0.0, true);
+      }
+    });
     // Cancel auto-play cleanly if user clicks anywhere outside Skip/Nav
     window.addEventListener('pointerdown', (e) => {
       if (autoPlayState && e.target && !e.target.closest('#transitionSkipBtn') && !e.target.closest('a[href="#disciplines"]') && !e.target.closest('a[href="#works"]')) {
